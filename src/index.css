@@ -115,7 +115,7 @@
     border-color: hsl(var(--border));
   }
   body {
-    @apply bg-[#f0ede8] text-vs font-syne;
+    @apply bg-[#f0ede8] text-vs font-space-grotesk;
     font-feature-settings: "rlig" 1, "calt" 1;
     cursor: none;
   }

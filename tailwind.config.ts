@@ -19,6 +19,7 @@ const config = {
     },
     extend: {
       fontFamily: {
+        'space-grotesk': ['Space Grotesk', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
         heebo: ['Heebo', 'sans-serif'],
         lobster: ['Lobster Two', 'cursive'],
