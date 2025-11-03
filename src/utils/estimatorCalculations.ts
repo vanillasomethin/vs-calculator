@@ -11,18 +11,18 @@ export const calculateCosts = (estimate: ProjectEstimate) => {
   const areaInSqm = estimate.areaUnit === "sqft" ? estimate.area / 10.764 : estimate.area;
   
   const componentMultipliers: Record<string, Record<ComponentOption, number>> = {
-    'plumbing': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.8, '': 0 },
-    'ac': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.0, '': 0 },
-    'electrical': { 'basic': 1.0, 'mid': 1.2, 'premium': 1.7, '': 0 },
-    'elevator': { 'basic': 1.0, 'mid': 1.5, 'premium': 2.2, '': 0 },
-    'lighting': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.9, '': 0 },
-    'windows': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.1, '': 0 },
-    'ceiling': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.8, '': 0 },
-    'surfaces': { 'basic': 1.0, 'mid': 1.5, 'premium': 2.3, '': 0 },
-    'fixedFurniture': { 'basic': 1.0, 'mid': 1.6, 'premium': 2.5, '': 0 },
-    'looseFurniture': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.2, '': 0 },
-    'furnishings': { 'basic': 1.0, 'mid': 1.3, 'premium': 2.0, '': 0 },
-    'appliances': { 'basic': 1.0, 'mid': 1.6, 'premium': 2.4, '': 0 }
+    'plumbing': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.8, 'none': 0, '': 0 },
+    'ac': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.0, 'none': 0, '': 0 },
+    'electrical': { 'basic': 1.0, 'mid': 1.2, 'premium': 1.7, 'none': 0, '': 0 },
+    'elevator': { 'basic': 1.0, 'mid': 1.5, 'premium': 2.2, 'none': 0, '': 0 },
+    'lighting': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.9, 'none': 0, '': 0 },
+    'windows': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.1, 'none': 0, '': 0 },
+    'ceiling': { 'basic': 1.0, 'mid': 1.3, 'premium': 1.8, 'none': 0, '': 0 },
+    'surfaces': { 'basic': 1.0, 'mid': 1.5, 'premium': 2.3, 'none': 0, '': 0 },
+    'fixedFurniture': { 'basic': 1.0, 'mid': 1.6, 'premium': 2.5, 'none': 0, '': 0 },
+    'looseFurniture': { 'basic': 1.0, 'mid': 1.4, 'premium': 2.2, 'none': 0, '': 0 },
+    'furnishings': { 'basic': 1.0, 'mid': 1.3, 'premium': 2.0, 'none': 0, '': 0 },
+    'appliances': { 'basic': 1.0, 'mid': 1.6, 'premium': 2.4, 'none': 0, '': 0 }
   };
   
   const locationMultiplier = 1.0;

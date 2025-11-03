@@ -4,10 +4,10 @@ import CategorySelectionGrid from "./CategorySelectionGrid";
 
 interface ComponentsStepProps {
   plumbing: ComponentOption;
-  ac: ComponentOption | null;
+  ac: ComponentOption;
   electrical: ComponentOption;
-  elevator: ComponentOption | null;
-  onOptionChange: (component: string, option: ComponentOption | null) => void;
+  elevator: ComponentOption;
+  onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
 const ComponentsStep = ({
@@ -64,9 +64,9 @@ const ComponentsStep = ({
 
   const selectedOptions = {
     plumbing,
-    ac: ac ?? "none", // default to "none" if null
+    ac: ac || "none",
     electrical,
-    elevator: elevator ?? "none",
+    elevator: elevator || "none",
   };
 
   return (
@@ -74,9 +74,7 @@ const ComponentsStep = ({
       <CategorySelectionGrid
         categories={componentCategories}
         selectedOptions={selectedOptions}
-        onOptionChange={(component, option) =>
-          onOptionChange(component, option === "none" ? null : option)
-        }
+        onOptionChange={onOptionChange}
         sectionTitle="Core Building Components"
         sectionDescription="Select your preferred options for the building components. Choose 'Not required' for optional ones."
       />

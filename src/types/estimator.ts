@@ -1,5 +1,5 @@
 
-export type ComponentOption = "basic" | "mid" | "premium" | "";
+export type ComponentOption = "basic" | "mid" | "premium" | "none" | "";
 export type PriceTier = "basic" | "mid" | "premium";
 export type AreaUnit = "sqft" | "sqm";
 
