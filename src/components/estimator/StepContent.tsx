@@ -14,22 +14,22 @@ const StepContent = () => {
   // ✅ FIX 1: Destructure handleOptionChange
   const { step, estimate, updateEstimate, handleReset, handleSaveEstimate, handleOptionChange } = useEstimator();
 
-  // Set default "basic" options when first reaching step 4
-  useEffect(() => {
-    if (step === 4) {
-      const componentsToInitialize = [
-        'plumbing', 'ac', 'electrical', 'elevator',
-        'lighting', 'windows', 'ceiling', 'surfaces',
-        'fixedFurniture', 'looseFurniture', 'furnishings', 'appliances'
-      ];
-      
-      componentsToInitialize.forEach(component => {
-        if (!estimate[component as keyof typeof estimate]) {
-          updateEstimate(component as keyof typeof estimate, 'basic');
-        }
-      });
-    }
-  }, [step, estimate, updateEstimate]);
+  // Set default "standard" options when first reaching step 4
+  useEffect(() => {
+    if (step === 4) {
+      const componentsToInitialize = [
+        'plumbing', 'ac', 'electrical', 'elevator', 'civilQuality',
+        'lighting', 'windows', 'ceiling', 'surfaces', 'buildingEnvelope',
+        'fixedFurniture', 'looseFurniture', 'furnishings', 'appliances', 'artefacts'
+      ];
+      
+      componentsToInitialize.forEach(component => {
+        if (!estimate[component as keyof typeof estimate]) {
+          updateEstimate(component as keyof typeof estimate, 'standard');
+        }
+      });
+    }
+  }, [step, estimate, updateEstimate]);
 
   return (
     <AnimatePresence mode="wait">
@@ -67,33 +67,36 @@ const StepContent = () => {
           />
         )}
         
-        {step === 4 && (
-          <div className="space-y-12">
-            <ComponentsStep 
-              plumbing={estimate.plumbing}
-              ac={estimate.ac}
-              electrical={estimate.electrical}
-              elevator={estimate.elevator}
-              onOptionChange={handleOptionChange} // ✅ FIX 2
-            />
-            
-            <FinishesStep 
-              lighting={estimate.lighting}
-              windows={estimate.windows}
-              ceiling={estimate.ceiling}
-              surfaces={estimate.surfaces}
-              onOptionChange={handleOptionChange} // ✅ FIX 3
-            />
-            
-            <InteriorsStep 
-              fixedFurniture={estimate.fixedFurniture}
-              looseFurniture={estimate.looseFurniture}
-              furnishings={estimate.furnishings}
-              appliances={estimate.appliances}
-              onOptionChange={handleOptionChange} // ✅ FIX 4
-            />
-          </div>
-        )}
+        {step === 4 && (
+          <div className="space-y-12">
+            <ComponentsStep 
+              plumbing={estimate.plumbing}
+              ac={estimate.ac}
+              electrical={estimate.electrical}
+              elevator={estimate.elevator}
+              civilQuality={estimate.civilQuality}
+              onOptionChange={handleOptionChange}
+            />
+            
+            <FinishesStep 
+              lighting={estimate.lighting}
+              windows={estimate.windows}
+              ceiling={estimate.ceiling}
+              surfaces={estimate.surfaces}
+              buildingEnvelope={estimate.buildingEnvelope}
+              onOptionChange={handleOptionChange}
+            />
+            
+            <InteriorsStep 
+              fixedFurniture={estimate.fixedFurniture}
+              looseFurniture={estimate.looseFurniture}
+              furnishings={estimate.furnishings}
+              appliances={estimate.appliances}
+              artefacts={estimate.artefacts}
+              onOptionChange={handleOptionChange}
+            />
+          </div>
+        )}
         
         {step === 5 && (
           <ResultsStep 

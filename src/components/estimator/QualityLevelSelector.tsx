@@ -1,6 +1,7 @@
 import { ComponentOption } from "@/types/estimator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { X, Check, Star, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,10 +13,34 @@ interface QualityLevelSelectorProps {
 }
 
 const options = [
-  { value: "none" as ComponentOption, label: "Not Required", icon: X, color: "text-gray-500" },
-  { value: "standard" as ComponentOption, label: "Standard", icon: Check, color: "text-blue-600" },
-  { value: "premium" as ComponentOption, label: "Premium", icon: Star, color: "text-purple-600" },
-  { value: "luxury" as ComponentOption, label: "Luxury", icon: Crown, color: "text-amber-600" },
+  { 
+    value: "none" as ComponentOption, 
+    label: "Not Required", 
+    icon: X, 
+    color: "text-gray-500",
+    description: "Skip this component entirely - no cost"
+  },
+  { 
+    value: "standard" as ComponentOption, 
+    label: "Standard", 
+    icon: Check, 
+    color: "text-blue-600",
+    description: "Functional quality with reliable materials and standard finishes"
+  },
+  { 
+    value: "premium" as ComponentOption, 
+    label: "Premium", 
+    icon: Star, 
+    color: "text-purple-600",
+    description: "Enhanced quality with better aesthetics, durability and branded materials"
+  },
+  { 
+    value: "luxury" as ComponentOption, 
+    label: "Luxury", 
+    icon: Crown, 
+    color: "text-amber-600",
+    description: "Top-tier luxury materials, imported finishes and premium brands"
+  },
 ];
 
 const QualityLevelSelector = ({ 
@@ -25,41 +50,50 @@ const QualityLevelSelector = ({
   disabled = false 
 }: QualityLevelSelectorProps) => {
   return (
-    <RadioGroup
-      value={currentValue || "none"}
-      onValueChange={(value) => onChange(value as ComponentOption)}
-      disabled={disabled}
-      className="grid grid-cols-2 md:grid-cols-4 gap-3"
-    >
-      {options.map((option) => {
-        const Icon = option.icon;
-        const isSelected = currentValue === option.value;
-        
-        return (
-          <div key={option.value} className="relative">
-            <RadioGroupItem
-              value={option.value}
-              id={`${component}-${option.value}`}
-              className="peer sr-only"
-            />
-            <Label
-              htmlFor={`${component}-${option.value}`}
-              className={cn(
-                "flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all",
-                "hover:bg-vs/5 hover:border-vs/30",
-                isSelected 
-                  ? "bg-vs/10 border-vs text-vs-dark shadow-sm" 
-                  : "bg-white border-gray-200 text-gray-700",
-                disabled && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <Icon className={cn("size-6 mb-2", isSelected ? "text-vs" : option.color)} />
-              <span className="text-sm font-medium text-center">{option.label}</span>
-            </Label>
-          </div>
-        );
-      })}
-    </RadioGroup>
+    <TooltipProvider>
+      <RadioGroup
+        value={currentValue || "none"}
+        onValueChange={(value) => onChange(value as ComponentOption)}
+        disabled={disabled}
+        className="grid grid-cols-2 md:grid-cols-4 gap-3"
+      >
+        {options.map((option) => {
+          const Icon = option.icon;
+          const isSelected = currentValue === option.value;
+          
+          return (
+            <Tooltip key={option.value}>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={`${component}-${option.value}`}
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor={`${component}-${option.value}`}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all",
+                      "hover:bg-vs/5 hover:border-vs/30",
+                      isSelected 
+                        ? "bg-vs/10 border-vs text-vs-dark shadow-sm" 
+                        : "bg-white border-gray-200 text-gray-700",
+                      disabled && "opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    <Icon className={cn("size-6 mb-2", isSelected ? "text-vs" : option.color)} />
+                    <span className="text-sm font-medium text-center">{option.label}</span>
+                  </Label>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">{option.description}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </RadioGroup>
+    </TooltipProvider>
   );
 };
 

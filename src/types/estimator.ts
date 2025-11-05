@@ -17,14 +17,17 @@ export type ProjectEstimate = {
   ac: ComponentOption;
   electrical: ComponentOption;
   elevator: ComponentOption;
+  civilQuality: ComponentOption;
   lighting: ComponentOption;
   windows: ComponentOption;
   ceiling: ComponentOption;
   surfaces: ComponentOption;
+  buildingEnvelope: ComponentOption;
   fixedFurniture: ComponentOption;
   looseFurniture: ComponentOption;
   furnishings: ComponentOption;
   appliances: ComponentOption;
+  artefacts: ComponentOption;
   totalCost: number;
   phaseBreakdown: {
     planning: number;
@@ -52,14 +55,17 @@ export const initialEstimate: ProjectEstimate = {
   ac: "none",
   electrical: "standard",
   elevator: "none",
+  civilQuality: "standard",
   lighting: "none",
   windows: "none",
   ceiling: "none",
   surfaces: "none",
+  buildingEnvelope: "none",
   fixedFurniture: "none",
   looseFurniture: "none",
   furnishings: "none",
   appliances: "none",
+  artefacts: "none",
   totalCost: 0,
   phaseBreakdown: {
     planning: 0,

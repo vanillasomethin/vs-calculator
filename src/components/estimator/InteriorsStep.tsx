@@ -1,4 +1,4 @@
-import { Armchair, Sofa, Palette, Microwave } from "lucide-react";
+import { Armchair, Sofa, Palette, Microwave, Frame } from "lucide-react";
 import { ComponentOption } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 
@@ -7,6 +7,7 @@ interface InteriorsStepProps {
   looseFurniture: ComponentOption;
   furnishings: ComponentOption;
   appliances: ComponentOption;
+  artefacts: ComponentOption;
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -15,6 +16,7 @@ const InteriorsStep = ({
   looseFurniture,
   furnishings,
   appliances,
+  artefacts,
   onOptionChange,
 }: InteriorsStepProps) => {
   const interiors = [
@@ -34,10 +36,10 @@ const InteriorsStep = ({
     },
     {
       key: "furnishings",
-      title: "Decorative Elements",
+      title: "Furnishings",
       icon: <Palette className="size-6" />,
       value: furnishings,
-      description: "Curtains, blinds, artwork, and decorative accessories",
+      description: "Rugs, curtains, bedding, cushions, and soft furnishings",
     },
     {
       key: "appliances",
@@ -45,6 +47,13 @@ const InteriorsStep = ({
       icon: <Microwave className="size-6" />,
       value: appliances,
       description: "Kitchen and home appliances, smart home devices",
+    },
+    {
+      key: "artefacts",
+      title: "Artefacts & Art",
+      icon: <Frame className="size-6" />,
+      value: artefacts,
+      description: "Artwork, sculptures, decorative objects, and collectibles",
     },
   ];
 

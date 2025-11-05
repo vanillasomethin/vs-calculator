@@ -1,4 +1,4 @@
-import { Lightbulb, DoorOpen, Layers, Brush } from "lucide-react";
+import { Lightbulb, DoorOpen, Layers, Brush, Building2 } from "lucide-react";
 import { ComponentOption } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 
@@ -7,6 +7,7 @@ interface FinishesStepProps {
   windows: ComponentOption;
   ceiling: ComponentOption;
   surfaces: ComponentOption;
+  buildingEnvelope: ComponentOption;
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -15,6 +16,7 @@ const FinishesStep = ({
   windows,
   ceiling,
   surfaces,
+  buildingEnvelope,
   onOptionChange,
 }: FinishesStepProps) => {
   const finishes = [
@@ -45,6 +47,13 @@ const FinishesStep = ({
       icon: <Brush className="size-6" />,
       value: surfaces,
       description: "Paint, wallpaper, tiles, and flooring materials",
+    },
+    {
+      key: "buildingEnvelope",
+      title: "Building Envelope & Facade Development",
+      icon: <Building2 className="size-6" />,
+      value: buildingEnvelope,
+      description: "External cladding, facade systems, weatherproofing, and building skin",
     },
   ];
 

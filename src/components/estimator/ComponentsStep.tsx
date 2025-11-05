@@ -1,4 +1,4 @@
-import { Droplet, Wind, Zap, ArrowUp } from "lucide-react";
+import { Droplet, Wind, Zap, ArrowUp, Hammer } from "lucide-react";
 import { ComponentOption } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ interface ComponentsStepProps {
   ac: ComponentOption;
   electrical: ComponentOption;
   elevator: ComponentOption;
+  civilQuality: ComponentOption;
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -16,6 +17,7 @@ const ComponentsStep = ({
   ac,
   electrical,
   elevator,
+  civilQuality,
   onOptionChange,
 }: ComponentsStepProps) => {
   const components = [
@@ -50,6 +52,14 @@ const ComponentsStep = ({
       value: elevator,
       required: false,
       description: "Vertical transportation systems",
+    },
+    {
+      key: "civilQuality",
+      title: "Quality of Construction - Civil Materials",
+      icon: <Hammer className="size-6" />,
+      value: civilQuality,
+      required: true,
+      description: "Building materials quality, concrete grade, steel quality, and construction standards",
     },
   ];
 
