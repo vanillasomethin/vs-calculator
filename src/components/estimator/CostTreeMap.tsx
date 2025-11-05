@@ -38,136 +38,158 @@ const CostTreeMap = ({ estimate, showLabels = false }: CostTreeMapProps) => {
     const formatData = () => {
       const baseRate = estimate.totalCost / estimate.area;
       
+      const isIncluded = (value: any) => value && value !== 'none' && value !== '';
+      
       const coreItems: TreeMapItem[] = [];
-      if (estimate.plumbing) {
-        const size = estimate.area * baseRate * 0.06;
+      if (isIncluded(estimate.civilQuality)) {
+        coreItems.push({ 
+          name: "Civil Quality", 
+          size: estimate.categoryBreakdown.core * 0.2,
+          percentage: (estimate.categoryBreakdown.core * 0.2 / estimate.totalCost) * 100
+        });
+      }
+      if (isIncluded(estimate.plumbing)) {
         coreItems.push({ 
           name: "Plumbing", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.core * 0.25,
+          percentage: (estimate.categoryBreakdown.core * 0.25 / estimate.totalCost) * 100
         });
       }
-      if (estimate.electrical) {
-        const size = estimate.area * baseRate * 0.08;
+      if (isIncluded(estimate.electrical)) {
         coreItems.push({ 
           name: "Electrical", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.core * 0.25,
+          percentage: (estimate.categoryBreakdown.core * 0.25 / estimate.totalCost) * 100
         });
       }
-      if (estimate.ac) {
-        const size = estimate.area * baseRate * 0.07;
+      if (isIncluded(estimate.ac)) {
         coreItems.push({ 
           name: "AC Systems", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.core * 0.2,
+          percentage: (estimate.categoryBreakdown.core * 0.2 / estimate.totalCost) * 100
         });
       }
-      if (estimate.elevator) {
-        const size = estimate.area * baseRate * 0.05;
+      if (isIncluded(estimate.elevator)) {
         coreItems.push({ 
           name: "Elevator", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.core * 0.1,
+          percentage: (estimate.categoryBreakdown.core * 0.1 / estimate.totalCost) * 100
         });
       }
       
       const finishItems: TreeMapItem[] = [];
-      if (estimate.lighting) {
-        const size = estimate.area * baseRate * 0.04;
+      if (isIncluded(estimate.buildingEnvelope)) {
+        finishItems.push({ 
+          name: "Building Envelope", 
+          size: estimate.categoryBreakdown.finishes * 0.25,
+          percentage: (estimate.categoryBreakdown.finishes * 0.25 / estimate.totalCost) * 100
+        });
+      }
+      if (isIncluded(estimate.lighting)) {
         finishItems.push({ 
           name: "Lighting", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.finishes * 0.2,
+          percentage: (estimate.categoryBreakdown.finishes * 0.2 / estimate.totalCost) * 100
         });
       }
-      if (estimate.windows) {
-        const size = estimate.area * baseRate * 0.06;
+      if (isIncluded(estimate.windows)) {
         finishItems.push({ 
           name: "Windows", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.finishes * 0.25,
+          percentage: (estimate.categoryBreakdown.finishes * 0.25 / estimate.totalCost) * 100
         });
       }
-      if (estimate.ceiling) {
-        const size = estimate.area * baseRate * 0.04;
+      if (isIncluded(estimate.ceiling)) {
         finishItems.push({ 
           name: "Ceiling", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.finishes * 0.15,
+          percentage: (estimate.categoryBreakdown.finishes * 0.15 / estimate.totalCost) * 100
         });
       }
-      if (estimate.surfaces) {
-        const size = estimate.area * baseRate * 0.09;
+      if (isIncluded(estimate.surfaces)) {
         finishItems.push({ 
           name: "Surfaces", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.finishes * 0.15,
+          percentage: (estimate.categoryBreakdown.finishes * 0.15 / estimate.totalCost) * 100
         });
       }
       
       const interiorItems: TreeMapItem[] = [];
-      if (estimate.fixedFurniture) {
-        const size = estimate.area * baseRate * 0.08;
+      if (isIncluded(estimate.fixedFurniture)) {
         interiorItems.push({ 
           name: "Fixed Furniture", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.interiors * 0.3,
+          percentage: (estimate.categoryBreakdown.interiors * 0.3 / estimate.totalCost) * 100
         });
       }
-      if (estimate.looseFurniture) {
-        const size = estimate.area * baseRate * 0.06;
+      if (isIncluded(estimate.looseFurniture)) {
         interiorItems.push({ 
           name: "Loose Furniture", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.interiors * 0.25,
+          percentage: (estimate.categoryBreakdown.interiors * 0.25 / estimate.totalCost) * 100
         });
       }
-      if (estimate.furnishings) {
-        const size = estimate.area * baseRate * 0.04;
+      if (isIncluded(estimate.furnishings)) {
         interiorItems.push({ 
           name: "Furnishings", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.interiors * 0.2,
+          percentage: (estimate.categoryBreakdown.interiors * 0.2 / estimate.totalCost) * 100
         });
       }
-      if (estimate.appliances) {
-        const size = estimate.area * baseRate * 0.05;
+      if (isIncluded(estimate.appliances)) {
         interiorItems.push({ 
           name: "Appliances", 
-          size,
-          percentage: (size / estimate.totalCost) * 100
+          size: estimate.categoryBreakdown.interiors * 0.15,
+          percentage: (estimate.categoryBreakdown.interiors * 0.15 / estimate.totalCost) * 100
+        });
+      }
+      if (isIncluded(estimate.artefacts)) {
+        interiorItems.push({ 
+          name: "Artefacts", 
+          size: estimate.categoryBreakdown.interiors * 0.1,
+          percentage: (estimate.categoryBreakdown.interiors * 0.1 / estimate.totalCost) * 100
         });
       }
       
-      // Add base construction costs
+      // Construction phase costs
+      const constructionCost = estimate.phaseBreakdown.construction;
       const constructionItems: TreeMapItem[] = [
         { 
-          name: "Structure", 
-          size: estimate.area * baseRate * 0.15,
-          percentage: (estimate.area * baseRate * 0.15 / estimate.totalCost) * 100
+          name: "Structure & Foundation", 
+          size: constructionCost * 0.5,
+          percentage: (constructionCost * 0.5 / estimate.totalCost) * 100
         },
         { 
-          name: "Foundation", 
-          size: estimate.area * baseRate * 0.08,
-          percentage: (estimate.area * baseRate * 0.08 / estimate.totalCost) * 100
+          name: "Masonry & Walls", 
+          size: constructionCost * 0.3,
+          percentage: (constructionCost * 0.3 / estimate.totalCost) * 100
         },
         { 
-          name: "Walls", 
-          size: estimate.area * baseRate * 0.05,
-          percentage: (estimate.area * baseRate * 0.05 / estimate.totalCost) * 100
+          name: "Other Construction", 
+          size: constructionCost * 0.2,
+          percentage: (constructionCost * 0.2 / estimate.totalCost) * 100
         }
       ];
+      
+      const categories = [];
+      
+      if (constructionItems.length > 0) {
+        categories.push({ name: "Construction", children: constructionItems, color: COLOR_CATEGORIES["Construction"] });
+      }
+      if (coreItems.length > 0) {
+        categories.push({ name: "Core Components", children: coreItems, color: COLOR_CATEGORIES["Core Components"] });
+      }
+      if (finishItems.length > 0) {
+        categories.push({ name: "Finishes", children: finishItems, color: COLOR_CATEGORIES["Finishes"] });
+      }
+      if (interiorItems.length > 0) {
+        categories.push({ name: "Interiors", children: interiorItems, color: COLOR_CATEGORIES["Interiors"] });
+      }
       
       return [
         {
           name: "Total Cost",
-          children: [
-            { name: "Construction", children: constructionItems, color: COLOR_CATEGORIES["Construction"] },
-            { name: "Core Components", children: coreItems, color: COLOR_CATEGORIES["Core Components"] },
-            { name: "Finishes", children: finishItems, color: COLOR_CATEGORIES["Finishes"] },
-            { name: "Interiors", children: interiorItems, color: COLOR_CATEGORIES["Interiors"] }
-          ]
+          children: categories
         }
       ];
     };
@@ -252,15 +274,15 @@ const CustomizedContent = (props: any) => {
   
   return (
     <g>
-      <rect
+        <rect
         x={x}
         y={y}
         width={width}
         height={height}
         style={{
-          fill: depth < 2 
-            ? COLORS[Math.floor((index / root.children.length) * COLORS.length) % COLORS.length] 
-            : COLORS[(depth + index) % COLORS.length],
+          fill: depth === 1 
+            ? COLOR_CATEGORIES[name as keyof typeof COLOR_CATEGORIES] || COLORS[index % COLORS.length]
+            : COLORS[index % COLORS.length],
           stroke: '#fff',
           strokeWidth: 2 / (depth + 1e-10),
           strokeOpacity: 1 / (depth + 1e-10),

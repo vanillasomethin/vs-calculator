@@ -55,13 +55,33 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     }
   };
   
-  const handleUserFormSubmit = (userData: UserFormData) => {
-    console.log("User data submitted:", userData);
-    toast({
-      title: "Report sent!",
-      description: `We've sent the detailed cost report to ${userData.email}.`
-    });
+  const handleUserFormSubmit = async (userData: UserFormData) => {
+    console.log("User submitted form:", userData);
+    console.log("Estimate data:", estimate);
+    
+    // Send data to hello@vanillasometh.in
+    const emailData = {
+      to: "hello@vanillasometh.in",
+      subject: `New Estimate Request from ${userData.name}`,
+      userInfo: userData,
+      estimate: {
+        location: `${estimate.city}, ${estimate.state}`,
+        projectType: estimate.projectType,
+        area: `${estimate.area} ${estimate.areaUnit}`,
+        totalCost: formatCurrency(estimate.totalCost),
+        timeline: `${estimate.timeline.totalMonths} months`,
+      }
+    };
+    
+    console.log("Email data to send:", emailData);
+    
     setIsUserFormOpen(false);
+    
+    toast({
+      title: "Report Generated!",
+      description: "Your detailed cost estimate has been sent to your email and our team will contact you shortly.",
+    });
+    
     onSave();
   };
 
@@ -83,28 +103,31 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     core: {
       title: "Core Building Components",
       items: [
+        isIncluded(estimate.civilQuality) && { name: "Quality of Construction - Civil Materials", level: estimate.civilQuality },
         isIncluded(estimate.plumbing) && { name: "Plumbing & Sanitary", level: estimate.plumbing },
         isIncluded(estimate.electrical) && { name: "Electrical Systems", level: estimate.electrical },
-        isIncluded(estimate.ac) && { name: "AC Systems", level: estimate.ac },
-        isIncluded(estimate.elevator) && { name: "Elevators/Lifts", level: estimate.elevator },
+        isIncluded(estimate.ac) && { name: "AC & HVAC Systems", level: estimate.ac },
+        isIncluded(estimate.elevator) && { name: "Vertical Transportation", level: estimate.elevator },
       ].filter(Boolean)
     },
     finishes: {
       title: "Finishes & Surfaces",
       items: [
-        isIncluded(estimate.lighting) && { name: "Lighting Solutions", level: estimate.lighting },
-        isIncluded(estimate.windows) && { name: "Windows & Doors", level: estimate.windows },
-        isIncluded(estimate.ceiling) && { name: "Ceiling Treatments", level: estimate.ceiling },
-        isIncluded(estimate.surfaces) && { name: "Wall & Floor Surfaces", level: estimate.surfaces },
+        isIncluded(estimate.buildingEnvelope) && { name: "Building Envelope & Facade", level: estimate.buildingEnvelope },
+        isIncluded(estimate.lighting) && { name: "Lighting Systems & Fixtures", level: estimate.lighting },
+        isIncluded(estimate.windows) && { name: "Windows & Glazing Systems", level: estimate.windows },
+        isIncluded(estimate.ceiling) && { name: "Ceiling Design & Finishes", level: estimate.ceiling },
+        isIncluded(estimate.surfaces) && { name: "Wall & Floor Finishes", level: estimate.surfaces },
       ].filter(Boolean)
     },
     interiors: {
       title: "Interiors & Furnishings",
       items: [
-        isIncluded(estimate.fixedFurniture) && { name: "Fixed Furniture", level: estimate.fixedFurniture },
+        isIncluded(estimate.fixedFurniture) && { name: "Fixed Furniture & Cabinetry", level: estimate.fixedFurniture },
         isIncluded(estimate.looseFurniture) && { name: "Loose Furniture", level: estimate.looseFurniture },
-        isIncluded(estimate.furnishings) && { name: "Decorative Elements", level: estimate.furnishings },
-        isIncluded(estimate.appliances) && { name: "Appliances & Fixtures", level: estimate.appliances },
+        isIncluded(estimate.furnishings) && { name: "Furnishings & Soft Decor", level: estimate.furnishings },
+        isIncluded(estimate.appliances) && { name: "Appliances & Equipment", level: estimate.appliances },
+        isIncluded(estimate.artefacts) && { name: "Artefacts & Art Pieces", level: estimate.artefacts },
       ].filter(Boolean)
     }
   };

@@ -11,16 +11,16 @@ export const calculateCosts = (estimate: ProjectEstimate) => {
   const areaInSqm = estimate.areaUnit === "sqft" ? estimate.area / 10.764 : estimate.area;
   
   const componentMultipliers: Record<string, Record<ComponentOption, number>> = {
+    'civilQuality': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
     'plumbing': { 'none': 0, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
     'ac': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 1.0, '': 0 },
     'electrical': { 'none': 0, 'standard': 0.0, 'premium': 0.3, 'luxury': 0.7, '': 0 },
     'elevator': { 'none': 0, 'standard': 0.0, 'premium': 0.5, 'luxury': 1.2, '': 0 },
-    'civilQuality': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
+    'buildingEnvelope': { 'none': 0, 'standard': 0.0, 'premium': 0.45, 'luxury': 1.0, '': 0 },
     'lighting': { 'none': 0, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
     'windows': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
     'ceiling': { 'none': 0, 'standard': 0.0, 'premium': 0.3, 'luxury': 0.7, '': 0 },
     'surfaces': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 1.0, '': 0 },
-    'buildingEnvelope': { 'none': 0, 'standard': 0.0, 'premium': 0.45, 'luxury': 1.0, '': 0 },
     'fixedFurniture': { 'none': 0, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
     'looseFurniture': { 'none': 0, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
     'furnishings': { 'none': 0, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },

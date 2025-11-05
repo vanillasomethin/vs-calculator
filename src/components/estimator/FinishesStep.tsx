@@ -21,39 +21,39 @@ const FinishesStep = ({
 }: FinishesStepProps) => {
   const finishes = [
     {
-      key: "lighting",
-      title: "Lighting Solutions",
-      icon: <Lightbulb className="size-6" />,
-      value: lighting,
-      description: "Interior and exterior lighting fixtures and systems",
-    },
-    {
-      key: "windows",
-      title: "Windows & Doors",
-      icon: <DoorOpen className="size-6" />,
-      value: windows,
-      description: "Window frames, glass, and door installations",
-    },
-    {
-      key: "ceiling",
-      title: "Ceiling Treatments",
-      icon: <Layers className="size-6" />,
-      value: ceiling,
-      description: "False ceiling, acoustic treatments, and finishes",
-    },
-    {
-      key: "surfaces",
-      title: "Wall & Floor Surfaces",
-      icon: <Brush className="size-6" />,
-      value: surfaces,
-      description: "Paint, wallpaper, tiles, and flooring materials",
-    },
-    {
       key: "buildingEnvelope",
       title: "Building Envelope & Facade Development",
       icon: <Building2 className="size-6" />,
       value: buildingEnvelope,
-      description: "External cladding, facade systems, weatherproofing, and building skin",
+      description: "Exterior wall systems, facade cladding (ACP/stone/glass), weather protection, thermal/acoustic insulation, and architectural features for building exterior",
+    },
+    {
+      key: "lighting",
+      title: "Lighting Systems & Fixtures",
+      icon: <Lightbulb className="size-6" />,
+      value: lighting,
+      description: "Decorative light fittings, ambient/task/accent lighting, LED/designer fixtures, smart lighting controls, and landscape/outdoor lighting solutions",
+    },
+    {
+      key: "windows",
+      title: "Windows & Glazing Systems",
+      icon: <DoorOpen className="size-6" />,
+      value: windows,
+      description: "Window frames (aluminum/uPVC/wood), glass types (single/double glazed), acoustic/thermal glazing, sliding/casement systems, and security grills",
+    },
+    {
+      key: "ceiling",
+      title: "Ceiling Design & Finishes",
+      icon: <Layers className="size-6" />,
+      value: ceiling,
+      description: "False ceiling systems (gypsum/POP/grid), ceiling treatments, coffers, cove lighting, acoustic panels, and decorative ceiling finishes",
+    },
+    {
+      key: "surfaces",
+      title: "Wall & Floor Finishes",
+      icon: <Brush className="size-6" />,
+      value: surfaces,
+      description: "Flooring materials (tiles/marble/wood/vinyl), wall finishes (paint/wallpaper/cladding/textures), skirting, dado treatments, and protective coatings",
     },
   ];
 

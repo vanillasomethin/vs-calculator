@@ -22,38 +22,38 @@ const InteriorsStep = ({
   const interiors = [
     {
       key: "fixedFurniture",
-      title: "Fixed Furniture",
+      title: "Fixed Furniture & Cabinetry",
       icon: <Armchair className="size-6" />,
       value: fixedFurniture,
-      description: "Built-in wardrobes, kitchen cabinets, and storage units",
+      description: "Built-in wardrobes, modular kitchen cabinets, vanity units, wall shelving, study tables, TV units, and custom carpentry with hardware and finishes",
     },
     {
       key: "looseFurniture",
       title: "Loose Furniture",
       icon: <Sofa className="size-6" />,
       value: looseFurniture,
-      description: "Movable furniture like sofas, beds, and dining sets",
+      description: "Movable furniture including sofas, beds, dining tables, chairs, center tables, side tables, outdoor furniture, and upholstery work",
     },
     {
       key: "furnishings",
-      title: "Furnishings",
+      title: "Furnishings & Soft Decor",
       icon: <Palette className="size-6" />,
       value: furnishings,
-      description: "Rugs, curtains, bedding, cushions, and soft furnishings",
+      description: "Soft furnishings including curtains, drapes, blinds, rugs, carpets, bedding, cushions, throws, table linens, and decorative textile elements",
     },
     {
       key: "appliances",
-      title: "Appliances & Fixtures",
+      title: "Appliances & Equipment",
       icon: <Microwave className="size-6" />,
       value: appliances,
-      description: "Kitchen and home appliances, smart home devices",
+      description: "Kitchen appliances (hob, chimney, oven, refrigerator), home electronics (TV, audio systems), water purifiers, and smart home devices",
     },
     {
       key: "artefacts",
-      title: "Artefacts & Art",
+      title: "Artefacts & Art Pieces",
       icon: <Frame className="size-6" />,
       value: artefacts,
-      description: "Artwork, sculptures, decorative objects, and collectibles",
+      description: "Decorative artwork, paintings, sculptures, wall art, vases, showpieces, antiques, and curated decorative objects for aesthetic enhancement",
     },
   ];
 
