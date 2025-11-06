@@ -1,134 +1,122 @@
+import { ProjectEstimate, ValidationResult, ComponentOption } from "@/types/estimator";
 
-import { ComponentOption, ProjectEstimate } from "@/types/estimator";
+/**
+ * Format currency in Indian format
+ */
+export const formatCurrency = (amount: number, showDecimals: boolean = false): string => {
+  const formatter = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: showDecimals ? 2 : 0,
+    minimumFractionDigits: 0
+  });
+  
+  return formatter.format(amount).replace('₹', '₹ ');
+};
 
-export const calculateCosts = (estimate: ProjectEstimate) => {
-  const baseRatesPerSqm: Record<string, number> = {
-    'residential': 35000,
-    'commercial': 45000,
-    'mixed-use': 50000,
-  };
-  
-  const areaInSqm = estimate.areaUnit === "sqft" ? estimate.area / 10.764 : estimate.area;
-  
-  const componentMultipliers: Record<string, Record<ComponentOption, number>> = {
-    'civilQuality': { 'none': -0.3, 'standard': 0.0, 'premium': 0.5, 'luxury': 1.2, '': 0 },
-    'plumbing': { 'none': -0.15, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
-    'ac': { 'none': -0.2, 'standard': 0.0, 'premium': 0.4, 'luxury': 1.0, '': 0 },
-    'electrical': { 'none': -0.15, 'standard': 0.0, 'premium': 0.3, 'luxury': 0.7, '': 0 },
-    'elevator': { 'none': -0.1, 'standard': 0.0, 'premium': 0.5, 'luxury': 1.2, '': 0 },
-    'buildingEnvelope': { 'none': -0.2, 'standard': 0.0, 'premium': 0.45, 'luxury': 1.0, '': 0 },
-    'lighting': { 'none': -0.15, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
-    'windows': { 'none': -0.2, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
-    'ceiling': { 'none': -0.1, 'standard': 0.0, 'premium': 0.3, 'luxury': 0.7, '': 0 },
-    'surfaces': { 'none': -0.15, 'standard': 0.0, 'premium': 0.4, 'luxury': 1.0, '': 0 },
-    'fixedFurniture': { 'none': -0.15, 'standard': 0.0, 'premium': 0.4, 'luxury': 0.9, '': 0 },
-    'looseFurniture': { 'none': -0.1, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
-    'furnishings': { 'none': -0.1, 'standard': 0.0, 'premium': 0.35, 'luxury': 0.8, '': 0 },
-    'appliances': { 'none': -0.15, 'standard': 0.0, 'premium': 0.5, 'luxury': 1.2, '': 0 },
-    'artefacts': { 'none': -0.05, 'standard': 0.0, 'premium': 0.5, 'luxury': 1.5, '': 0 }
-  };
-  
-  // Location-based pricing multipliers (Indian cities)
-  const locationMultipliers: Record<string, number> = {
-    'mumbai': 1.35,
-    'delhi': 1.25,
-    'bangalore': 1.20,
-    'hyderabad': 1.10,
-    'chennai': 1.10,
-    'pune': 1.15,
-    'kolkata': 1.05,
-    'ahmedabad': 1.00,
-    'other': 0.95
-  };
-  
-  const locationMultiplier = estimate.city ? (locationMultipliers[estimate.city.toLowerCase()] || 1.0) : 1.0;
-  
-  // Compute base cost first
-  const baseRate = baseRatesPerSqm[estimate.projectType] || baseRatesPerSqm.residential;
-  const baseCost = areaInSqm * baseRate * locationMultiplier;
+/**
+ * Format large amounts in Lakhs/Crores
+ */
+export const formatIndianCurrency = (amount: number): string => {
+  if (amount >= 10000000) {
+    return `₹${(amount / 10000000).toFixed(2)} Cr`;
+  } else if (amount >= 100000) {
+    return `₹${(amount / 100000).toFixed(2)} L`;
+  } else if (amount >= 1000) {
+    return `₹${(amount / 1000).toFixed(1)}K`;
+  }
+  return formatCurrency(amount);
+};
 
-  // Define category component lists
-  const coreComponents = ['plumbing', 'ac', 'electrical', 'elevator', 'civilQuality'] as const;
-  const finishesComponents = ['lighting', 'windows', 'ceiling', 'surfaces', 'buildingEnvelope'] as const;
-  const interiorsComponents = ['fixedFurniture', 'looseFurniture', 'furnishings', 'appliances', 'artefacts'] as const;
+/**
+ * Convert square feet to square meters
+ */
+export const sqftToSqm = (sqft: number): number => {
+  return sqft * 0.092903;
+};
 
-  // Category shares of base cost (used for upgrade deltas)
-  const coreShare = 0.3;
-  const finishesShare = 0.25;
-  const interiorsShare = 0.2;
+/**
+ * Convert square meters to square feet
+ */
+export const sqmToSqft = (sqm: number): number => {
+  return sqm * 10.764;
+};
 
-  // Base amounts per component (share distributed across components)
-  const coreBaseAmount = (baseCost * coreShare) / coreComponents.length;
-  const finishesBaseAmount = (baseCost * finishesShare) / finishesComponents.length;
-  const interiorsBaseAmount = (baseCost * interiorsShare) / interiorsComponents.length;
-
-  // Additional costs based on selected upgrades (basic = 0)
-  const coreComponentsCost = calculateCategoryTotal(
-    [...coreComponents], componentMultipliers, estimate, coreBaseAmount
-  );
+/**
+ * Validate estimate for accuracy
+ */
+export const validateEstimate = (estimate: ProjectEstimate): ValidationResult => {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const suggestions: string[] = [];
   
-  const finishesCost = calculateCategoryTotal(
-    [...finishesComponents], componentMultipliers, estimate, finishesBaseAmount
-  );
+  if (estimate.area > 0) {
+    const maxArea = estimate.areaUnit === "sqft" ? 50000 : 4645;
+    if (estimate.area > maxArea) {
+      warnings.push("Very large project area. Custom estimation recommended.");
+    }
+  }
   
-  const interiorsCost = calculateCategoryTotal(
-    [...interiorsComponents], componentMultipliers, estimate, interiorsBaseAmount
-  );
+  const qualityLevels: ComponentOption[] = [
+    estimate.civilQuality,
+    estimate.plumbing,
+    estimate.electrical,
+  ];
   
-  const totalCost = (baseCost + coreComponentsCost + finishesCost + interiorsCost) * 1.1;
+  const hasLuxury = qualityLevels.some(q => q === "luxury");
+  const hasStandard = qualityLevels.some(q => q === "standard");
   
-  const planningCost = totalCost * 0.15;
-  const constructionCost = totalCost * 0.6;
-  const interiorsCostTotal = totalCost * 0.25;
+  if (hasLuxury && hasStandard) {
+    suggestions.push("Consider upgrading standard components for consistency.");
+  }
   
-  const baseMonths = Math.max(6, Math.ceil(Math.sqrt(areaInSqm) / 5));
-  const projectTypeMultiplier = estimate.projectType === 'commercial' ? 1.2 : 
-                              estimate.projectType === 'mixed-use' ? 1.3 : 1.0;
-  
-  const totalMonths = Math.ceil(baseMonths * projectTypeMultiplier);
-  const planningMonths = Math.ceil(totalMonths * 0.2);
-  const constructionMonths = Math.ceil(totalMonths * 0.5);
-  const interiorsMonths = Math.ceil(totalMonths * 0.3);
+  const isValid = errors.length === 0;
   
   return {
-    totalCost,
-    phaseBreakdown: {
-      planning: planningCost,
-      construction: constructionCost,
-      interiors: interiorsCostTotal
-    },
-    categoryBreakdown: {
-      core: coreComponentsCost,
-      finishes: finishesCost,
-      interiors: interiorsCost
-    },
-    timeline: {
-      totalMonths,
-      phases: {
-        planning: planningMonths,
-        construction: constructionMonths,
-        interiors: interiorsMonths
-      }
-    }
+    isValid,
+    warnings,
+    errors,
+    suggestions,
   };
 };
 
-const calculateCategoryTotal = (
-  components: string[], 
-  multipliers: Record<string, Record<ComponentOption, number>>,
-  estimate: ProjectEstimate,
-  baseAmount: number
-) => {
-  let total = 0;
+/**
+ * Calculate percentage of total
+ */
+export const calculatePercentage = (part: number, total: number): number => {
+  if (total === 0) return 0;
+  return Math.round((part / total) * 100);
+};
+
+/**
+ * Get quality level label
+ */
+export const getQualityLabel = (level: ComponentOption): string => {
+  const labels: Record<ComponentOption, string> = {
+    none: "Not Required",
+    standard: "Standard",
+    premium: "Premium",
+    luxury: "Luxury",
+  };
+  return labels[level];
+};
+
+/**
+ * Check if component is included
+ */
+export const isComponentIncluded = (value: ComponentOption | undefined): boolean => {
+  return !!(value && value !== "none" && value !== "");
+};
+
+/**
+ * Generate estimate summary text
+ */
+export const generateEstimateSummary = (estimate: ProjectEstimate): string => {
+  const costPerUnit = estimate.totalCost / estimate.area;
   
-  components.forEach(component => {
-    const option = estimate[component as keyof ProjectEstimate] as ComponentOption;
-    const multiplier = multipliers[component]?.[option];
-    
-    if (multiplier !== undefined) {
-      total += baseAmount * multiplier;
-    }
-  });
-  
-  return total;
+  return `${estimate.projectType} project in ${estimate.city}, ${estimate.state}
+Area: ${estimate.area} ${estimate.areaUnit}
+Estimated Cost: ${formatCurrency(estimate.totalCost)}
+Cost per ${estimate.areaUnit}: ${formatCurrency(costPerUnit)}
+Timeline: ${estimate.timeline.totalMonths} months`;
 };
