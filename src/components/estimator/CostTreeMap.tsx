@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { ProjectEstimate } from "@/types/estimator";
@@ -16,13 +15,12 @@ interface TreeMapItem {
   percentage?: number;
 }
 
-// Enhanced color scheme for better readability
+// Enhanced color scheme
 const COLORS = [
   "#8889DD", "#8DC77B", "#E2CF45", "#F89C74", "#E79796", 
   "#B085F5", "#71C2CC", "#F8C12D", "#A5D297"
 ];
 
-// Color legend mapping
 const COLOR_CATEGORIES = {
   "Construction": "#8889DD",
   "Core Components": "#8DC77B",
@@ -34,156 +32,211 @@ const CostTreeMap = ({ estimate, showLabels = false }: CostTreeMapProps) => {
   const [data, setData] = useState<TreeMapItem[]>([]);
   
   useEffect(() => {
-    // Convert estimate data to treemap format
     const formatData = () => {
-      const baseRate = estimate.totalCost / estimate.area;
-      
       const isIncluded = (value: any) => value && value !== 'none' && value !== '';
       
+      // Get actual breakdown values
+      const coreTotal = estimate.categoryBreakdown.core;
+      const finishesTotal = estimate.categoryBreakdown.finishes;
+      const interiorsTotal = estimate.categoryBreakdown.interiors;
+      const constructionTotal = estimate.phaseBreakdown.construction;
+      
+      // Core Components breakdown
       const coreItems: TreeMapItem[] = [];
+      let coreItemsCount = 0;
+      
+      if (isIncluded(estimate.civilQuality)) coreItemsCount++;
+      if (isIncluded(estimate.plumbing)) coreItemsCount++;
+      if (isIncluded(estimate.electrical)) coreItemsCount++;
+      if (isIncluded(estimate.ac)) coreItemsCount++;
+      if (isIncluded(estimate.elevator)) coreItemsCount++;
+      
+      // Calculate proportional costs based on typical construction distributions
       if (isIncluded(estimate.civilQuality)) {
+        const civilCost = coreTotal * 0.20; // Civil quality is typically 20% of core
         coreItems.push({ 
           name: "Civil Quality", 
-          size: estimate.categoryBreakdown.core * 0.2,
-          percentage: (estimate.categoryBreakdown.core * 0.2 / estimate.totalCost) * 100
+          size: civilCost,
+          percentage: (civilCost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.plumbing)) {
+        const plumbingCost = coreTotal * 0.25;
         coreItems.push({ 
           name: "Plumbing", 
-          size: estimate.categoryBreakdown.core * 0.25,
-          percentage: (estimate.categoryBreakdown.core * 0.25 / estimate.totalCost) * 100
+          size: plumbingCost,
+          percentage: (plumbingCost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.electrical)) {
+        const electricalCost = coreTotal * 0.25;
         coreItems.push({ 
           name: "Electrical", 
-          size: estimate.categoryBreakdown.core * 0.25,
-          percentage: (estimate.categoryBreakdown.core * 0.25 / estimate.totalCost) * 100
+          size: electricalCost,
+          percentage: (electricalCost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.ac)) {
+        const acCost = coreTotal * 0.20;
         coreItems.push({ 
           name: "AC Systems", 
-          size: estimate.categoryBreakdown.core * 0.2,
-          percentage: (estimate.categoryBreakdown.core * 0.2 / estimate.totalCost) * 100
+          size: acCost,
+          percentage: (acCost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.elevator)) {
+        const elevatorCost = coreTotal * 0.10;
         coreItems.push({ 
           name: "Elevator", 
-          size: estimate.categoryBreakdown.core * 0.1,
-          percentage: (estimate.categoryBreakdown.core * 0.1 / estimate.totalCost) * 100
+          size: elevatorCost,
+          percentage: (elevatorCost / estimate.totalCost) * 100
         });
       }
       
+      // Finishes breakdown
       const finishItems: TreeMapItem[] = [];
+      let finishItemsCount = 0;
+      
+      if (isIncluded(estimate.buildingEnvelope)) finishItemsCount++;
+      if (isIncluded(estimate.lighting)) finishItemsCount++;
+      if (isIncluded(estimate.windows)) finishItemsCount++;
+      if (isIncluded(estimate.ceiling)) finishItemsCount++;
+      if (isIncluded(estimate.surfaces)) finishItemsCount++;
+      
       if (isIncluded(estimate.buildingEnvelope)) {
+        const cost = finishesTotal * 0.30; // Envelope is major component
         finishItems.push({ 
           name: "Building Envelope", 
-          size: estimate.categoryBreakdown.finishes * 0.25,
-          percentage: (estimate.categoryBreakdown.finishes * 0.25 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.lighting)) {
+        const cost = finishesTotal * 0.15;
         finishItems.push({ 
           name: "Lighting", 
-          size: estimate.categoryBreakdown.finishes * 0.2,
-          percentage: (estimate.categoryBreakdown.finishes * 0.2 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.windows)) {
+        const cost = finishesTotal * 0.25;
         finishItems.push({ 
           name: "Windows", 
-          size: estimate.categoryBreakdown.finishes * 0.25,
-          percentage: (estimate.categoryBreakdown.finishes * 0.25 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.ceiling)) {
+        const cost = finishesTotal * 0.15;
         finishItems.push({ 
           name: "Ceiling", 
-          size: estimate.categoryBreakdown.finishes * 0.15,
-          percentage: (estimate.categoryBreakdown.finishes * 0.15 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.surfaces)) {
+        const cost = finishesTotal * 0.15;
         finishItems.push({ 
           name: "Surfaces", 
-          size: estimate.categoryBreakdown.finishes * 0.15,
-          percentage: (estimate.categoryBreakdown.finishes * 0.15 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       
+      // Interiors breakdown
       const interiorItems: TreeMapItem[] = [];
+      
       if (isIncluded(estimate.fixedFurniture)) {
+        const cost = interiorsTotal * 0.35; // Fixed furniture is major component
         interiorItems.push({ 
           name: "Fixed Furniture", 
-          size: estimate.categoryBreakdown.interiors * 0.3,
-          percentage: (estimate.categoryBreakdown.interiors * 0.3 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.looseFurniture)) {
+        const cost = interiorsTotal * 0.30;
         interiorItems.push({ 
           name: "Loose Furniture", 
-          size: estimate.categoryBreakdown.interiors * 0.25,
-          percentage: (estimate.categoryBreakdown.interiors * 0.25 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.furnishings)) {
+        const cost = interiorsTotal * 0.15;
         interiorItems.push({ 
           name: "Furnishings", 
-          size: estimate.categoryBreakdown.interiors * 0.2,
-          percentage: (estimate.categoryBreakdown.interiors * 0.2 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.appliances)) {
+        const cost = interiorsTotal * 0.15;
         interiorItems.push({ 
           name: "Appliances", 
-          size: estimate.categoryBreakdown.interiors * 0.15,
-          percentage: (estimate.categoryBreakdown.interiors * 0.15 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       if (isIncluded(estimate.artefacts)) {
+        const cost = interiorsTotal * 0.05;
         interiorItems.push({ 
           name: "Artefacts", 
-          size: estimate.categoryBreakdown.interiors * 0.1,
-          percentage: (estimate.categoryBreakdown.interiors * 0.1 / estimate.totalCost) * 100
+          size: cost,
+          percentage: (cost / estimate.totalCost) * 100
         });
       }
       
-      // Construction phase costs
-      const constructionCost = estimate.phaseBreakdown.construction;
+      // Construction phase breakdown
       const constructionItems: TreeMapItem[] = [
         { 
-          name: "Structure & Foundation", 
-          size: constructionCost * 0.5,
-          percentage: (constructionCost * 0.5 / estimate.totalCost) * 100
+          name: "Foundation", 
+          size: constructionTotal * 0.25,
+          percentage: (constructionTotal * 0.25 / estimate.totalCost) * 100
         },
         { 
-          name: "Masonry & Walls", 
-          size: constructionCost * 0.3,
-          percentage: (constructionCost * 0.3 / estimate.totalCost) * 100
+          name: "Structure", 
+          size: constructionTotal * 0.40,
+          percentage: (constructionTotal * 0.40 / estimate.totalCost) * 100
         },
         { 
-          name: "Other Construction", 
-          size: constructionCost * 0.2,
-          percentage: (constructionCost * 0.2 / estimate.totalCost) * 100
+          name: "Masonry", 
+          size: constructionTotal * 0.35,
+          percentage: (constructionTotal * 0.35 / estimate.totalCost) * 100
         }
       ];
       
+      // Build category structure
       const categories = [];
       
-      if (constructionItems.length > 0) {
-        categories.push({ name: "Construction", children: constructionItems, color: COLOR_CATEGORIES["Construction"] });
+      if (constructionItems.length > 0 && constructionTotal > 0) {
+        categories.push({ 
+          name: "Construction", 
+          children: constructionItems, 
+          color: COLOR_CATEGORIES["Construction"] 
+        });
       }
-      if (coreItems.length > 0) {
-        categories.push({ name: "Core Components", children: coreItems, color: COLOR_CATEGORIES["Core Components"] });
+      if (coreItems.length > 0 && coreTotal > 0) {
+        categories.push({ 
+          name: "Core Components", 
+          children: coreItems, 
+          color: COLOR_CATEGORIES["Core Components"] 
+        });
       }
-      if (finishItems.length > 0) {
-        categories.push({ name: "Finishes", children: finishItems, color: COLOR_CATEGORIES["Finishes"] });
+      if (finishItems.length > 0 && finishesTotal > 0) {
+        categories.push({ 
+          name: "Finishes", 
+          children: finishItems, 
+          color: COLOR_CATEGORIES["Finishes"] 
+        });
       }
-      if (interiorItems.length > 0) {
-        categories.push({ name: "Interiors", children: interiorItems, color: COLOR_CATEGORIES["Interiors"] });
+      if (interiorItems.length > 0 && interiorsTotal > 0) {
+        categories.push({ 
+          name: "Interiors", 
+          children: interiorItems, 
+          color: COLOR_CATEGORIES["Interiors"] 
+        });
       }
       
       return [
@@ -226,7 +279,7 @@ const CostTreeMap = ({ estimate, showLabels = false }: CostTreeMapProps) => {
   return (
     <div className="flex flex-col space-y-4 min-w-0">
       <div className="h-[400px] w-full overflow-hidden rounded-lg">
-        {data.length > 0 ? (
+        {data.length > 0 && data[0].children && data[0].children.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <Treemap
               data={data}
@@ -240,7 +293,7 @@ const CostTreeMap = ({ estimate, showLabels = false }: CostTreeMapProps) => {
           </ResponsiveContainer>
         ) : (
           <div className="h-full flex items-center justify-center text-gray-400">
-            Loading cost breakdown...
+            No cost data to display. Please select components.
           </div>
         )}
       </div>
@@ -266,17 +319,22 @@ const CustomizedContent = (props: any) => {
   const { root, depth, x, y, width, height, index, name, value, showLabels } = props;
   
   const formatCurrency = (amount: number) => {
+    if (amount >= 10000000) { // 1 Crore
+      return `₹${(amount / 10000000).toFixed(1)}Cr`;
+    } else if (amount >= 100000) { // 1 Lakh
+      return `₹${(amount / 100000).toFixed(1)}L`;
+    }
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    }).format(amount).replace('₹', '₹');
   };
   
   return (
     <g>
-        <rect
+      <rect
         x={x}
         y={y}
         width={width}
@@ -290,53 +348,54 @@ const CustomizedContent = (props: any) => {
           strokeOpacity: 1 / (depth + 1e-10),
         }}
       />
-      {/* Show labels on all depths if showLabels is true */}
-      {(showLabels || depth === 1) && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={depth === 1 ? 14 : 12}
-          fontWeight={depth === 1 ? "bold" : "normal"}
-          className="drop-shadow-md"
-          style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
-        >
-          {name}
-        </text>
-      )}
-      {(showLabels || depth === 1) && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + (depth === 1 ? 20 : 16)}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={depth === 1 ? 12 : 10}
-          className="drop-shadow-md"
-          style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
-        >
-          {formatCurrency(value)}
-        </text>
-      )}
-      {!showLabels && depth === 2 && width > 70 && height > 25 && (
+      {/* Show labels based on depth and size */}
+      {depth === 1 && width > 60 && height > 40 && (
         <>
           <text
             x={x + width / 2}
-            y={y + height / 2}
+            y={y + height / 2 - 8}
             textAnchor="middle"
             fill="#fff"
-            fontSize={10}
+            fontSize={14}
+            fontWeight="bold"
+            className="drop-shadow-md"
             style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
           >
             {name}
           </text>
-          {width > 100 && (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 12}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={12}
+            className="drop-shadow-md"
+            style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
+          >
+            {formatCurrency(value)}
+          </text>
+        </>
+      )}
+      {depth === 2 && width > 70 && height > 30 && (
+        <>
+          <text
+            x={x + width / 2}
+            y={y + height / 2 - 4}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={10}
+            fontWeight="500"
+            style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
+          >
+            {name}
+          </text>
+          {width > 90 && (
             <text
               x={x + width / 2}
-              y={y + height / 2 + 14}
+              y={y + height / 2 + 10}
               textAnchor="middle"
               fill="#fff"
-              fontSize={8}
+              fontSize={9}
               style={{ textShadow: "0px 0px 3px rgba(0,0,0,0.7)" }}
             >
               {formatCurrency(value)}
