@@ -181,64 +181,62 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full space-y-3">
       {/* Donut Chart */}
-      <div className="mb-3">
-        <ResponsiveContainer width="100%" height={180}>
-          <div className="relative">
-            <svg viewBox="0 0 200 200" className="w-full h-full">
-              <g transform="translate(100, 100)">
-                {data.map((item, index) => {
-                  const startAngle = data.slice(0, index).reduce((sum, d) => sum + (d.percentage / 100) * 360, 0);
-                  const endAngle = startAngle + (item.percentage / 100) * 360;
-                  const startRad = (startAngle - 90) * Math.PI / 180;
-                  const endRad = (endAngle - 90) * Math.PI / 180;
-                  
-                  const innerRadius = 50;
-                  const outerRadius = 80;
-                  
-                  const x1 = Math.cos(startRad) * innerRadius;
-                  const y1 = Math.sin(startRad) * innerRadius;
-                  const x2 = Math.cos(startRad) * outerRadius;
-                  const y2 = Math.sin(startRad) * outerRadius;
-                  const x3 = Math.cos(endRad) * outerRadius;
-                  const y3 = Math.sin(endRad) * outerRadius;
-                  const x4 = Math.cos(endRad) * innerRadius;
-                  const y4 = Math.sin(endRad) * innerRadius;
-                  
-                  const largeArc = item.percentage > 50 ? 1 : 0;
-                  
-                  const pathData = [
-                    `M ${x1} ${y1}`,
-                    `L ${x2} ${y2}`,
-                    `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x3} ${y3}`,
-                    `L ${x4} ${y4}`,
-                    `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x1} ${y1}`,
-                    'Z'
-                  ].join(' ');
-                  
-                  return (
-                    <path
-                      key={index}
-                      d={pathData}
-                      fill={item.color}
-                      stroke="white"
-                      strokeWidth="2"
-                    />
-                  );
-                })}
-              </g>
-            </svg>
-          </div>
-        </ResponsiveContainer>
+      <div className="flex justify-center">
+        <div className="w-40 h-40">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <g transform="translate(100, 100)">
+              {data.map((item, index) => {
+                const startAngle = data.slice(0, index).reduce((sum, d) => sum + (d.percentage / 100) * 360, 0);
+                const endAngle = startAngle + (item.percentage / 100) * 360;
+                const startRad = (startAngle - 90) * Math.PI / 180;
+                const endRad = (endAngle - 90) * Math.PI / 180;
+                
+                const innerRadius = 50;
+                const outerRadius = 80;
+                
+                const x1 = Math.cos(startRad) * innerRadius;
+                const y1 = Math.sin(startRad) * innerRadius;
+                const x2 = Math.cos(startRad) * outerRadius;
+                const y2 = Math.sin(startRad) * outerRadius;
+                const x3 = Math.cos(endRad) * outerRadius;
+                const y3 = Math.sin(endRad) * outerRadius;
+                const x4 = Math.cos(endRad) * innerRadius;
+                const y4 = Math.sin(endRad) * innerRadius;
+                
+                const largeArc = item.percentage > 50 ? 1 : 0;
+                
+                const pathData = [
+                  `M ${x1} ${y1}`,
+                  `L ${x2} ${y2}`,
+                  `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x3} ${y3}`,
+                  `L ${x4} ${y4}`,
+                  `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x1} ${y1}`,
+                  'Z'
+                ].join(' ');
+                
+                return (
+                  <path
+                    key={index}
+                    d={pathData}
+                    fill={item.color}
+                    stroke="white"
+                    strokeWidth="2"
+                  />
+                );
+              })}
+            </g>
+          </svg>
+        </div>
       </div>
 
       {/* Legend */}
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] mb-3">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px]">
         {data.map((item, index) => (
           <div key={index} className="flex items-center">
             <div 
-              className="w-3 h-3 mr-1.5 rounded-sm flex-shrink-0" 
+              className="w-2.5 h-2.5 mr-1 rounded-sm flex-shrink-0" 
               style={{ backgroundColor: item.color }}
             />
             <span className="text-gray-700 truncate">{item.name}</span>
@@ -247,12 +245,12 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
       </div>
 
       {/* Horizontal Bar Chart */}
-      <div className="mt-3">
-        <ResponsiveContainer width="100%" height={Math.min(data.length * 30 + 30, 200)}>
+      <div className="w-full">
+        <ResponsiveContainer width="100%" height={Math.min(data.length * 25 + 20, 150)}>
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            margin={{ top: 0, right: 5, left: 0, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
             <XAxis type="number" hide />
@@ -263,7 +261,7 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
               tick={false}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="cost" radius={[0, 4, 4, 0]} barSize={20}>
+            <Bar dataKey="cost" radius={[0, 4, 4, 0]} barSize={16}>
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
@@ -273,19 +271,19 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
       </div>
 
       {/* Cost breakdown list */}
-      <div className="mt-3 space-y-1">
+      <div className="space-y-0.5 max-h-40 overflow-y-auto">
         {data.map((item, index) => (
-          <div key={index} className="flex items-center justify-between text-xs py-1.5 border-b border-gray-100 last:border-0">
-            <div className="flex items-center gap-2 flex-1">
+          <div key={index} className="flex items-center justify-between text-[10px] py-1 border-b border-gray-50 last:border-0">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
               <div 
-                className="w-2 h-2 rounded-sm flex-shrink-0" 
+                className="w-1.5 h-1.5 rounded-sm flex-shrink-0" 
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-gray-700">{item.name}</span>
+              <span className="text-gray-700 truncate">{item.name}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               <span className="font-medium text-vs">{formatCurrency(item.cost)}</span>
-              <span className="text-gray-500 text-[10px] w-10 text-right">{item.percentage.toFixed(0)}%</span>
+              <span className="text-gray-500 text-[9px] w-8 text-right">{item.percentage.toFixed(0)}%</span>
             </div>
           </div>
         ))}
