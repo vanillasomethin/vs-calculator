@@ -729,3 +729,30 @@
 .paralax .layer:nth-child(3) {
     transform: translateY(calc(var(--scrollTop) * 0.75));
 }
+/* Compact mode for estimator steps 1-4 */
+[data-estimator-step]:not([data-estimator-step="5"]) {
+  /* Reduce heading sizes */
+  & h2, & .text-2xl {
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  & h3, & .text-xl {
+    font-size: 1.125rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  & h4, & .text-lg {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Reduce spacing */
+  & .space-y-8 { gap: 1rem !important; }
+  & .space-y-6 { gap: 0.75rem !important; }
+  & .mb-8 { margin-bottom: 1rem !important; }
+  & .mb-6 { margin-bottom: 0.75rem !important; }
+  & .pb-6 { padding-bottom: 0.75rem !important; }
+  & .gap-6 { gap: 1rem !important; }
+  & .p-6 { padding: 1rem !important; }
+}
