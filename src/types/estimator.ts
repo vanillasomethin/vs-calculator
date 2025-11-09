@@ -65,6 +65,19 @@ export interface ProjectEstimate {
   categoryBreakdown: CategoryBreakdown;
   phaseBreakdown: PhaseBreakdown;
   timeline: Timeline;
+  
+  // Architect Fee related fields (optional)
+  architectFee?: {
+    baseFee: number;
+    ffeFee: number;
+    landscapeFee: number;
+    vizFee: number;
+    overheadAllocation: number;
+    profit: number;
+    tax: number;
+    totalFee: number;
+    currency: string;
+  };
 }
 
 // For saved estimates
@@ -78,21 +91,4 @@ export interface UserFormData {
   name: string;
   email: string;
   phone?: string;
-}
-// Add to existing ProjectEstimate interface
-export interface ProjectEstimate {
-  // ... existing fields ...
-  
-  // Architect Fee related fields
-  architectFee: {
-    baseFee: number;
-    ffeFee: number;
-    landscapeFee: number;
-    vizFee: number;
-    overheadAllocation: number;
-    profit: number;
-    tax: number;
-    totalFee: number;
-    currency: string;
-  };
 }

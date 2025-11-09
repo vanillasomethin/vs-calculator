@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ProjectEstimate, ComponentOption } from "@/types/estimator";
-import { Share, CheckCircle2 } from "lucide-react";
+import { Share, CheckCircle2, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImprovedCostVisualization from "./ImprovedCostVisualization";
 import PhaseTimelineCost from "./PhaseTimelineCost";
 import ContactCTAStrategy from "./ContactCTAStrategy";
+import { generateEstimatePDF } from "@/utils/pdfExport";
 
 interface ResultsStepProps {
   estimate: ProjectEstimate;
@@ -49,6 +50,22 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           title: "Copied to clipboard!",
           description: "Share text has been copied to your clipboard."
         });
+      });
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    try {
+      generateEstimatePDF(estimate);
+      toast({
+        title: "PDF Generated!",
+        description: "Your estimate has been downloaded as a PDF."
+      });
+    } catch (error) {
+      toast({
+        title: "Error generating PDF",
+        description: "There was a problem creating your PDF. Please try again.",
+        variant: "destructive"
       });
     }
   };
@@ -229,19 +246,17 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       </motion.div>
 
       {/* Contact CTA */}
-      <ContactCTAStrategy 
-        estimate={{
-          totalCost: estimate.totalCost,
-          area: estimate.area,
-          areaUnit: estimate.areaUnit,
-          city: estimate.city,
-          state: estimate.state,
-          projectType: estimate.projectType
-        }} 
-      />
+      <ContactCTAStrategy estimate={estimate} />
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
+        <button 
+          onClick={handleDownloadPDF}
+          className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+        >
+          <Download size={18} /> Download PDF
+        </button>
+
         <button 
           onClick={handleShare}
           className="flex items-center gap-2 px-6 py-3 bg-vs hover:bg-vs-light text-white font-semibold rounded-lg transition-colors"

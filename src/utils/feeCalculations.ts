@@ -17,14 +17,41 @@ export const defaultFeeRates: FeeRates = {
     "Individual House": { model: "PERCENT", rate: 0.08, min: 20000 },
     "Residential Block": { model: "PERCENT", rate: 0.05, min: 50000 },
     "Commercial": { model: "PERCENT", rate: 0.04, min: 80000 },
-    // ... other typologies
+    "FF&E Procurement": { model: "PERCENT", rate: 0.10, min: 30000 },
+    "Landscape - Detailed": { model: "SQM", rate: 150, min: 25000 },
   },
   clientMultipliers: {
     "Friend/Family": 0.85,
     "Individual": 1.0,
-    // ... other client types
+    "Corporate": 1.15,
+    "Developer": 1.10,
   },
-  // ... other rate configurations
+  complexity: {
+    "Simple": 0.9,
+    "Standard": 1.0,
+    "Premium": 1.2,
+    "Luxury": 1.5,
+  },
+  premiumMultiplier: 1.0,
+  rushMultiplier: 1.25,
+  vizPrices: {
+    "None": 0,
+    "Standard": 25000,
+    "Premium": 50000,
+    "Luxury": 100000,
+  },
+  extraRender: {
+    "Interior": 5000,
+    "Exterior": 7500,
+  },
+  conversionRates: {
+    "INR": 1,
+    "USD": 83,
+    "EUR": 90,
+  },
+  profitMargin: 0.15,
+  taxRate: 0.18,
+  minimumFeeStudio: 50000,
 };
 
 export function calculateArchitectFee(

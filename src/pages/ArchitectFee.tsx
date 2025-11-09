@@ -10,7 +10,7 @@ const ArchitectFee = () => {
     estimate.totalCost,
     estimate.area,
     'Individual', // Can be made configurable
-    estimate.complexity === 'premium' ? 'Premium' : 'Standard',
+    estimate.complexity > 7 ? 'Premium' : 'Standard',
     true, // includeFFE
     true, // includeLandscape
     'Standard', // vizPackage

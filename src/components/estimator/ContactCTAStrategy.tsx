@@ -2,16 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Mail, MessageSquare, Download, ChevronRight, CheckCircle2, Clock, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { generateEstimatePDF } from "@/utils/pdfExport";
+import { ProjectEstimate } from "@/types/estimator";
 
 interface ContactCTAStrategyProps {
-  estimate: {
-    totalCost: number;
-    area: number;
-    areaUnit: string;
-    city: string;
-    state: string;
-    projectType: string;
-  };
+  estimate: ProjectEstimate;
 }
 
 interface ContactFormData {
@@ -46,7 +41,7 @@ const ContactCTAStrategy = ({ estimate }: ContactCTAStrategyProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));access_key: 'e8781f5f-dc82-4ac7-a554-ddf01043c3a2',
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,6 +79,22 @@ const ContactCTAStrategy = ({ estimate }: ContactCTAStrategyProps) => {
       title: "Request Received!",
       description: "Our team will contact you within 24 hours with a detailed quote.",
     });
+  };
+
+  const handleDownloadPDF = () => {
+    try {
+      generateEstimatePDF(estimate);
+      toast({
+        title: "PDF Downloaded!",
+        description: "Your estimate summary has been downloaded."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -307,7 +318,10 @@ const ContactCTAStrategy = ({ estimate }: ContactCTAStrategyProps) => {
               <p className="text-[10px] text-gray-600">Get PDF estimate</p>
             </div>
           </div>
-          <button className="px-3 py-1 text-xs bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={handleDownloadPDF}
+            className="px-3 py-1 text-xs bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+          >
             Download
           </button>
         </div>
