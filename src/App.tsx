@@ -30,3 +30,10 @@ const App = () => (
 );
 
 export default App;
+import ArchitectFee from '@/pages/ArchitectFee';
+
+// In your router configuration
+{
+  path: '/architect-fee',
+  element: <ArchitectFee />
+}
