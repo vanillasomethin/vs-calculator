@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Home } from 'lucide-react';
 import { defaultArchitectFeeRates } from '@/types/architectFee';
 import { calculateArchitectFee } from '@/utils/architectFeeCalculations';
 
@@ -37,13 +39,33 @@ const ArchitectFeeCalculator = () => {
 
   return (
     <div className="min-h-screen bg-background py-4 px-4">
+      {/* Header with navigation */}
+      <div className="container-custom max-w-5xl mx-auto mb-4">
+        <div className="flex justify-between items-center">
+          <Link 
+            to="/"
+            className="flex items-center gap-2 text-sm text-vs hover:text-vs-light transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Estimator
+          </Link>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/1938f286-8b49-49bf-bc47-3ac7ef7d6cab.png" 
+              alt="Vanilla & Somethin'" 
+              className="h-16 md:h-20"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="container-custom max-w-5xl mx-auto">
         <div className="text-center mb-4">
           <h1 className="text-3xl md:text-4xl font-display mb-2">
-            Architect Fee Calculator
+            Detailed Architect Fee Calculator
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
-            Calculate professional fees based on your project specifications
+            Calculate comprehensive professional fees based on detailed project specifications
           </p>
         </div>
 
@@ -59,6 +81,7 @@ const ArchitectFeeCalculator = () => {
                   value={input.projectName}
                   onChange={(e) => handleInputChange('projectName', e.target.value)}
                   className="w-full p-2 border rounded"
+                  placeholder="Enter project name"
                 />
               </div>
 
@@ -69,6 +92,7 @@ const ArchitectFeeCalculator = () => {
                   value={input.clientName}
                   onChange={(e) => handleInputChange('clientName', e.target.value)}
                   className="w-full p-2 border rounded"
+                  placeholder="Enter client name"
                 />
               </div>
 
@@ -194,7 +218,7 @@ const ArchitectFeeCalculator = () => {
 
           {/* Results Display */}
           <div className="glass-card border border-primary/5 rounded-2xl p-6">
-            <h2 className="font-semibold mb-4">Fee Breakdown</h2>
+            <h2 className="font-semibold mb-4">Detailed Fee Breakdown</h2>
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span>Base Design Fee:</span>
@@ -235,6 +259,13 @@ const ArchitectFeeCalculator = () => {
               <p>* Additional services may incur extra charges</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="container-custom max-w-5xl mx-auto mt-8">
+        <div className="text-center text-sm text-muted-foreground border-t pt-6">
+          <p>© {new Date().getFullYear()} VS Collective LLP. All rights reserved.</p>
         </div>
       </div>
     </div>
