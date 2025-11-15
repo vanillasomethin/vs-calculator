@@ -17,10 +17,8 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Fix: Use correct repo name or remove if using custom domain
   base: mode === 'production' ? '/vanilla-space-sculpt-63019/' : '/',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: false,
-  }
-}));
+    assetsDir:
