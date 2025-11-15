@@ -29,3 +29,54 @@ const Index = () => {
                 Our intelligent calculator considers location, project type, quality levels, and more.
               </p>
             </div>
+/* Estimator specific styles */
+.glass-card {
+  @apply bg-white bg-opacity-90 backdrop-blur-md;
+}
+
+/* Compact mode for estimator steps 1-4 */
+[data-estimator-step]:not([data-estimator-step="5"]) {
+  & h2, & .text-2xl {
+    font-size: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  & h3, & .text-xl {
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  & h4, & .text-lg {
+    font-size: 1.125rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  & .space-y-8 { gap: 1.5rem !important; }
+  & .space-y-6 { gap: 1rem !important; }
+  & .mb-8 { margin-bottom: 1.5rem !important; }
+  & .mb-6 { margin-bottom: 1rem !important; }
+  & .pb-6 { padding-bottom: 1rem !important; }
+  & .gap-6 { gap: 1rem !important; }
+  & .p-6 { padding: 1.25rem !important; }
+}
+
+/* Step 5 (Results) gets full styling */
+[data-estimator-step="5"] {
+  min-height: auto !important;
+}
+
+/* Loading animation fix */
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
