@@ -21,4 +21,11 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/vanilla-space-sculpt-63019/' : '/',
   build: {
     outDir: 'dist',
-    assetsDir:
+    assetsDir: 'assets',
+    sourcemap: false,
+    target: 'es2018',
+    // add any other build options you need, e.g.:
+    // minify: 'esbuild',
+    // rollupOptions: { ... }
+  },
+}));
