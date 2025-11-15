@@ -5,7 +5,6 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Add this to prevent concurrent runs
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -16,8 +15,12 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -25,31 +28,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
       
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
-        run: npm run build
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'  # or './build' depending on your setup
-          # Add unique name to prevent conflicts
-          name: github-pages
-
-  deploy:
-    # Add condition to prevent multiple deployments
-    needs: build
-    runs-on: ubuntu-latest
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
-      - name: Deploy to GitHub Pages
+          path: './dist'
+      
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
