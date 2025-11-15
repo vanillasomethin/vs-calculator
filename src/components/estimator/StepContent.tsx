@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-// 🛠️ FIX 1: Ensure handleOptionChange is destructured
 import { useEstimator } from "@/context/EstimatorContext"; 
 import LocationStep from "@/components/estimator/LocationStep";
 import ProjectTypeStep from "@/components/estimator/ProjectTypeStep";
@@ -11,8 +10,7 @@ import InteriorsStep from "@/components/estimator/InteriorsStep";
 import ResultsStep from "@/components/estimator/ResultsStep";
 
 const StepContent = () => {
-  // ✅ FIX 1: Destructure handleOptionChange
-  const { step, estimate, updateEstimate, handleReset, handleSaveEstimate, handleOptionChange } = useEstimator();
+  const { step, estimate, updateEstimate, handleReset, handleSaveEstimate, handleOptionChange } = useEstimator();
 
   // Set default "standard" options when first reaching step 4
   useEffect(() => {
@@ -31,44 +29,45 @@ const StepContent = () => {
     }
   }, [step, estimate, updateEstimate]);
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={step}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={step}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.3 }}
-        className="min-h-[300px]"
+        className="min-h-[400px]"
+        data-estimator-step={step}
       >
         {step === 1 && (
-          <LocationStep 
-            selectedState={estimate.state}
-            selectedCity={estimate.city}
-            onStateSelect={(state) => updateEstimate('state', state)}
-            onCitySelect={(city) => updateEstimate('city', city)}
-          />
-        )}
-        
-        {step === 2 && (
-          <ProjectTypeStep 
-            selectedType={estimate.projectType}
-            onSelect={(type) => updateEstimate('projectType', type)}
-          />
-        )}
-        
-        {step === 3 && (
-          <AreaStep 
-            area={estimate.area} 
-            areaUnit={estimate.areaUnit}
-            projectType={estimate.projectType}
-            onAreaChange={(area) => updateEstimate('area', area)}
-            onUnitChange={(unit) => updateEstimate('areaUnit', unit)}
-          />
-        )}
-        
+          <LocationStep 
+            selectedState={estimate.state}
+            selectedCity={estimate.city}
+            onStateSelect={(state) => updateEstimate('state', state)}
+            onCitySelect={(city) => updateEstimate('city', city)}
+          />
+        )}
+        
+        {step === 2 && (
+          <ProjectTypeStep 
+            selectedType={estimate.projectType}
+            onSelect={(type) => updateEstimate('projectType', type)}
+          />
+        )}
+        
+        {step === 3 && (
+          <AreaStep 
+            area={estimate.area} 
+            areaUnit={estimate.areaUnit}
+            projectType={estimate.projectType}
+            onAreaChange={(area) => updateEstimate('area', area)}
+            onUnitChange={(unit) => updateEstimate('areaUnit', unit)}
+          />
+        )}
+        
         {step === 4 && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <ComponentsStep
               plumbing={estimate.plumbing}
               ac={estimate.ac}
@@ -97,17 +96,17 @@ const StepContent = () => {
             />
           </div>
         )}
-        
-        {step === 5 && (
-          <ResultsStep 
-            estimate={estimate}
-            onReset={handleReset} 
-            onSave={handleSaveEstimate}
-          />
-        )}
-      </motion.div>
-    </AnimatePresence>
-  );
+        
+        {step === 5 && (
+          <ResultsStep 
+            estimate={estimate}
+            onReset={handleReset} 
+            onSave={handleSaveEstimate}
+          />
+        )}
+      </motion.div>
+    </AnimatePresence>
+  );
 };
 
 export default StepContent;
