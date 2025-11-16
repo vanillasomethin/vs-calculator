@@ -1,6 +1,24 @@
 // Component quality options
 export type ComponentOption = "none" | "standard" | "premium" | "luxury";
 
+// Detailed component options for Residence/Villa projects
+export type CementOption = "economy" | "economy-plus" | "premium";
+export type SteelOption = "economy" | "economy-plus" | "premium";
+export type BrickOption = "red-clay" | "fly-ash" | "aac-blocks";
+export type FlooringOption = "vitrified-45" | "vitrified-60" | "vitrified-120" | "wooden" | "marble" | "none";
+export type WindowOption = "aluminium-19mm" | "aluminium-25mm" | "upvc";
+export type WindowSillOption = "marble" | "wooden" | "granite-80" | "granite-120" | "none";
+export type WindowGrillOption = "basic-ms" | "designer-ms" | "none";
+export type DoorOption = "hardwood-engineered-35mm" | "pine-flush-laminate-40mm" | "pine-flush-veneer-45mm" | "teak-flush-laminate-40mm";
+export type StaircaseOption = "granite-standard" | "granite-80" | "granite-120" | "none";
+export type ElectricalOption = "anchor-basic" | "anchor-havells" | "legrand-schneider";
+export type BathroomFixtureOption = "economy" | "economy-plus" | "premium";
+export type PaintingOption = "tractor-emulsion" | "premium-emulsion" | "washable-emulsion";
+export type KitchenSinkOption = "single-bowl" | "single-bowl-drainer" | "double-bowl-drainer";
+export type CountertopOption = "granite-150" | "galaxy-black-180" | "jet-black-250";
+export type WaterTankOption = "2000ltr" | "4000ltr" | "6000ltr" | "none";
+export type BooleanOption = "yes" | "no";
+
 // Category breakdown for cost visualization
 export interface CategoryBreakdown {
   construction: number;
@@ -9,21 +27,37 @@ export interface CategoryBreakdown {
   interiors: number;
 }
 
-// Phase breakdown for project timeline
+// Detailed phase breakdown for cost
 export interface PhaseBreakdown {
   planning: number;
-  construction: number;
-  interiors: number;
+  siteWorkFoundation: number;
+  superstructure: number;
+  mepRoughIns: number;
+  interiorFinishes: number;
+  exteriorFinalTouches: number;
 }
 
-// Timeline information
+// Timeline information with detailed phases
 export interface Timeline {
   totalMonths: number;
   phases: {
     planning: number;
-    construction: number;
-    interiors: number;
+    siteWorkFoundation: number;
+    superstructure: number;
+    mepRoughIns: number;
+    interiorFinishes: number;
+    exteriorFinalTouches: number;
   };
+}
+
+// Individual phase item for detailed breakdown
+export interface PhaseItem {
+  name: string;
+  cost: number;
+  phase: string;
+  startMonth?: number;
+  endMonth?: number;
+  duration?: number;
 }
 
 // Project subcategory types (now called "Type of Work")
@@ -88,12 +122,33 @@ export interface ProjectEstimate {
   furnishings: ComponentOption;
   appliances: ComponentOption;
   artefacts: ComponentOption;
-  
+
+  // Detailed Residential/Villa Components (optional - only for residential projects)
+  cement?: CementOption;
+  steel?: SteelOption;
+  bricks?: BrickOption;
+  flooringType?: FlooringOption;
+  windowType?: WindowOption;
+  windowSill?: WindowSillOption;
+  windowGrill?: WindowGrillOption;
+  doorType?: DoorOption;
+  staircaseType?: StaircaseOption;
+  electricalBrand?: ElectricalOption;
+  bathroomFixtures?: BathroomFixtureOption;
+  paintType?: PaintingOption;
+  kitchenSink?: KitchenSinkOption;
+  countertop?: CountertopOption;
+  overheadTank?: WaterTankOption;
+  undergroundTank?: WaterTankOption;
+  modularKitchen?: BooleanOption;
+  homeAutomation?: BooleanOption;
+
   // Calculated values
   totalCost: number;
   categoryBreakdown: CategoryBreakdown;
   phaseBreakdown: PhaseBreakdown;
   timeline: Timeline;
+  detailedBreakdown?: PhaseItem[]; // Detailed itemized breakdown
   
   // Architect Fee related fields (optional)
   architectFee?: {
