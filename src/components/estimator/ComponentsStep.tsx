@@ -9,7 +9,7 @@ interface ComponentsStepProps {
   electrical: ComponentOption;
   elevator: ComponentOption;
   civilQuality: ComponentOption;
-  projectSubcategory: ProjectSubcategory | "";
+  workTypes: ProjectSubcategory[];
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -19,24 +19,25 @@ const ComponentsStep = ({
   electrical,
   elevator,
   civilQuality,
-  projectSubcategory,
+  workTypes,
   onOptionChange,
 }: ComponentsStepProps) => {
-  // Define which components are available for each subcategory
+  // Define which components are available for each work type
   const shouldShowComponent = (componentKey: string): boolean => {
-    if (!projectSubcategory || projectSubcategory === "combination") {
-      return true; // Show all for combination or if not selected
+    if (!workTypes || workTypes.length === 0) {
+      return true; // Show all if no work types selected
     }
 
     const componentAvailability: Record<ProjectSubcategory, string[]> = {
       interiors: ["plumbing", "ac", "electrical"], // No civil/construction for interiors
       construction: ["civilQuality", "plumbing", "ac", "electrical", "elevator"],
       landscape: [], // Landscape doesn't need these core components
-      renovation: ["civilQuality", "plumbing", "ac", "electrical", "elevator"], // Can include civil modifications
-      combination: ["civilQuality", "plumbing", "ac", "electrical", "elevator"],
     };
 
-    return componentAvailability[projectSubcategory]?.includes(componentKey) ?? true;
+    // Show component if ANY selected work type requires it
+    return workTypes.some(workType =>
+      componentAvailability[workType]?.includes(componentKey) ?? false
+    );
   };
 
   const components = [
@@ -45,7 +46,7 @@ const ComponentsStep = ({
       title: "Quality of Construction - Civil Materials",
       icon: <Hammer className="size-6" />,
       value: civilQuality,
-      required: projectSubcategory === "construction",
+      required: workTypes.includes("construction"),
       description: "Structural materials quality including cement grade, steel specifications, brick/block quality, and construction workmanship standards",
     },
     {
@@ -86,7 +87,7 @@ const ComponentsStep = ({
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
-          No core building components are typically required for {projectSubcategory} projects.
+          No core building components are typically required for {workTypes.join(", ")} projects.
         </p>
       </div>
     );
@@ -98,9 +99,9 @@ const ComponentsStep = ({
         <h3 className="text-lg font-medium mb-2">Core Building Components</h3>
         <p className="text-sm text-muted-foreground">
           Select the quality level for each component. Choose "Not Required" to exclude optional items.
-          {projectSubcategory && projectSubcategory !== "combination" && (
+          {workTypes && workTypes.length > 0 && (
             <span className="block mt-2 text-xs text-vs">
-              Filtered for {projectSubcategory} projects
+              Showing components for: {workTypes.join(", ")}
             </span>
           )}
         </p>

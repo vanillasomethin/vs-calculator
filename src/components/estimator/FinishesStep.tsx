@@ -8,7 +8,7 @@ interface FinishesStepProps {
   ceiling: ComponentOption;
   surfaces: ComponentOption;
   buildingEnvelope: ComponentOption;
-  projectSubcategory: ProjectSubcategory | "";
+  workTypes: ProjectSubcategory[];
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -18,12 +18,12 @@ const FinishesStep = ({
   ceiling,
   surfaces,
   buildingEnvelope,
-  projectSubcategory,
+  workTypes,
   onOptionChange,
 }: FinishesStepProps) => {
-  // Define which finishes are available for each subcategory
+  // Define which finishes are available for each work type
   const shouldShowFinish = (finishKey: string): boolean => {
-    if (!projectSubcategory || projectSubcategory === "combination") {
+    if (!workTypes || workTypes.length === 0) {
       return true;
     }
 
@@ -31,11 +31,12 @@ const FinishesStep = ({
       interiors: ["lighting", "ceiling", "surfaces"], // Interior finishes only
       construction: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
       landscape: ["lighting"], // Outdoor lighting only
-      renovation: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"], // All finishes for renovation
-      combination: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
     };
 
-    return finishAvailability[projectSubcategory]?.includes(finishKey) ?? true;
+    // Show finish if ANY selected work type requires it
+    return workTypes.some(workType =>
+      finishAvailability[workType]?.includes(finishKey) ?? false
+    );
   };
 
   const finishes = [
@@ -86,9 +87,9 @@ const FinishesStep = ({
         <h3 className="text-lg font-medium mb-2">Finishes & Surfaces</h3>
         <p className="text-sm text-muted-foreground">
           Select the quality level for finishes. All items are optional - choose "Not Required" to skip.
-          {projectSubcategory && projectSubcategory !== "combination" && (
+          {workTypes && workTypes.length > 0 && (
             <span className="block mt-2 text-xs text-vs">
-              Filtered for {projectSubcategory} projects
+              Showing finishes for: {workTypes.join(", ")}
             </span>
           )}
         </p>

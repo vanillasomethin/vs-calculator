@@ -8,7 +8,7 @@ interface InteriorsStepProps {
   furnishings: ComponentOption;
   appliances: ComponentOption;
   artefacts: ComponentOption;
-  projectSubcategory: ProjectSubcategory | "";
+  workTypes: ProjectSubcategory[];
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -18,14 +18,14 @@ const InteriorsStep = ({
   furnishings,
   appliances,
   artefacts,
-  projectSubcategory,
+  workTypes,
   onOptionChange,
 }: InteriorsStepProps) => {
-  // Interiors are typically for interiors, renovation, and combination projects
-  // Not typically for pure construction or landscape
+  // Interiors are typically for interiors work type
+  // Show if interiors is selected as a work type
   const shouldShowInteriors = (): boolean => {
-    if (!projectSubcategory) return true;
-    return ["interiors", "renovation", "combination"].includes(projectSubcategory);
+    if (!workTypes || workTypes.length === 0) return true;
+    return workTypes.includes("interiors");
   };
 
   const interiors = [
@@ -70,10 +70,10 @@ const InteriorsStep = ({
     return (
       <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
         <p className="text-sm text-muted-foreground">
-          Interior components are not typically included in {projectSubcategory} projects.
+          Interior components are not typically included in {workTypes.join(", ")} work.
         </p>
         <p className="text-xs text-muted-foreground mt-2">
-          If you need interiors, consider selecting "Combination" as your project type.
+          If you need interiors, select "Interiors" in the Type of Work section.
         </p>
       </div>
     );

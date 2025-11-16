@@ -53,9 +53,13 @@ const StepContent = () => {
         {step === 2 && (
           <ProjectTypeStep
             selectedType={estimate.projectType}
-            selectedSubcategory={estimate.projectSubcategory}
-            onSelect={(type) => updateEstimate('projectType', type)}
-            onSubcategorySelect={(subcategory) => updateEstimate('projectSubcategory', subcategory)}
+            selectedWorkTypes={estimate.workTypes}
+            selectedRoomConfig={estimate.roomConfiguration}
+            selectedLandscapeAreas={estimate.landscapeAreas}
+            onSelectType={(type) => updateEstimate('projectType', type)}
+            onSelectWorkTypes={(workTypes) => updateEstimate('workTypes', workTypes)}
+            onSelectRoomConfig={(config) => updateEstimate('roomConfiguration', config)}
+            onSelectLandscapeAreas={(areas) => updateEstimate('landscapeAreas', areas)}
           />
         )}
 
@@ -77,7 +81,7 @@ const StepContent = () => {
               electrical={estimate.electrical}
               elevator={estimate.elevator}
               civilQuality={estimate.civilQuality}
-              projectSubcategory={estimate.projectSubcategory}
+              workTypes={estimate.workTypes}
               onOptionChange={handleOptionChange}
             />
 
@@ -87,7 +91,7 @@ const StepContent = () => {
               ceiling={estimate.ceiling}
               surfaces={estimate.surfaces}
               buildingEnvelope={estimate.buildingEnvelope}
-              projectSubcategory={estimate.projectSubcategory}
+              workTypes={estimate.workTypes}
               onOptionChange={handleOptionChange}
             />
 
@@ -97,7 +101,7 @@ const StepContent = () => {
               furnishings={estimate.furnishings}
               appliances={estimate.appliances}
               artefacts={estimate.artefacts}
-              projectSubcategory={estimate.projectSubcategory}
+              workTypes={estimate.workTypes}
               onOptionChange={handleOptionChange}
             />
           </div>

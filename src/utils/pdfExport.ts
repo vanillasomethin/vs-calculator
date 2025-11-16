@@ -62,10 +62,15 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   addLine(yPos);
   yPos += 8;
 
+  // Format work types for display
+  const workTypesDisplay = estimate.workTypes && estimate.workTypes.length > 0
+    ? estimate.workTypes.map(wt => toSentenceCase(wt)).join(", ")
+    : '';
+
   const details = [
     [`Location:`, `${estimate.city}, ${estimate.state}`],
-    [`Project Type:`, `${toSentenceCase(estimate.projectType)} ${estimate.projectSubcategory ? `(${toSentenceCase(estimate.projectSubcategory)})` : ''}`],
-    [`Total Area:`, `${estimate.area.toLocaleString()} ${estimate.areaUnit}`],
+    [`Project Type:`, `${toSentenceCase(estimate.projectType)} ${workTypesDisplay ? `(${workTypesDisplay})` : ''}`],
+    [`Total Area:`, `${estimate.area.toLocaleString('en-IN')} ${estimate.areaUnit}`],
     [`Date:`, new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })]
   ];
 
@@ -253,7 +258,8 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
 
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 120, 0);
-    doc.text(`₹${perSqm}/sqm`, pageWidth - margin - 5, yPos, { align: 'right' });
+    const priceText = `₹${perSqm.toLocaleString('en-IN')}/sqm`;
+    doc.text(priceText, pageWidth - margin - 5, yPos, { align: 'right' });
 
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
@@ -298,7 +304,9 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   }
 
   // Save the PDF
-  const subcategoryText = estimate.projectSubcategory ? `_${estimate.projectSubcategory}` : '';
-  const fileName = `Construction_Estimate_${estimate.city}${subcategoryText}_${estimate.area}${estimate.areaUnit}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const workTypesText = estimate.workTypes && estimate.workTypes.length > 0
+    ? `_${estimate.workTypes.join('_')}`
+    : '';
+  const fileName = `Construction_Estimate_${estimate.city}${workTypesText}_${estimate.area}${estimate.areaUnit}_${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(fileName);
 };

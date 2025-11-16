@@ -26,8 +26,28 @@ export interface Timeline {
   };
 }
 
-// Project subcategory types
-export type ProjectSubcategory = "interiors" | "construction" | "landscape" | "renovation" | "combination";
+// Project subcategory types (now called "Type of Work")
+export type ProjectSubcategory = "interiors" | "construction" | "landscape";
+
+// Room configuration types for Residential projects
+export type RoomConfiguration =
+  | "1BHK"
+  | "2BHK"
+  | "3BHK"
+  | "4BHK"
+  | "5BHK+"
+  | "Studio"
+  | "Penthouse"
+  | "Villa";
+
+// Landscape area types
+export type LandscapeArea =
+  | "Front Yard"
+  | "Back Yard"
+  | "Terrace Garden"
+  | "Rooftop Garden"
+  | "Full Compound"
+  | "Courtyard";
 
 // Main project estimate interface
 export interface ProjectEstimate {
@@ -37,11 +57,16 @@ export interface ProjectEstimate {
 
   // Project basics
   projectType: string;
-  projectSubcategory: ProjectSubcategory | "";
+  workTypes: ProjectSubcategory[]; // Multiple selection for type of work
+  roomConfiguration?: RoomConfiguration; // For Residential projects
+  landscapeAreas?: LandscapeArea[]; // For Landscape work
   area: number;
   areaUnit: "sqft" | "sqm";
   complexity: number;
   selectedMaterials: string[];
+
+  // Legacy field for backward compatibility
+  projectSubcategory?: ProjectSubcategory | "";
   
   // Core building components
   civilQuality: ComponentOption;

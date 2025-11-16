@@ -81,7 +81,10 @@ const initialEstimate: ProjectEstimate = {
   state: "",
   city: "",
   projectType: "",
-  projectSubcategory: "",
+  workTypes: [],
+  roomConfiguration: undefined,
+  landscapeAreas: undefined,
+  projectSubcategory: "", // Legacy field
   area: 0,
   areaUnit: "sqft",
   complexity: 5,
@@ -388,10 +391,27 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
           });
           return false;
         }
-        if (!estimate.projectSubcategory) {
+        if (!estimate.workTypes || estimate.workTypes.length === 0) {
           toast({
             title: "Work Type Required",
-            description: "Please select the type of work involved in your project.",
+            description: "Please select at least one type of work for your project.",
+            variant: "destructive",
+          });
+          return false;
+        }
+        // Validate conditional fields
+        if (estimate.projectType === "residential" && !estimate.roomConfiguration) {
+          toast({
+            title: "Room Configuration Required",
+            description: "Please select the room configuration for your residential project.",
+            variant: "destructive",
+          });
+          return false;
+        }
+        if (estimate.workTypes.includes("landscape") && (!estimate.landscapeAreas || estimate.landscapeAreas.length === 0)) {
+          toast({
+            title: "Landscape Area Required",
+            description: "Please select at least one landscape area.",
             variant: "destructive",
           });
           return false;
