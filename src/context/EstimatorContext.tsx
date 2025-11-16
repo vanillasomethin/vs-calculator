@@ -81,6 +81,7 @@ const initialEstimate: ProjectEstimate = {
   state: "",
   city: "",
   projectType: "",
+  projectSubcategory: "",
   area: 0,
   areaUnit: "sqft",
   complexity: 5,
@@ -383,6 +384,14 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
           toast({
             title: "Project Type Required",
             description: "Please select your project type.",
+            variant: "destructive",
+          });
+          return false;
+        }
+        if (!estimate.projectSubcategory) {
+          toast({
+            title: "Work Type Required",
+            description: "Please select the type of work involved in your project.",
             variant: "destructive",
           });
           return false;

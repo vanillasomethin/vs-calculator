@@ -1,5 +1,5 @@
 import { Droplet, Wind, Zap, ArrowUp, Hammer } from "lucide-react";
-import { ComponentOption } from "@/types/estimator";
+import { ComponentOption, ProjectSubcategory } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,6 +9,7 @@ interface ComponentsStepProps {
   electrical: ComponentOption;
   elevator: ComponentOption;
   civilQuality: ComponentOption;
+  projectSubcategory: ProjectSubcategory | "";
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -18,15 +19,33 @@ const ComponentsStep = ({
   electrical,
   elevator,
   civilQuality,
+  projectSubcategory,
   onOptionChange,
 }: ComponentsStepProps) => {
+  // Define which components are available for each subcategory
+  const shouldShowComponent = (componentKey: string): boolean => {
+    if (!projectSubcategory || projectSubcategory === "combination") {
+      return true; // Show all for combination or if not selected
+    }
+
+    const componentAvailability: Record<ProjectSubcategory, string[]> = {
+      interiors: ["plumbing", "ac", "electrical"], // No civil/construction for interiors
+      construction: ["civilQuality", "plumbing", "ac", "electrical", "elevator"],
+      landscape: [], // Landscape doesn't need these core components
+      renovation: ["civilQuality", "plumbing", "ac", "electrical", "elevator"], // Can include civil modifications
+      combination: ["civilQuality", "plumbing", "ac", "electrical", "elevator"],
+    };
+
+    return componentAvailability[projectSubcategory]?.includes(componentKey) ?? true;
+  };
+
   const components = [
     {
       key: "civilQuality",
       title: "Quality of Construction - Civil Materials",
       icon: <Hammer className="size-6" />,
       value: civilQuality,
-      required: true,
+      required: projectSubcategory === "construction",
       description: "Structural materials quality including cement grade, steel specifications, brick/block quality, and construction workmanship standards",
     },
     {
@@ -61,7 +80,17 @@ const ComponentsStep = ({
       required: false,
       description: "Passenger/goods lifts with safety mechanisms, cabin finishes, control systems, emergency backup, and maintenance access for multi-story buildings",
     },
-  ];
+  ].filter(component => shouldShowComponent(component.key));
+
+  if (components.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">
+          No core building components are typically required for {projectSubcategory} projects.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -69,6 +98,11 @@ const ComponentsStep = ({
         <h3 className="text-lg font-medium mb-2">Core Building Components</h3>
         <p className="text-sm text-muted-foreground">
           Select the quality level for each component. Choose "Not Required" to exclude optional items.
+          {projectSubcategory && projectSubcategory !== "combination" && (
+            <span className="block mt-2 text-xs text-vs">
+              Filtered for {projectSubcategory} projects
+            </span>
+          )}
         </p>
       </div>
 
@@ -90,7 +124,7 @@ const ComponentsStep = ({
               <p className="text-sm text-muted-foreground">{component.description}</p>
             </div>
           </div>
-          
+
           <QualityLevelSelector
             component={component.key}
             currentValue={component.value}

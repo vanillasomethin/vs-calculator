@@ -1,5 +1,5 @@
 import { Lightbulb, DoorOpen, Layers, Brush, Building2 } from "lucide-react";
-import { ComponentOption } from "@/types/estimator";
+import { ComponentOption, ProjectSubcategory } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 
 interface FinishesStepProps {
@@ -8,6 +8,7 @@ interface FinishesStepProps {
   ceiling: ComponentOption;
   surfaces: ComponentOption;
   buildingEnvelope: ComponentOption;
+  projectSubcategory: ProjectSubcategory | "";
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -17,8 +18,26 @@ const FinishesStep = ({
   ceiling,
   surfaces,
   buildingEnvelope,
+  projectSubcategory,
   onOptionChange,
 }: FinishesStepProps) => {
+  // Define which finishes are available for each subcategory
+  const shouldShowFinish = (finishKey: string): boolean => {
+    if (!projectSubcategory || projectSubcategory === "combination") {
+      return true;
+    }
+
+    const finishAvailability: Record<ProjectSubcategory, string[]> = {
+      interiors: ["lighting", "ceiling", "surfaces"], // Interior finishes only
+      construction: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
+      landscape: ["lighting"], // Outdoor lighting only
+      renovation: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"], // All finishes for renovation
+      combination: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
+    };
+
+    return finishAvailability[projectSubcategory]?.includes(finishKey) ?? true;
+  };
+
   const finishes = [
     {
       key: "buildingEnvelope",
@@ -55,7 +74,11 @@ const FinishesStep = ({
       value: surfaces,
       description: "Flooring materials (tiles/marble/wood/vinyl), wall finishes (paint/wallpaper/cladding/textures), skirting, dado treatments, and protective coatings",
     },
-  ];
+  ].filter(finish => shouldShowFinish(finish.key));
+
+  if (finishes.length === 0) {
+    return null; // Don't show section if no finishes are available
+  }
 
   return (
     <div className="space-y-6">
@@ -63,6 +86,11 @@ const FinishesStep = ({
         <h3 className="text-lg font-medium mb-2">Finishes & Surfaces</h3>
         <p className="text-sm text-muted-foreground">
           Select the quality level for finishes. All items are optional - choose "Not Required" to skip.
+          {projectSubcategory && projectSubcategory !== "combination" && (
+            <span className="block mt-2 text-xs text-vs">
+              Filtered for {projectSubcategory} projects
+            </span>
+          )}
         </p>
       </div>
 
@@ -77,7 +105,7 @@ const FinishesStep = ({
               <p className="text-sm text-muted-foreground">{finish.description}</p>
             </div>
           </div>
-          
+
           <QualityLevelSelector
             component={finish.key}
             currentValue={finish.value}
