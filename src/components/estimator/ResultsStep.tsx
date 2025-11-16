@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import ImprovedCostVisualization from "./ImprovedCostVisualization";
 import PhaseTimelineCost from "./PhaseTimelineCost";
 import MeetingScheduler from "./MeetingScheduler";
+import DetailedCostBreakdownTable from "./DetailedCostBreakdownTable";
+import ComponentSelectionSummary from "./ComponentSelectionSummary";
 import { generateEstimatePDF } from "@/utils/pdfExport";
 
 interface ResultsStepProps {
@@ -302,20 +304,6 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           </div>
         </div>
 
-        {/* Per Sqm Breakdown */}
-        <div>
-          <h3 className="text-base font-semibold text-vs-dark mb-3">Cost per {estimate.areaUnit === "sqft" ? "sqm" : "sqm"} Breakdown</h3>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="text-center mb-3">
-              <p className="text-sm text-gray-600 mb-1">Total Rate per sqm</p>
-              <p className="text-3xl font-bold text-vs">₹ {totalPerSqm.toLocaleString()}/sqm</p>
-            </div>
-            <div className="text-xs text-gray-600 text-center">
-              Based on selected component quality levels
-            </div>
-          </div>
-        </div>
-
         {/* Cost Breakdown Visualization */}
         <div>
           <h3 className="text-base font-semibold text-vs-dark mb-3">Cost Distribution</h3>
@@ -326,6 +314,18 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
         <div>
           <h3 className="text-base font-semibold text-vs-dark mb-3">Project Timeline & Costs</h3>
           <PhaseTimelineCost estimate={estimate} />
+        </div>
+
+        {/* Detailed Cost Breakdown by Phase */}
+        <div>
+          <h3 className="text-base font-semibold text-vs-dark mb-3">Detailed Cost Breakdown by Phase</h3>
+          <DetailedCostBreakdownTable estimate={estimate} />
+        </div>
+
+        {/* Component Selection Summary */}
+        <div>
+          <h3 className="text-base font-semibold text-vs-dark mb-3">Component Selection Summary</h3>
+          <ComponentSelectionSummary estimate={estimate} />
         </div>
 
         {/* Selected Features - List Format with Pricing */}
