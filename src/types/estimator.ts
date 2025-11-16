@@ -26,14 +26,18 @@ export interface Timeline {
   };
 }
 
+// Project subcategory types
+export type ProjectSubcategory = "interiors" | "construction" | "landscape" | "renovation" | "combination";
+
 // Main project estimate interface
 export interface ProjectEstimate {
   // Location
   state: string;
   city: string;
-  
+
   // Project basics
   projectType: string;
+  projectSubcategory: ProjectSubcategory | "";
   area: number;
   areaUnit: "sqft" | "sqm";
   complexity: number;

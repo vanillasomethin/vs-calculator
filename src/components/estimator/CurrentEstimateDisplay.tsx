@@ -4,8 +4,9 @@ import { AlertTriangle } from "lucide-react";
 
 const CurrentEstimateDisplay = () => {
   const { estimate, step } = useEstimator();
-  
-  if (step >= 5 || estimate.totalCost <= 0) {
+
+  // Hide on step 3 (area selection) and step 5 (results)
+  if (step === 3 || step >= 5 || estimate.totalCost <= 0) {
     return null;
   }
   

@@ -1,5 +1,5 @@
 import { Armchair, Sofa, Palette, Microwave, Frame } from "lucide-react";
-import { ComponentOption } from "@/types/estimator";
+import { ComponentOption, ProjectSubcategory } from "@/types/estimator";
 import QualityLevelSelector from "./QualityLevelSelector";
 
 interface InteriorsStepProps {
@@ -8,6 +8,7 @@ interface InteriorsStepProps {
   furnishings: ComponentOption;
   appliances: ComponentOption;
   artefacts: ComponentOption;
+  projectSubcategory: ProjectSubcategory | "";
   onOptionChange: (component: string, option: ComponentOption) => void;
 }
 
@@ -17,8 +18,16 @@ const InteriorsStep = ({
   furnishings,
   appliances,
   artefacts,
+  projectSubcategory,
   onOptionChange,
 }: InteriorsStepProps) => {
+  // Interiors are typically for interiors, renovation, and combination projects
+  // Not typically for pure construction or landscape
+  const shouldShowInteriors = (): boolean => {
+    if (!projectSubcategory) return true;
+    return ["interiors", "renovation", "combination"].includes(projectSubcategory);
+  };
+
   const interiors = [
     {
       key: "fixedFurniture",
@@ -57,6 +66,19 @@ const InteriorsStep = ({
     },
   ];
 
+  if (!shouldShowInteriors()) {
+    return (
+      <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+        <p className="text-sm text-muted-foreground">
+          Interior components are not typically included in {projectSubcategory} projects.
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          If you need interiors, consider selecting "Combination" as your project type.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
@@ -77,7 +99,7 @@ const InteriorsStep = ({
               <p className="text-sm text-muted-foreground">{interior.description}</p>
             </div>
           </div>
-          
+
           <QualityLevelSelector
             component={interior.key}
             currentValue={interior.value}
