@@ -52,29 +52,36 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 };
 
 // Component pricing per square meter (in INR)
+// Updated based on Bangalore 2025 market rates from architects4design.com + UltraTech Calculator
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
-  civilQuality: { none: 0, standard: 650, premium: 1100, luxury: 2000 },
-  plumbing: { none: 0, standard: 450, premium: 850, luxury: 1600 },
-  electrical: { none: 0, standard: 400, premium: 750, luxury: 1500 },
-  ac: { none: 0, standard: 900, premium: 1600, luxury: 3000 },
-  elevator: { none: 0, standard: 450, premium: 850, luxury: 1800 },
-  buildingEnvelope: { none: 0, standard: 350, premium: 700, luxury: 1400 },
-  lighting: { none: 0, standard: 300, premium: 650, luxury: 1400 },
-  windows: { none: 0, standard: 400, premium: 800, luxury: 1700 },
-  ceiling: { none: 0, standard: 280, premium: 550, luxury: 1200 },
-  surfaces: { none: 0, standard: 450, premium: 900, luxury: 2000 },
-  fixedFurniture: { none: 0, standard: 850, premium: 1500, luxury: 2800 },
-  looseFurniture: { none: 0, standard: 550, premium: 1100, luxury: 2500 },
-  furnishings: { none: 0, standard: 200, premium: 450, luxury: 1000 },
-  appliances: { none: 0, standard: 350, premium: 750, luxury: 1800 },
-  artefacts: { none: 0, standard: 150, premium: 400, luxury: 1000 },
+  // Core Construction Components
+  civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
+  plumbing: { none: 0, standard: 300, premium: 550, luxury: 950 },
+  electrical: { none: 0, standard: 250, premium: 480, luxury: 850 },
+  ac: { none: 0, standard: 350, premium: 600, luxury: 1100 },
+  elevator: { none: 0, standard: 1100, premium: 1700, luxury: 2800 },
+
+  // Finishes & Envelope
+  buildingEnvelope: { none: 0, standard: 250, premium: 500, luxury: 950 },
+  lighting: { none: 0, standard: 180, premium: 400, luxury: 800 },
+  windows: { none: 0, standard: 300, premium: 600, luxury: 1200 },
+  ceiling: { none: 0, standard: 180, premium: 360, luxury: 750 },
+  surfaces: { none: 0, standard: 350, premium: 700, luxury: 1400 },
+
+  // Interior Components
+  fixedFurniture: { none: 0, standard: 500, premium: 900, luxury: 1700 },
+  looseFurniture: { none: 0, standard: 350, premium: 700, luxury: 1500 },
+  furnishings: { none: 0, standard: 120, premium: 280, luxury: 600 },
+  appliances: { none: 0, standard: 250, premium: 500, luxury: 1000 },
+  artefacts: { none: 0, standard: 100, premium: 250, luxury: 550 },
 };
 
 // Base construction cost per square meter (foundation, structure, masonry)
+// Updated for Bangalore 2025 - reflects current material and labor costs
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
-  residential: 1200,
-  commercial: 1500,
-  "mixed-use": 1800,
+  residential: 850,
+  commercial: 1050,
+  "mixed-use": 1250,
 };
 
 const initialEstimate: ProjectEstimate = {
@@ -153,6 +160,15 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     return baseMultiplier * (1 + complexityAdjustment);
   }, []);
 
+  // Get size-based cost multiplier
+  const getSizeMultiplier = useCallback((areaInSqM: number): number => {
+    if (areaInSqM < 50) return 1.20; // Very small projects - high fixed costs
+    if (areaInSqM < 100) return 1.12; // Small projects - limited economies
+    if (areaInSqM < 200) return 1.05; // Medium projects - moderate scale
+    if (areaInSqM >= 500) return 0.95; // Large projects - economies of scale
+    return 1.0; // Standard size (200-500 sqm)
+  }, []);
+
   // Calculate construction cost
   const calculateConstructionCost = useCallback((
     projectType: string,
@@ -160,21 +176,27 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     civilQuality: ComponentOption
   ): number => {
     const baseCost = BASE_CONSTRUCTION_COST[projectType] || BASE_CONSTRUCTION_COST.residential;
-    
+
     // Quality multiplier for construction
     let qualityMultiplier = 1.0;
     if (civilQuality === "premium") qualityMultiplier = 1.6;
     else if (civilQuality === "luxury") qualityMultiplier = 2.8;
     else if (civilQuality === "none") qualityMultiplier = 0; // Interior-only projects
-    
-    return baseCost * areaInSqM * qualityMultiplier;
-  }, []);
+
+    // Size-based adjustment
+    const sizeMultiplier = getSizeMultiplier(areaInSqM);
+
+    return baseCost * areaInSqM * qualityMultiplier * sizeMultiplier;
+  }, [getSizeMultiplier]);
 
   // Calculate component costs
   const calculateComponentCosts = useCallback((
     estimate: ProjectEstimate,
     areaInSqM: number
   ): { core: number; finishes: number; interiors: number } => {
+    // Get size multiplier for accurate pricing
+    const sizeMultiplier = getSizeMultiplier(areaInSqM);
+
     const core = [
       COMPONENT_PRICING.civilQuality[estimate.civilQuality] * areaInSqM * 0.15,
       COMPONENT_PRICING.plumbing[estimate.plumbing] * areaInSqM,
@@ -199,8 +221,13 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
       COMPONENT_PRICING.artefacts[estimate.artefacts] * areaInSqM,
     ].reduce((sum, cost) => sum + cost, 0);
 
-    return { core, finishes, interiors };
-  }, []);
+    // Apply size multiplier to all components
+    return {
+      core: core * sizeMultiplier,
+      finishes: finishes * sizeMultiplier,
+      interiors: interiors * sizeMultiplier
+    };
+  }, [getSizeMultiplier]);
 
   // Calculate timeline
   const calculateTimeline = useCallback((

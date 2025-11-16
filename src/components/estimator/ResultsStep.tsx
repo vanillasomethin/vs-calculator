@@ -15,22 +15,23 @@ interface ResultsStepProps {
 }
 
 // Component pricing per square meter mapping for display
+// Updated for Bangalore 2025 market rates
 const COMPONENT_PRICING_PER_SQM: Record<string, Record<ComponentOption, number>> = {
-  civilQuality: { none: 0, standard: 650, premium: 1100, luxury: 2000 },
-  plumbing: { none: 0, standard: 450, premium: 850, luxury: 1600 },
-  electrical: { none: 0, standard: 400, premium: 750, luxury: 1500 },
-  ac: { none: 0, standard: 900, premium: 1600, luxury: 3000 },
-  elevator: { none: 0, standard: 450, premium: 850, luxury: 1800 },
-  buildingEnvelope: { none: 0, standard: 350, premium: 700, luxury: 1400 },
-  lighting: { none: 0, standard: 300, premium: 650, luxury: 1400 },
-  windows: { none: 0, standard: 400, premium: 800, luxury: 1700 },
-  ceiling: { none: 0, standard: 280, premium: 550, luxury: 1200 },
-  surfaces: { none: 0, standard: 450, premium: 900, luxury: 2000 },
-  fixedFurniture: { none: 0, standard: 850, premium: 1500, luxury: 2800 },
-  looseFurniture: { none: 0, standard: 550, premium: 1100, luxury: 2500 },
-  furnishings: { none: 0, standard: 200, premium: 450, luxury: 1000 },
-  appliances: { none: 0, standard: 350, premium: 750, luxury: 1800 },
-  artefacts: { none: 0, standard: 150, premium: 400, luxury: 1000 },
+  civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
+  plumbing: { none: 0, standard: 300, premium: 550, luxury: 950 },
+  electrical: { none: 0, standard: 250, premium: 480, luxury: 850 },
+  ac: { none: 0, standard: 350, premium: 600, luxury: 1100 },
+  elevator: { none: 0, standard: 1100, premium: 1700, luxury: 2800 },
+  buildingEnvelope: { none: 0, standard: 250, premium: 500, luxury: 950 },
+  lighting: { none: 0, standard: 180, premium: 400, luxury: 800 },
+  windows: { none: 0, standard: 300, premium: 600, luxury: 1200 },
+  ceiling: { none: 0, standard: 180, premium: 360, luxury: 750 },
+  surfaces: { none: 0, standard: 350, premium: 700, luxury: 1400 },
+  fixedFurniture: { none: 0, standard: 500, premium: 900, luxury: 1700 },
+  looseFurniture: { none: 0, standard: 350, premium: 700, luxury: 1500 },
+  furnishings: { none: 0, standard: 120, premium: 280, luxury: 600 },
+  appliances: { none: 0, standard: 250, premium: 500, luxury: 1000 },
+  artefacts: { none: 0, standard: 100, premium: 250, luxury: 550 },
 };
 
 // Component descriptions for detailed breakdown
@@ -379,10 +380,38 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           </div>
         </div>
 
+        {/* Cost Range & Market Positioning */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-blue-900 mb-2">Market Positioning (Bangalore 2025)</h3>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-blue-800">Estimated Range:</span>
+              <span className="text-sm font-bold text-blue-900">
+                {formatCurrency(Math.round(estimate.totalCost * 0.95))} - {formatCurrency(Math.round(estimate.totalCost * 1.05))}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-blue-800">Per {estimate.areaUnit} Range:</span>
+              <span className="text-sm font-bold text-blue-900">
+                ₹{Math.round((estimate.totalCost / estimate.area) * 0.95).toLocaleString()} - ₹{Math.round((estimate.totalCost / estimate.area) * 1.05).toLocaleString()}
+              </span>
+            </div>
+            <p className="text-xs text-blue-700 mt-2">
+              Based on current Bangalore market rates (₹1,750-1,900/sqft standard range)
+            </p>
+          </div>
+        </div>
+
         {/* Disclaimer */}
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs text-gray-700">
-          <p className="font-medium text-orange-800 mb-1">Important Note:</p>
-          <p>This is an indicative estimate based on standard inputs and market rates for {estimate.city}. Final costs may vary based on site conditions, material availability, contractor rates, and specific requirements. For an accurate detailed quote, please contact our team.</p>
+          <p className="font-medium text-orange-800 mb-1">Important Disclaimer:</p>
+          <ul className="list-disc list-inside space-y-1 text-gray-700">
+            <li>Rates based on Bangalore 2025 market standards (₹1,750-1,900/sqft for standard quality)</li>
+            <li>Actual costs may vary ±10% based on site conditions and material price fluctuations</li>
+            <li>GST (12% effective) and professional fees included in estimate</li>
+            <li>Detailed BOQ will be provided after site visit and requirement analysis</li>
+            <li>Final pricing subject to contractor quotes and material availability</li>
+          </ul>
         </div>
       </motion.div>
 

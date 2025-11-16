@@ -119,11 +119,25 @@ const ContactCTAStrategy = ({ estimate }: ContactCTAStrategyProps) => {
         </div>
 
         <div className="bg-white/60 p-3 rounded-lg mb-3">
-          <p className="text-xs text-gray-700 mb-2">
-            <span className="font-semibold">Current estimate:</span> {formatCurrency(estimate.totalCost)}
-          </p>
+          <div className="mb-2">
+            <p className="text-xs text-gray-700 mb-1">
+              <span className="font-semibold">Estimated Cost:</span> {formatCurrency(estimate.totalCost)}
+            </p>
+            <p className="text-xs text-gray-600">
+              <span className="font-semibold">Range:</span> {formatCurrency(Math.round(estimate.totalCost * 0.95))} - {formatCurrency(Math.round(estimate.totalCost * 1.05))}
+            </p>
+            <p className="text-xs text-gray-600">
+              <span className="font-semibold">Per {estimate.areaUnit}:</span> ₹{Math.round(estimate.totalCost / estimate.area).toLocaleString()}
+              <span className="text-gray-500"> (₹{Math.round((estimate.totalCost / estimate.area) * 0.95).toLocaleString()}-{Math.round((estimate.totalCost / estimate.area) * 1.05).toLocaleString()})</span>
+            </p>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
+            <p className="text-[10px] text-blue-800 font-medium">
+              ✓ Based on Bangalore 2025 market rates (₹1,750-1,900/sqft standard)
+            </p>
+          </div>
           <p className="text-xs text-gray-600">
-            This is an indicative cost. For a precise quote tailored to your specific requirements, connect with our team.
+            This is an indicative estimate. For a precise BOQ tailored to your specific requirements and site conditions, connect with our team.
           </p>
         </div>
 
