@@ -113,15 +113,21 @@ const initialEstimate: ProjectEstimate = {
   },
   phaseBreakdown: {
     planning: 0,
-    construction: 0,
-    interiors: 0,
+    siteWorkFoundation: 0,
+    superstructure: 0,
+    mepRoughIns: 0,
+    interiorFinishes: 0,
+    exteriorFinalTouches: 0,
   },
   timeline: {
     totalMonths: 0,
     phases: {
       planning: 0,
-      construction: 0,
-      interiors: 0,
+      siteWorkFoundation: 0,
+      superstructure: 0,
+      mepRoughIns: 0,
+      interiorFinishes: 0,
+      exteriorFinalTouches: 0,
     },
   },
 };
@@ -202,53 +208,101 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     return { core, finishes, interiors };
   }, []);
 
-  // Calculate timeline
+  // Calculate timeline with 6 detailed phases
   const calculateTimeline = useCallback((
     projectType: string,
+    workTypes: string[],
     area: number,
     areaUnit: string,
     complexity: number
   ) => {
-    // Convert to approximate building size units
-    const sizeUnits = area / (areaUnit === "sqft" ? 1000 : 100);
-    
-    // Base timeline in months
-    let planningMonths = 2;
-    let constructionMonths = 6;
-    let interiorsMonths = 2;
-    
+    // Convert to square meters for calculation
+    const areaInSqM = areaUnit === "sqft" ? area * 0.092903 : area;
+    const sizeUnits = areaInSqM / 100; // Units in hundreds of sqm
+
+    // Base timeline in months for each phase
+    let planningMonths = 1.5;
+    let siteWorkMonths = 1;
+    let superstructureMonths = 2;
+    let mepMonths = 1.5;
+    let interiorFinishesMonths = 1.5;
+    let exteriorMonths = 1;
+
+    // Work type adjustments
+    const hasConstruction = workTypes.includes("construction");
+    const hasInteriors = workTypes.includes("interiors");
+    const hasLandscape = workTypes.includes("landscape");
+
+    if (!hasConstruction) {
+      // Interior-only or landscape-only projects
+      siteWorkMonths = 0;
+      superstructureMonths = 0;
+      planningMonths = 0.5;
+    }
+
+    if (!hasInteriors) {
+      interiorFinishesMonths = 0.5; // Minimal finishing
+    }
+
+    if (hasLandscape) {
+      exteriorMonths += 1; // Additional time for landscaping
+    }
+
     // Project type adjustment
     if (projectType === "commercial") {
-      planningMonths += 1;
-      constructionMonths += 2;
-      interiorsMonths += 1;
+      planningMonths += 0.5;
+      superstructureMonths += 1;
+      mepMonths += 0.5;
     } else if (projectType === "mixed-use") {
-      planningMonths += 2;
-      constructionMonths += 4;
-      interiorsMonths += 1;
+      planningMonths += 1;
+      superstructureMonths += 2;
+      mepMonths += 1;
+      interiorFinishesMonths += 1;
     }
-    
-    // Area adjustment (add time for larger projects)
-    const areaAddition = Math.floor(sizeUnits / 2);
-    constructionMonths += areaAddition;
-    interiorsMonths += Math.floor(areaAddition / 2);
-    
+
+    // Area-based scaling (larger projects take more time)
+    const areaFactor = Math.log10(Math.max(sizeUnits, 1)) * 0.5;
+    if (hasConstruction) {
+      siteWorkMonths += areaFactor * 0.3;
+      superstructureMonths += areaFactor * 0.5;
+      mepMonths += areaFactor * 0.3;
+    }
+    if (hasInteriors) {
+      interiorFinishesMonths += areaFactor * 0.4;
+    }
+
     // Complexity adjustment
-    const complexityFactor = 1 + ((complexity - 5) * 0.1);
-    constructionMonths = Math.ceil(constructionMonths * complexityFactor);
-    interiorsMonths = Math.ceil(interiorsMonths * complexityFactor);
-    
-    // Ensure minimum values
-    planningMonths = Math.max(1, Math.round(planningMonths));
-    constructionMonths = Math.max(3, Math.round(constructionMonths));
-    interiorsMonths = Math.max(1, Math.round(interiorsMonths));
-    
+    const complexityFactor = 1 + ((complexity - 5) * 0.08);
+    if (hasConstruction) {
+      siteWorkMonths *= complexityFactor;
+      superstructureMonths *= complexityFactor;
+      mepMonths *= complexityFactor;
+    }
+    if (hasInteriors) {
+      interiorFinishesMonths *= complexityFactor;
+    }
+    exteriorMonths *= complexityFactor;
+
+    // Round to reasonable values
+    planningMonths = Math.max(0.5, Math.round(planningMonths * 2) / 2);
+    siteWorkMonths = Math.max(0, Math.round(siteWorkMonths * 2) / 2);
+    superstructureMonths = Math.max(0, Math.round(superstructureMonths * 2) / 2);
+    mepMonths = Math.max(0, Math.round(mepMonths * 2) / 2);
+    interiorFinishesMonths = Math.max(0, Math.round(interiorFinishesMonths * 2) / 2);
+    exteriorMonths = Math.max(0, Math.round(exteriorMonths * 2) / 2);
+
+    const totalMonths = planningMonths + siteWorkMonths + superstructureMonths +
+                        mepMonths + interiorFinishesMonths + exteriorMonths;
+
     return {
-      totalMonths: planningMonths + constructionMonths + interiorsMonths,
+      totalMonths: Math.round(totalMonths * 2) / 2, // Round to nearest 0.5
       phases: {
         planning: planningMonths,
-        construction: constructionMonths,
-        interiors: interiorsMonths,
+        siteWorkFoundation: siteWorkMonths,
+        superstructure: superstructureMonths,
+        mepRoughIns: mepMonths,
+        interiorFinishes: interiorFinishesMonths,
+        exteriorFinalTouches: exteriorMonths,
       },
     };
   }, []);
@@ -299,14 +353,47 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     // 10. Final total cost
     const totalCost = totalBeforeTax + gst;
 
-    // 11. Calculate phase breakdown
-    const planningCost = totalCost * 0.08;
-    const constructionPhaseCost = constructionCost + (core * 0.6) + professionalFees * 0.5;
-    const interiorsPhaseCost = interiors + finishes + (core * 0.4) + professionalFees * 0.5 + contingency + gst;
+    // 11. Calculate detailed phase breakdown (6 phases)
+    const planningCost = totalCost * 0.05; // 5% for planning
+
+    // Distribute costs based on work type
+    const hasConstruction = currentEstimate.workTypes.includes("construction");
+    const hasInteriors = currentEstimate.workTypes.includes("interiors");
+
+    let siteWorkCost = 0;
+    let superstructureCost = 0;
+    let mepCost = 0;
+    let interiorFinishesCost = 0;
+    let exteriorCost = 0;
+
+    if (hasConstruction) {
+      siteWorkCost = totalCost * 0.12; // Site work & foundation: 12%
+      superstructureCost = constructionCost + (totalCost * 0.08); // Superstructure: construction + 8%
+      mepCost = core + (totalCost * 0.05); // MEP rough-ins: core + 5%
+      exteriorCost = (totalCost * 0.08); // Exterior & final touches: 8%
+    }
+
+    if (hasInteriors) {
+      interiorFinishesCost = interiors + finishes + (totalCost * 0.10); // Interior finishes: interiors + finishes + 10%
+    } else {
+      // Minimal finishing for non-interior projects
+      interiorFinishesCost = finishes * 0.5;
+    }
+
+    // Add remaining costs (fees, contingency, gst) distributed
+    const remainingCost = totalCost - (planningCost + siteWorkCost + superstructureCost + mepCost + interiorFinishesCost + exteriorCost);
+    if (hasConstruction) {
+      superstructureCost += remainingCost * 0.4;
+      mepCost += remainingCost * 0.3;
+      exteriorCost += remainingCost * 0.3;
+    } else {
+      interiorFinishesCost += remainingCost;
+    }
 
     // 12. Calculate timeline
     const timeline = calculateTimeline(
       currentEstimate.projectType,
+      currentEstimate.workTypes,
       currentEstimate.area,
       currentEstimate.areaUnit,
       currentEstimate.complexity
@@ -323,8 +410,11 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
       },
       phaseBreakdown: {
         planning: Math.round(planningCost),
-        construction: Math.round(constructionPhaseCost),
-        interiors: Math.round(interiorsPhaseCost),
+        siteWorkFoundation: Math.round(siteWorkCost),
+        superstructure: Math.round(superstructureCost),
+        mepRoughIns: Math.round(mepCost),
+        interiorFinishes: Math.round(interiorFinishesCost),
+        exteriorFinalTouches: Math.round(exteriorCost),
       },
       timeline,
     };
