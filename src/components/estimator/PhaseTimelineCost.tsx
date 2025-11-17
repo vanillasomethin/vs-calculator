@@ -28,98 +28,146 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     }).format(value).replace('₹', '₹');
   };
 
-  // Timeline phases with costs
+  // Calculate proper timeline phases
+  let currentMonth = 1;
+
+  // Timeline phases with costs - using red hues theme
   const phases: Phase[] = [
-    { 
-      name: "Home Design & Approval", 
+    {
+      name: "Home Design & Approval",
       duration: estimate.timeline.phases.planning,
       cost: estimate.phaseBreakdown.planning,
       percentage: (estimate.phaseBreakdown.planning / estimate.totalCost) * 100,
-      color: "#FFD700",
-      startMonth: 1,
-      endMonth: estimate.timeline.phases.planning
+      color: "#8B0000", // Dark red
+      startMonth: currentMonth,
+      endMonth: currentMonth + estimate.timeline.phases.planning - 1
     },
-    { 
-      name: "Excavation", 
-      duration: Math.ceil(estimate.timeline.phases.construction * 0.1),
-      cost: estimate.phaseBreakdown.construction * 0.05,
-      percentage: (estimate.phaseBreakdown.construction * 0.05 / estimate.totalCost) * 100,
-      color: "#228B22",
-      startMonth: estimate.timeline.phases.planning + 1,
-      endMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.1)
-    },
-    { 
-      name: "Footing & Foundation", 
-      duration: Math.ceil(estimate.timeline.phases.construction * 0.25),
-      cost: estimate.categoryBreakdown.construction * 0.25,
-      percentage: (estimate.categoryBreakdown.construction * 0.25 / estimate.totalCost) * 100,
-      color: "#000000",
-      startMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.1) + 1,
-      endMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.35)
-    },
-    { 
-      name: "RCC Work - Columns & Slabs", 
-      duration: Math.ceil(estimate.timeline.phases.construction * 0.25),
-      cost: estimate.categoryBreakdown.construction * 0.40,
-      percentage: (estimate.categoryBreakdown.construction * 0.40 / estimate.totalCost) * 100,
-      color: "#0000FF",
-      startMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.35) + 1,
-      endMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.60)
-    },
-    { 
-      name: "Roof Slab", 
-      duration: Math.ceil(estimate.timeline.phases.construction * 0.20),
-      cost: estimate.categoryBreakdown.construction * 0.30,
-      percentage: (estimate.categoryBreakdown.construction * 0.30 / estimate.totalCost) * 100,
-      color: "#FF0000",
-      startMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.60) + 1,
-      endMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.80)
-    },
-    { 
-      name: "Brickwork and Plastering", 
-      duration: Math.ceil(estimate.timeline.phases.construction * 0.15),
-      cost: estimate.categoryBreakdown.finishes * 0.30,
-      percentage: (estimate.categoryBreakdown.finishes * 0.30 / estimate.totalCost) * 100,
-      color: "#FFC0CB",
-      startMonth: estimate.timeline.phases.planning + Math.ceil(estimate.timeline.phases.construction * 0.80) + 1,
-      endMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction
-    },
-    { 
-      name: "Flooring & Tiling", 
-      duration: Math.ceil(estimate.timeline.phases.interiors * 0.30),
-      cost: estimate.categoryBreakdown.finishes * 0.40,
-      percentage: (estimate.categoryBreakdown.finishes * 0.40 / estimate.totalCost) * 100,
-      color: "#800080",
-      startMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + 1,
-      endMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.30)
-    },
-    { 
-      name: "Electric Wiring", 
-      duration: Math.ceil(estimate.timeline.phases.interiors * 0.25),
-      cost: estimate.categoryBreakdown.core * 0.35,
-      percentage: (estimate.categoryBreakdown.core * 0.35 / estimate.totalCost) * 100,
-      color: "#FFA500",
-      startMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.30) + 1,
-      endMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.55)
-    },
-    { 
-      name: "Water Supply & Plumbing", 
-      duration: Math.ceil(estimate.timeline.phases.interiors * 0.30),
-      cost: estimate.categoryBreakdown.core * 0.40,
-      percentage: (estimate.categoryBreakdown.core * 0.40 / estimate.totalCost) * 100,
-      color: "#808080",
-      startMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.55) + 1,
-      endMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.85)
-    },
-    { 
-      name: "Door & Windows", 
-      duration: Math.ceil(estimate.timeline.phases.interiors * 0.15),
-      cost: estimate.categoryBreakdown.finishes * 0.30,
-      percentage: (estimate.categoryBreakdown.finishes * 0.30 / estimate.totalCost) * 100,
-      color: "#A0522D",
-      startMonth: estimate.timeline.phases.planning + estimate.timeline.phases.construction + Math.ceil(estimate.timeline.phases.interiors * 0.85) + 1,
-      endMonth: estimate.timeline.totalMonths
-    },
+    (() => {
+      currentMonth += estimate.timeline.phases.planning;
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.construction * 0.1));
+      const phase = {
+        name: "Excavation",
+        duration,
+        cost: estimate.phaseBreakdown.construction * 0.05,
+        percentage: (estimate.phaseBreakdown.construction * 0.05 / estimate.totalCost) * 100,
+        color: "#B22222", // Firebrick
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.construction * 0.25));
+      const phase = {
+        name: "Footing & Foundation",
+        duration,
+        cost: estimate.categoryBreakdown.construction * 0.25,
+        percentage: (estimate.categoryBreakdown.construction * 0.25 / estimate.totalCost) * 100,
+        color: "#CD5C5C", // Indian red
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.construction * 0.25));
+      const phase = {
+        name: "RCC Work - Columns & Slabs",
+        duration,
+        cost: estimate.categoryBreakdown.construction * 0.40,
+        percentage: (estimate.categoryBreakdown.construction * 0.40 / estimate.totalCost) * 100,
+        color: "#DC143C", // Crimson
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.construction * 0.20));
+      const phase = {
+        name: "Roof Slab",
+        duration,
+        cost: estimate.categoryBreakdown.construction * 0.30,
+        percentage: (estimate.categoryBreakdown.construction * 0.30 / estimate.totalCost) * 100,
+        color: "#E9967A", // Dark salmon
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.construction * 0.15));
+      const phase = {
+        name: "Brickwork and Plastering",
+        duration,
+        cost: estimate.categoryBreakdown.finishes * 0.30,
+        percentage: (estimate.categoryBreakdown.finishes * 0.30 / estimate.totalCost) * 100,
+        color: "#F08080", // Light coral
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.interiors * 0.30));
+      const phase = {
+        name: "Flooring & Tiling",
+        duration,
+        cost: estimate.categoryBreakdown.finishes * 0.40,
+        percentage: (estimate.categoryBreakdown.finishes * 0.40 / estimate.totalCost) * 100,
+        color: "#FA8072", // Salmon
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.interiors * 0.25));
+      const phase = {
+        name: "Electric Wiring",
+        duration,
+        cost: estimate.categoryBreakdown.core * 0.35,
+        percentage: (estimate.categoryBreakdown.core * 0.35 / estimate.totalCost) * 100,
+        color: "#FFA07A", // Light salmon
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.interiors * 0.20));
+      const phase = {
+        name: "Water Supply & Plumbing",
+        duration,
+        cost: estimate.categoryBreakdown.core * 0.40,
+        percentage: (estimate.categoryBreakdown.core * 0.40 / estimate.totalCost) * 100,
+        color: "#FFB6C1", // Light pink
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      currentMonth += duration;
+      return phase;
+    })(),
+    (() => {
+      const duration = Math.max(1, Math.ceil(estimate.timeline.phases.interiors * 0.25));
+      const phase = {
+        name: "Door & Windows",
+        duration,
+        cost: estimate.categoryBreakdown.finishes * 0.30,
+        percentage: (estimate.categoryBreakdown.finishes * 0.30 / estimate.totalCost) * 100,
+        color: "#FFC0CB", // Pink
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      };
+      return phase;
+    })(),
   ];
 
   const totalDuration = estimate.timeline.totalMonths;
@@ -182,24 +230,76 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
         <div className="h-1 bg-gray-200 w-full rounded-full"></div>
       </div>
 
+      {/* Detailed Cost & Timeline Table */}
+      <div className="mt-6">
+        <h4 className="text-sm font-semibold text-vs-dark mb-3">Phase-wise Cost & Timeline Summary</h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="bg-vs/10">
+                <th className="border border-vs/20 px-2 py-2 text-left font-semibold text-vs-dark">Phase</th>
+                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">Duration</th>
+                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">Timeline</th>
+                <th className="border border-vs/20 px-2 py-2 text-right font-semibold text-vs-dark">Cost</th>
+                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {phases.map((phase, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="border border-gray-200 px-2 py-2 text-gray-800">{phase.name}</td>
+                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-700">
+                    {phase.duration} {phase.duration === 1 ? 'month' : 'months'}
+                  </td>
+                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-600">
+                    M{phase.startMonth}-M{phase.endMonth}
+                  </td>
+                  <td className="border border-gray-200 px-2 py-2 text-right font-semibold text-vs">
+                    {formatCurrency(phase.cost)}
+                  </td>
+                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-600">
+                    {phase.percentage.toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+              <tr className="bg-vs/5 font-bold">
+                <td className="border border-vs/30 px-2 py-2 text-vs-dark">Total</td>
+                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
+                  {totalDuration} months
+                </td>
+                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
+                  M1-M{totalDuration}
+                </td>
+                <td className="border border-vs/30 px-2 py-2 text-right text-vs">
+                  {formatCurrency(estimate.totalCost)}
+                </td>
+                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
+                  100%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Cost distribution summary */}
       <div className="grid grid-cols-2 gap-2 mt-4">
-        <div className="bg-blue-50 p-2 rounded-lg">
-          <p className="text-[10px] text-blue-600 mb-0.5">Construction Phase</p>
-          <p className="text-sm font-bold text-blue-900">
+        <div className="bg-red-50 p-2 rounded-lg border border-red-100">
+          <p className="text-[10px] text-red-700 mb-0.5">Construction Phase</p>
+          <p className="text-sm font-bold text-red-900">
             {formatCurrency(estimate.phaseBreakdown.construction)}
           </p>
-          <p className="text-[10px] text-blue-700">
+          <p className="text-[10px] text-red-600">
             {((estimate.phaseBreakdown.construction / estimate.totalCost) * 100).toFixed(0)}% of total
           </p>
         </div>
-        
-        <div className="bg-purple-50 p-2 rounded-lg">
-          <p className="text-[10px] text-purple-600 mb-0.5">Finishes & Interiors</p>
-          <p className="text-sm font-bold text-purple-900">
+
+        <div className="bg-orange-50 p-2 rounded-lg border border-orange-100">
+          <p className="text-[10px] text-orange-700 mb-0.5">Finishes & Interiors</p>
+          <p className="text-sm font-bold text-orange-900">
             {formatCurrency(estimate.phaseBreakdown.interiors)}
           </p>
-          <p className="text-[10px] text-purple-700">
+          <p className="text-[10px] text-orange-600">
             {((estimate.phaseBreakdown.interiors / estimate.totalCost) * 100).toFixed(0)}% of total
           </p>
         </div>

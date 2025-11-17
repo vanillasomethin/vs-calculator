@@ -52,7 +52,6 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 };
 
 // Component pricing per square meter (in INR)
-// Updated based on Bangalore 2025 market rates from architects4design.com + UltraTech Calculator
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
   // Core Construction Components
   civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
@@ -77,7 +76,6 @@ const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
 };
 
 // Base construction cost per square meter (foundation, structure, masonry)
-// Updated for Bangalore 2025 - reflects current material and labor costs
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
   residential: 850,
   commercial: 1050,

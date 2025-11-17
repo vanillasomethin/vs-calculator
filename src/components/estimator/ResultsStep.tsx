@@ -15,7 +15,6 @@ interface ResultsStepProps {
 }
 
 // Component pricing per square meter mapping for display
-// Updated for Bangalore 2025 market rates
 const COMPONENT_PRICING_PER_SQM: Record<string, Record<ComponentOption, number>> = {
   civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
   plumbing: { none: 0, standard: 300, premium: 550, luxury: 950 },
@@ -122,10 +121,10 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     return level;
   };
 
-  // Calculate per sqm for each component
+  // Calculate area in sqm for calculations
   const areaInSqM = estimate.areaUnit === "sqft" ? estimate.area * 0.092903 : estimate.area;
 
-  // Create pricing list with per sqm costs
+  // Create pricing list with costs
   const pricingList = [
     isIncluded(estimate.civilQuality) && {
       category: "Core Components",
@@ -133,6 +132,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.civilQuality,
       description: COMPONENT_DESCRIPTIONS.civilQuality,
       perSqm: COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality] * areaInSqM),
     },
     isIncluded(estimate.plumbing) && {
       category: "Core Components",
@@ -140,6 +141,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.plumbing,
       description: COMPONENT_DESCRIPTIONS.plumbing,
       perSqm: COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing] * areaInSqM),
     },
     isIncluded(estimate.electrical) && {
       category: "Core Components",
@@ -147,6 +150,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.electrical,
       description: COMPONENT_DESCRIPTIONS.electrical,
       perSqm: COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical] * areaInSqM),
     },
     isIncluded(estimate.ac) && {
       category: "Core Components",
@@ -154,6 +159,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.ac,
       description: COMPONENT_DESCRIPTIONS.ac,
       perSqm: COMPONENT_PRICING_PER_SQM.ac[estimate.ac],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.ac[estimate.ac] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.ac[estimate.ac] * areaInSqM),
     },
     isIncluded(estimate.elevator) && {
       category: "Core Components",
@@ -161,6 +168,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.elevator,
       description: COMPONENT_DESCRIPTIONS.elevator,
       perSqm: COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator] * areaInSqM),
     },
     isIncluded(estimate.buildingEnvelope) && {
       category: "Finishes",
@@ -168,6 +177,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.buildingEnvelope,
       description: COMPONENT_DESCRIPTIONS.buildingEnvelope,
       perSqm: COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope] * areaInSqM),
     },
     isIncluded(estimate.lighting) && {
       category: "Finishes",
@@ -175,6 +186,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.lighting,
       description: COMPONENT_DESCRIPTIONS.lighting,
       perSqm: COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting] * areaInSqM),
     },
     isIncluded(estimate.windows) && {
       category: "Finishes",
@@ -182,6 +195,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.windows,
       description: COMPONENT_DESCRIPTIONS.windows,
       perSqm: COMPONENT_PRICING_PER_SQM.windows[estimate.windows],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.windows[estimate.windows] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.windows[estimate.windows] * areaInSqM),
     },
     isIncluded(estimate.ceiling) && {
       category: "Finishes",
@@ -189,6 +204,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.ceiling,
       description: COMPONENT_DESCRIPTIONS.ceiling,
       perSqm: COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling] * areaInSqM),
     },
     isIncluded(estimate.surfaces) && {
       category: "Finishes",
@@ -196,6 +213,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.surfaces,
       description: COMPONENT_DESCRIPTIONS.surfaces,
       perSqm: COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces] * areaInSqM),
     },
     isIncluded(estimate.fixedFurniture) && {
       category: "Interiors",
@@ -203,6 +222,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.fixedFurniture,
       description: COMPONENT_DESCRIPTIONS.fixedFurniture,
       perSqm: COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] * areaInSqM),
     },
     isIncluded(estimate.looseFurniture) && {
       category: "Interiors",
@@ -210,6 +231,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.looseFurniture,
       description: COMPONENT_DESCRIPTIONS.looseFurniture,
       perSqm: COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture] * areaInSqM),
     },
     isIncluded(estimate.furnishings) && {
       category: "Interiors",
@@ -217,6 +240,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.furnishings,
       description: COMPONENT_DESCRIPTIONS.furnishings,
       perSqm: COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings] * areaInSqM),
     },
     isIncluded(estimate.appliances) && {
       category: "Interiors",
@@ -224,6 +249,8 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.appliances,
       description: COMPONENT_DESCRIPTIONS.appliances,
       perSqm: COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances] * areaInSqM),
     },
     isIncluded(estimate.artefacts) && {
       category: "Interiors",
@@ -231,11 +258,10 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       level: estimate.artefacts,
       description: COMPONENT_DESCRIPTIONS.artefacts,
       perSqm: COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts] * areaInSqM),
     },
   ].filter(Boolean);
-
-  // Calculate total per sqm from selected components
-  const totalPerSqm = pricingList.reduce((sum, item) => sum + (item.perSqm || 0), 0);
 
   // Calculate architect fee (COA standards)
   const getArchitectFeePercentage = (projectCost: number): number => {
@@ -278,44 +304,14 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
 
         {/* Total Cost - Prominent */}
         <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-6 rounded-xl text-center">
-          <h3 className="text-sm text-vs-dark/70 mb-2">Estimated Project Cost</h3>
+          <h3 className="text-sm text-vs-dark/70 mb-2">Estimated Project Cost (Excl. GST)</h3>
           <p className="text-4xl font-bold text-vs mb-2">{formatCurrency(estimate.totalCost)}</p>
           <p className="text-sm text-vs-dark/70">
             {formatCurrency(Math.round(estimate.totalCost / estimate.area))} per {estimate.areaUnit}
           </p>
+          <p className="text-xs text-vs-dark/50 mt-2">GST @ 18% applicable as per govt. rates</p>
         </div>
 
-        {/* Architect Fee */}
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-blue-900">Architect's Fee (as per COA standards)</h3>
-            <span className="text-xs bg-blue-200 text-blue-900 px-2 py-1 rounded">{architectFeePercent}%</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-blue-800">Professional architectural services</p>
-            <p className="text-lg font-bold text-blue-900">{formatCurrency(Math.round(architectFee))}</p>
-          </div>
-          <div className="mt-3 pt-3 border-t border-blue-200">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-blue-900">Total with Architect Fee</p>
-              <p className="text-2xl font-bold text-blue-900">{formatCurrency(Math.round(totalWithArchitectFee))}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Per Sqm Breakdown */}
-        <div>
-          <h3 className="text-base font-semibold text-vs-dark mb-3">Cost per {estimate.areaUnit === "sqft" ? "sqm" : "sqm"} Breakdown</h3>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="text-center mb-3">
-              <p className="text-sm text-gray-600 mb-1">Total Rate per sqm</p>
-              <p className="text-3xl font-bold text-vs">₹ {totalPerSqm.toLocaleString()}/sqm</p>
-            </div>
-            <div className="text-xs text-gray-600 text-center">
-              Based on selected component quality levels
-            </div>
-          </div>
-        </div>
 
         {/* Cost Breakdown Visualization */}
         <div>
@@ -338,7 +334,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
                 key={index}
                 className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-start gap-2 flex-1">
                     <CheckCircle2 size={16} className="text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
@@ -348,16 +344,24 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
                           {formatLevel(item.level)}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">{item.description}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded">
-                          <IndianRupee className="size-3" />
-                          <span className="font-medium">{item.perSqm}/sqm</span>
-                        </div>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-600">{item.category}</span>
-                      </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Component description */}
+                <p className="text-xs text-gray-600 mt-1 mb-2 pl-6">Includes: {item.description}</p>
+
+                {/* Pricing information */}
+                <div className="flex items-center justify-between gap-2 mt-2 pl-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                      <IndianRupee className="size-3" />
+                      <span className="font-medium">{item.perSqft}/sqft</span>
+                    </div>
+                    <span className="text-xs text-gray-500">{item.category}</span>
+                  </div>
+                  <div className="text-sm font-bold text-vs">
+                    {formatCurrency(item.totalCost)}
                   </div>
                 </div>
               </div>
@@ -380,37 +384,15 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           </div>
         </div>
 
-        {/* Cost Range & Market Positioning */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">Market Positioning (Bangalore 2025)</h3>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-blue-800">Estimated Range:</span>
-              <span className="text-sm font-bold text-blue-900">
-                {formatCurrency(Math.round(estimate.totalCost * 0.95))} - {formatCurrency(Math.round(estimate.totalCost * 1.05))}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-blue-800">Per {estimate.areaUnit} Range:</span>
-              <span className="text-sm font-bold text-blue-900">
-                ₹{Math.round((estimate.totalCost / estimate.area) * 0.95).toLocaleString()} - ₹{Math.round((estimate.totalCost / estimate.area) * 1.05).toLocaleString()}
-              </span>
-            </div>
-            <p className="text-xs text-blue-700 mt-2">
-              Based on current Bangalore market rates (₹1,750-1,900/sqft standard range)
-            </p>
-          </div>
-        </div>
-
         {/* Disclaimer */}
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs text-gray-700">
           <p className="font-medium text-orange-800 mb-1">Important Disclaimer:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-700">
-            <li>Rates based on Bangalore 2025 market standards (₹1,750-1,900/sqft for standard quality)</li>
             <li>Actual costs may vary ±10% based on site conditions and material price fluctuations</li>
-            <li>GST (12% effective) and professional fees included in estimate</li>
+            <li>GST (18%) and professional fees not included in base estimate</li>
             <li>Detailed BOQ will be provided after site visit and requirement analysis</li>
             <li>Final pricing subject to contractor quotes and material availability</li>
+            <li>This is an indicative estimate - please contact us for detailed quotation</li>
           </ul>
         </div>
       </motion.div>

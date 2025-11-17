@@ -199,8 +199,8 @@ const QualityLevelSelector = ({
                       <span className="font-medium">₹0</span>
                     ) : (
                       <>
-                        <span className="font-medium">₹{level.price}</span>
-                        <span>/m²</span>
+                        <span className="font-medium">₹{Math.round(level.price / 10.764)}</span>
+                        <span>/sqft</span>
                       </>
                     )}
                   </div>
@@ -223,7 +223,7 @@ const QualityLevelSelector = ({
               {qualityLevels.find(l => l.value === currentValue)?.label}
             </span>
             {qualityLevels.find(l => l.value === currentValue)?.price! > 0 && (
-              <span> - ₹{qualityLevels.find(l => l.value === currentValue)?.price}/m²</span>
+              <span> - ₹{Math.round(qualityLevels.find(l => l.value === currentValue)?.price! / 10.764)}/sqft</span>
             )}
           </p>
           <p className="text-xs text-muted-foreground pl-1 mt-1">

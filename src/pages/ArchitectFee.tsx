@@ -100,25 +100,25 @@ const ArchitectFee = () => {
       <div className="container-custom max-w-6xl mx-auto">
         <div ref={contentRef}>
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-display mb-2">
+            <h1 className="text-3xl md:text-4xl font-display mb-2 text-vs-dark">
               Architect Fee Calculator
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
-              Calculate professional fees based on your project details
+              Calculate professional fees based on COA standards and your project details
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Input Section */}
-            <div className="glass-card border border-primary/5 rounded-2xl p-6">
-              <h3 className="font-semibold mb-4 text-lg">Project Details</h3>
+            <div className="glass-card border border-vs/10 rounded-2xl p-6 shadow-sm">
+              <h3 className="font-semibold mb-4 text-lg text-vs-dark">Project Details</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Project Type</label>
                   <select
                     value={projectType}
                     onChange={(e) => setProjectType(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                   >
                     <option value="Individual House">Individual House</option>
                     <option value="Residential Block">Residential Block</option>
@@ -132,18 +132,18 @@ const ArchitectFee = () => {
                     type="number"
                     value={constructionCost}
                     onChange={(e) => setConstructionCost(Number(e.target.value))}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                     min="0"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Area (sq m)</label>
+                  <label className="block text-sm font-medium mb-2">Area (sqft)</label>
                   <input
                     type="number"
                     value={area}
                     onChange={(e) => setArea(Number(e.target.value))}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                     min="0"
                   />
                 </div>
@@ -153,7 +153,7 @@ const ArchitectFee = () => {
                   <select
                     value={clientType}
                     onChange={(e) => setClientType(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                   >
                     <option value="Friend/Family">Friend/Family</option>
                     <option value="Individual">Individual</option>
@@ -167,7 +167,7 @@ const ArchitectFee = () => {
                   <select
                     value={complexity}
                     onChange={(e) => setComplexity(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                   >
                     <option value="Simple">Simple</option>
                     <option value="Standard">Standard</option>
@@ -181,7 +181,7 @@ const ArchitectFee = () => {
                   <select
                     value={vizPackage}
                     onChange={(e) => setVizPackage(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                   >
                     <option value="None">None</option>
                     <option value="Standard">Standard</option>
@@ -195,7 +195,7 @@ const ArchitectFee = () => {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-primary/10 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
                   >
                     <option value="INR">INR (₹)</option>
                     <option value="USD">USD ($)</option>
@@ -238,63 +238,71 @@ const ArchitectFee = () => {
             </div>
 
             {/* Results Section */}
-            <div className="glass-card border border-primary/5 rounded-2xl p-6">
-              <h3 className="font-semibold mb-4 text-lg">Fee Breakdown</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-primary/5">
-                  <span className="text-sm">Base Design Fee:</span>
-                  <span className="text-sm font-medium">{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
+            <div className="glass-card border border-vs/10 rounded-2xl p-6 shadow-sm">
+              <h3 className="font-semibold mb-4 text-lg text-vs-dark">Fee Breakdown</h3>
+
+              {/* Total Fee - Prominent Display */}
+              <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-5 rounded-xl text-center mb-5">
+                <h3 className="text-sm text-vs-dark/70 mb-2">Total Professional Fee</h3>
+                <p className="text-3xl font-bold text-vs mb-1">{currencySymbol}{architectFee.totalFee.toLocaleString()}</p>
+                <p className="text-xs text-vs-dark/50">Including GST @ 18%</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-700">Base Design Fee:</span>
+                  <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
                 </div>
 
                 {includeFFE && (
-                  <div className="flex justify-between py-2 border-b border-primary/5">
-                    <span className="text-sm">FF&E Fee:</span>
-                    <span className="text-sm font-medium">{currencySymbol}{architectFee.ffeFee.toLocaleString()}</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-700">FF&E Procurement:</span>
+                    <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.ffeFee.toLocaleString()}</span>
                   </div>
                 )}
 
                 {includeLandscape && (
-                  <div className="flex justify-between py-2 border-b border-primary/5">
-                    <span className="text-sm">Landscape Design:</span>
-                    <span className="text-sm font-medium">{currencySymbol}{architectFee.landscapeFee.toLocaleString()}</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-700">Landscape Design:</span>
+                    <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.landscapeFee.toLocaleString()}</span>
                   </div>
                 )}
 
                 {vizPackage !== 'None' && (
-                  <div className="flex justify-between py-2 border-b border-primary/5">
-                    <span className="text-sm">Visualization Package:</span>
-                    <span className="text-sm font-medium">{currencySymbol}{architectFee.vizFee.toLocaleString()}</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-700">Visualization Package:</span>
+                    <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.vizFee.toLocaleString()}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between py-2 border-b border-primary/5">
-                  <span className="text-sm">Overhead Allocation:</span>
-                  <span className="text-sm font-medium">{currencySymbol}{architectFee.overheadAllocation.toLocaleString()}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-700">Overhead Allocation:</span>
+                  <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.overheadAllocation.toLocaleString()}</span>
                 </div>
 
-                <div className="flex justify-between py-2 border-b border-primary/5">
-                  <span className="text-sm">Profit Margin (15%):</span>
-                  <span className="text-sm font-medium">{currencySymbol}{architectFee.profit.toLocaleString()}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-700">Profit Margin (15%):</span>
+                  <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.profit.toLocaleString()}</span>
                 </div>
 
-                <div className="flex justify-between py-2 border-b border-primary/5">
-                  <span className="text-sm">Tax (18%):</span>
-                  <span className="text-sm font-medium">{currencySymbol}{architectFee.tax.toLocaleString()}</span>
-                </div>
-
-                <div className="flex justify-between py-3 mt-4 bg-primary/5 px-4 rounded-lg">
-                  <span className="font-semibold">Total Professional Fee:</span>
-                  <span className="font-semibold text-lg">{currencySymbol}{architectFee.totalFee.toLocaleString()}</span>
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-700">GST (18%):</span>
+                  <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.tax.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
                 <Button
                   onClick={exportToPDF}
-                  className="w-full bg-primary hover:bg-primary/90 text-white"
+                  className="w-full bg-vs hover:bg-vs-light text-white transition-colors"
                 >
                   Export to PDF
                 </Button>
+
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs text-gray-700">
+                  <p className="font-medium text-orange-800 mb-1">Note:</p>
+                  <p className="text-gray-600">Fees calculated as per Council of Architecture (COA) guidelines</p>
+                </div>
               </div>
             </div>
           </div>

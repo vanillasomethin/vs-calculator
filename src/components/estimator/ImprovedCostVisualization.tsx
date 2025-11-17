@@ -16,10 +16,10 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
   };
 
   const COLORS = {
-    construction: 'hsl(var(--vs))',
-    core: 'hsl(var(--vs-dark))',
-    finishes: 'hsl(var(--accent))',
-    interiors: 'hsl(var(--muted))'
+    construction: '#8B0000', // Dark red
+    core: '#B22222',        // Firebrick red
+    finishes: '#CD5C5C',    // Indian red
+    interiors: '#F08080'    // Light coral
   };
 
   const categoryData = [
