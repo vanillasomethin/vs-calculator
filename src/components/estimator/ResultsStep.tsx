@@ -33,56 +33,89 @@ const COMPONENT_PRICING_PER_SQM: Record<string, Record<ComponentOption, number>>
   artefacts: { none: 0, standard: 100, premium: 250, luxury: 550 },
 };
 
-// Component descriptions for detailed breakdown
-const COMPONENT_DESCRIPTIONS: Record<string, string> = {
-  civilQuality: "Cement, steel, bricks/blocks, concrete work, masonry",
-  plumbing: "Pipes, fixtures, toilets, sinks, showers, drainage systems",
-  electrical: "Wiring, boards, switches, outlets, MCB, earthing",
-  ac: "AC units, ducting, ventilation, controls",
-  elevator: "Lift cabin, mechanism, safety systems, controls",
-  buildingEnvelope: "Facade cladding, insulation, exterior finishes",
-  lighting: "Light fixtures, LED systems, controls, outdoor lighting",
-  windows: "Frames, glazing, security grills",
-  ceiling: "False ceiling, gypsum, POP, acoustic panels",
-  surfaces: "Flooring, wall finishes, tiles, marble, paint",
-  fixedFurniture: "Wardrobes, kitchen cabinets, vanities, shelving",
-  looseFurniture: "Sofas, beds, dining sets, tables, chairs",
-  furnishings: "Curtains, rugs, bedding, cushions, linens",
-  appliances: "Kitchen appliances, home electronics, smart devices",
-  artefacts: "Artwork, sculptures, decorative pieces",
+// Component descriptions for detailed breakdown with specs/brands
+const COMPONENT_DESCRIPTIONS: Record<string, { standard: string[]; premium: string[]; luxury: string[] }> = {
+  civilQuality: {
+    standard: ["UltraTech/ACC cement", "TMT Fe500D steel bars", "Red clay/Solid concrete blocks", "M20 grade concrete", "Standard brick masonry"],
+    premium: ["Birla A1 cement", "TATA Tiscon steel", "AAC blocks (Siporex/Magicrete)", "M25 grade concrete", "Wire-cut clay bricks", "Premium plastering finish"],
+    luxury: ["Premium imported cement", "High-grade steel with corrosion resistance", "Premium AAC blocks", "M30+ grade concrete", "Designer bricks/stone cladding", "Multi-coat premium plastering"]
+  },
+  plumbing: {
+    standard: ["Astral/Ashirvad CPVC pipes", "Hindware/Parryware fixtures", "Basic CP fittings", "Standard drainage system"],
+    premium: ["Supreme/Prince uPVC pipes", "Kohler/Jaquar fixtures", "Premium CP fittings", "Concealed plumbing", "Premium bathroom accessories"],
+    luxury: ["Rehau/Geberit imported pipes", "TOTO/Duravit imported fixtures", "Designer faucets & accessories", "Smart flush systems", "Underfloor heating compatible"]
+  },
+  electrical: {
+    standard: ["Polycab/Havells wires", "Legrand/Anchor Roma switches", "ABB/Siemens MCB", "Standard earthing system", "Basic lighting points"],
+    premium: ["Finolex/KEI premium wires", "Schneider/Legrand designer switches", "Premium MCB & RCCB", "Smart home pre-wiring", "Structured cabling"],
+    luxury: ["Premium imported wires", "Lutron/Gira touch switches", "Complete home automation ready", "Smart lighting control", "Integrated AV wiring"]
+  },
+  ac: {
+    standard: ["3-star rated split ACs", "Basic copper piping", "Standard outdoor units", "Window/Split AC provision"],
+    premium: ["5-star Inverter ACs (Daikin/Mitsubishi)", "Premium copper piping", "Concealed ducting", "VRV/VRF system ready"],
+    luxury: ["Daikin/Mitsubishi VRV systems", "Complete ducted HVAC", "Smart climate control", "Air purification system", "Zone-wise temperature control"]
+  },
+  elevator: {
+    standard: ["4-6 passenger hydraulic lift", "Basic cabin finish", "ARD system", "Standard controls"],
+    premium: ["6-8 passenger MRL lift", "SS/Designer cabin", "Automatic rescue device", "Glass panel options", "Digital display"],
+    luxury: ["Premium MRL/Traction lift", "Luxury cabin with wood/glass", "Smart destination control", "Machine room-less design", "Premium branding (Otis/Schindler)"]
+  },
+  buildingEnvelope: {
+    standard: ["Basic exterior paint", "Standard waterproofing", "Basic thermal insulation", "Standard facade finish"],
+    premium: ["Premium textured paint (Asian/Berger)", "APP membrane waterproofing", "Enhanced thermal insulation", "Elevation with designer elements"],
+    luxury: ["ACP/Glass facade panels", "Premium waterproofing system", "Complete thermal envelope", "Designer cladding (Stone/Wood/Metal)", "Green building materials"]
+  },
+  lighting: {
+    standard: ["Philips/Crompton LED lights", "Basic fixtures", "Standard outdoor lighting", "Energy-efficient bulbs"],
+    premium: ["Premium LED systems", "Designer fixtures (Bajaj/Havells)", "Cove lighting", "Landscape lighting", "Dimmer controls"],
+    luxury: ["Smart lighting system (Philips Hue)", "Designer imported fixtures", "Automated controls", "Color-changing ambiance", "Integrated outdoor lighting"]
+  },
+  windows: {
+    standard: ["Aluminum sliding windows", "5mm clear glass", "Basic MS grills", "Powder-coated frames"],
+    premium: ["uPVC/Premium aluminum", "6mm toughened glass", "Designer grills", "Double glazing options", "Imported hardware"],
+    luxury: ["Premium imported uPVC (Fenesta)", "Double-glazed low-E glass", "Frameless/Minimal frame design", "Motorized windows", "Acoustic glass options"]
+  },
+  ceiling: {
+    standard: ["Gypsum board false ceiling", "Basic POP corners", "Standard grid system", "Paint finish"],
+    premium: ["Premium gypsum with cove lighting", "Designer POP elements", "Acoustic panels (Armstrong)", "Textured/painted finishes", "Concealed AC vents"],
+    luxury: ["Imported acoustic panels", "Designer wood/metal ceilings", "Integrated smart lighting", "Custom sculptural elements", "Premium finishes (veneer/fabric)"]
+  },
+  surfaces: {
+    standard: ["Vitrified tiles 2x2 (Kajaria/Somany)", "Basic wall tiles", "Asian Paints Tractor Emulsion", "Standard granite kitchen counter"],
+    premium: ["Premium tiles 2x4 or larger", "Designer wall tiles/cladding", "Premium paint (Royale/Dulux)", "Quartz/premium granite counters", "Wooden/laminate flooring options"],
+    luxury: ["Imported marble/Italian tiles", "Large format porcelain", "Designer wall finishes", "Premium imported paint", "Engineered wood/real hardwood flooring", "Corian/Quartz surfaces"]
+  },
+  fixedFurniture: {
+    standard: ["BWP plywood", "Laminate finish", "Basic hardware", "Standard kitchen cabinets", "Simple wardrobe systems"],
+    premium: ["Premium BWR/Marine ply", "Acrylic/High-gloss finish", "Hettich/Ebco hardware", "Modular kitchen (Godrej/HomeLane)", "Designer wardrobes with organizers"],
+    luxury: ["Imported marine ply/MDF", "Lacquered/Veneer finish", "Blum/Hafele premium hardware", "Designer modular kitchen (Häfele/Sleek)", "Walk-in closets", "Custom joinery"]
+  },
+  looseFurniture: {
+    standard: ["IKEA/Hometown furniture", "Standard sofa sets", "Basic beds & dining", "Functional design"],
+    premium: ["Urban Ladder/Pepperfry premium range", "Designer sofas (L-shaped/modular)", "Upholstered beds", "6-8 seater dining sets", "Storage ottomans"],
+    luxury: ["Imported/Custom-designed furniture", "Italian leather sofas", "King-size designer beds", "Luxury dining sets", "Designer accent chairs", "Antique/Statement pieces"]
+  },
+  furnishings: {
+    standard: ["Basic curtains", "Standard blinds", "Cotton bedding", "Simple rugs", "Basic cushions"],
+    premium: ["Designer curtains with automation", "Premium blinds (Somfy)", "Branded bedding sets", "Hand-tufted rugs", "Designer cushions & throws"],
+    luxury: ["Imported drapes & sheers", "Motorized curtain systems", "Luxury bedding (Egyptian cotton)", "Designer Persian/Turkish rugs", "Custom upholstery", "Decorative wall hangings"]
+  },
+  appliances: {
+    standard: ["Basic kitchen appliances", "Standard chimney & hob", "Basic refrigerator & washing machine", "Standard microwave"],
+    premium: ["Premium brands (Bosch/IFB)", "Built-in chimney & hob", "Inverter AC & refrigerator", "Dishwasher", "Water purifier (RO+UV)", "Smart TV"],
+    luxury: ["High-end imported brands (Miele/Siemens)", "Complete built-in kitchen suite", "Wine cooler", "Premium coffee machine", "Smart home appliances", "Home theater system"]
+  },
+  artefacts: {
+    standard: ["Basic wall art", "Decorative planters", "Simple photo frames", "Basic decorative pieces"],
+    premium: ["Designer wall art", "Sculptures", "Statement mirrors", "Premium vases & artifacts", "Indoor plants with designer pots"],
+    luxury: ["Original artwork/Limited editions", "Designer sculptures", "Antique pieces", "Custom installations", "Premium indoor landscaping", "Curated art collection"]
+  },
 };
 
 const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   const { toast } = useToast();
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const meetingSchedulerRef = useRef<HTMLDivElement>(null);
-
-  // Scroll detection to trigger meeting scheduler popup
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      // Trigger when user is within 200px of the bottom
-      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 200;
-
-      if (isNearBottom && !hasScrolledToBottom) {
-        setHasScrolledToBottom(true);
-        // Smooth scroll to meeting scheduler
-        setTimeout(() => {
-          meetingSchedulerRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          });
-        }, 300);
-      }
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [hasScrolledToBottom]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -159,7 +192,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Core Components",
       name: "Quality of Construction - Civil Materials",
       level: estimate.civilQuality,
-      description: COMPONENT_DESCRIPTIONS.civilQuality,
+      description: COMPONENT_DESCRIPTIONS.civilQuality[estimate.civilQuality],
       perSqm: COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality] * areaInSqM),
@@ -168,7 +201,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Core Components",
       name: "Plumbing & Sanitary",
       level: estimate.plumbing,
-      description: COMPONENT_DESCRIPTIONS.plumbing,
+      description: COMPONENT_DESCRIPTIONS.plumbing[estimate.plumbing],
       perSqm: COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.plumbing[estimate.plumbing] * areaInSqM),
@@ -177,7 +210,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Core Components",
       name: "Electrical Systems",
       level: estimate.electrical,
-      description: COMPONENT_DESCRIPTIONS.electrical,
+      description: COMPONENT_DESCRIPTIONS.electrical[estimate.electrical],
       perSqm: COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.electrical[estimate.electrical] * areaInSqM),
@@ -186,7 +219,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Core Components",
       name: "AC & HVAC Systems",
       level: estimate.ac,
-      description: COMPONENT_DESCRIPTIONS.ac,
+      description: COMPONENT_DESCRIPTIONS.ac[estimate.ac],
       perSqm: COMPONENT_PRICING_PER_SQM.ac[estimate.ac],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.ac[estimate.ac] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.ac[estimate.ac] * areaInSqM),
@@ -195,7 +228,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Core Components",
       name: "Elevator/Lift",
       level: estimate.elevator,
-      description: COMPONENT_DESCRIPTIONS.elevator,
+      description: COMPONENT_DESCRIPTIONS.elevator[estimate.elevator],
       perSqm: COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.elevator[estimate.elevator] * areaInSqM),
@@ -204,7 +237,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Finishes",
       name: "Building Envelope & Facade",
       level: estimate.buildingEnvelope,
-      description: COMPONENT_DESCRIPTIONS.buildingEnvelope,
+      description: COMPONENT_DESCRIPTIONS.buildingEnvelope[estimate.buildingEnvelope],
       perSqm: COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.buildingEnvelope[estimate.buildingEnvelope] * areaInSqM),
@@ -213,7 +246,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Finishes",
       name: "Lighting Systems & Fixtures",
       level: estimate.lighting,
-      description: COMPONENT_DESCRIPTIONS.lighting,
+      description: COMPONENT_DESCRIPTIONS.lighting[estimate.lighting],
       perSqm: COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.lighting[estimate.lighting] * areaInSqM),
@@ -222,7 +255,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Finishes",
       name: "Windows & Glazing",
       level: estimate.windows,
-      description: COMPONENT_DESCRIPTIONS.windows,
+      description: COMPONENT_DESCRIPTIONS.windows[estimate.windows],
       perSqm: COMPONENT_PRICING_PER_SQM.windows[estimate.windows],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.windows[estimate.windows] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.windows[estimate.windows] * areaInSqM),
@@ -231,7 +264,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Finishes",
       name: "Ceiling Design & Finishes",
       level: estimate.ceiling,
-      description: COMPONENT_DESCRIPTIONS.ceiling,
+      description: COMPONENT_DESCRIPTIONS.ceiling[estimate.ceiling],
       perSqm: COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.ceiling[estimate.ceiling] * areaInSqM),
@@ -240,7 +273,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Finishes",
       name: "Wall & Floor Finishes",
       level: estimate.surfaces,
-      description: COMPONENT_DESCRIPTIONS.surfaces,
+      description: COMPONENT_DESCRIPTIONS.surfaces[estimate.surfaces],
       perSqm: COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.surfaces[estimate.surfaces] * areaInSqM),
@@ -249,7 +282,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Interiors",
       name: "Fixed Furniture & Cabinetry",
       level: estimate.fixedFurniture,
-      description: COMPONENT_DESCRIPTIONS.fixedFurniture,
+      description: COMPONENT_DESCRIPTIONS.fixedFurniture[estimate.fixedFurniture],
       perSqm: COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] * areaInSqM),
@@ -258,7 +291,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Interiors",
       name: "Loose Furniture",
       level: estimate.looseFurniture,
-      description: COMPONENT_DESCRIPTIONS.looseFurniture,
+      description: COMPONENT_DESCRIPTIONS.looseFurniture[estimate.looseFurniture],
       perSqm: COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.looseFurniture[estimate.looseFurniture] * areaInSqM),
@@ -267,7 +300,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Interiors",
       name: "Furnishings & Soft Decor",
       level: estimate.furnishings,
-      description: COMPONENT_DESCRIPTIONS.furnishings,
+      description: COMPONENT_DESCRIPTIONS.furnishings[estimate.furnishings],
       perSqm: COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.furnishings[estimate.furnishings] * areaInSqM),
@@ -276,7 +309,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Interiors",
       name: "Appliances & Equipment",
       level: estimate.appliances,
-      description: COMPONENT_DESCRIPTIONS.appliances,
+      description: COMPONENT_DESCRIPTIONS.appliances[estimate.appliances],
       perSqm: COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.appliances[estimate.appliances] * areaInSqM),
@@ -285,7 +318,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       category: "Interiors",
       name: "Artefacts & Art Pieces",
       level: estimate.artefacts,
-      description: COMPONENT_DESCRIPTIONS.artefacts,
+      description: COMPONENT_DESCRIPTIONS.artefacts[estimate.artefacts],
       perSqm: COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts] * areaInSqM),
@@ -336,12 +369,12 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
 
         {/* Total Cost - Prominent */}
         <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-6 rounded-xl text-center">
-          <h3 className="text-sm text-vs-dark/70 mb-2">Estimated Project Cost (Excl. GST)</h3>
+          <h3 className="text-sm text-vs-dark/70 mb-2">Estimated Project Cost</h3>
           <p className="text-4xl font-bold text-vs mb-2">{formatCurrency(estimate.totalCost)}</p>
           <p className="text-sm text-vs-dark/70">
             {formatCurrency(Math.round(estimate.totalCost / estimate.area))} per {estimate.areaUnit}
           </p>
-          <p className="text-xs text-vs-dark/50 mt-2">GST @ 18% applicable as per govt. rates</p>
+          <p className="text-xs text-vs-dark/50 mt-2">All costs inclusive of GST @ 18%</p>
         </div>
 
 
@@ -381,14 +414,21 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
                 </div>
 
                 {/* Component description */}
-                <p className="text-xs text-gray-600 mt-1 mb-2 pl-6">Includes: {item.description}</p>
+                <div className="mt-1 mb-2 pl-6">
+                  <p className="text-xs font-semibold text-gray-700 mb-1">Includes:</p>
+                  <ul className="list-disc list-inside space-y-0.5 text-xs text-gray-600 ml-2">
+                    {item.description.map((spec: string, idx: number) => (
+                      <li key={idx}>{spec}</li>
+                    ))}
+                  </ul>
+                </div>
 
                 {/* Pricing information */}
                 <div className="flex items-center justify-between gap-2 mt-2 pl-6">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
                       <IndianRupee className="size-3" />
-                      <span className="font-medium">{item.perSqft}/sqft</span>
+                      <span className="font-medium">{estimate.areaUnit === "sqft" ? item.perSqft : item.perSqm}/{estimate.areaUnit}</span>
                     </div>
                     <span className="text-xs text-gray-500">{item.category}</span>
                   </div>
@@ -413,6 +453,21 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
                 <span>{formatCurrency(estimate.totalCost)}</span>
               </div>
             </div>
+
+            {/* Architect Fee - mentioned without highlighting */}
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>Architect's Fee ({architectFeePercent}% as per COA standards)</span>
+                <span className="font-medium">{formatCurrency(Math.round(architectFee))}</span>
+              </div>
+              <div className="flex items-center justify-between text-base font-semibold text-gray-800 mt-2">
+                <span>Total with Architect Fee</span>
+                <div className="flex items-center gap-1">
+                  <IndianRupee className="size-4" />
+                  <span>{formatCurrency(Math.round(totalWithArchitectFee))}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -420,8 +475,9 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs text-gray-700">
           <p className="font-medium text-orange-800 mb-1">Important Disclaimer:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-700">
+            <li>All costs shown are inclusive of GST @ 18%</li>
             <li>Actual costs may vary ±10% based on site conditions and material price fluctuations</li>
-            <li>GST (18%) and professional fees not included in base estimate</li>
+            <li>Architect's fee shown separately as per COA standards</li>
             <li>Detailed BOQ will be provided after site visit and requirement analysis</li>
             <li>Final pricing subject to contractor quotes and material availability</li>
             <li>This is an indicative estimate - please contact us for detailed quotation</li>
@@ -431,7 +487,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
 
       {/* Meeting Scheduler */}
       <div ref={meetingSchedulerRef}>
-        <MeetingScheduler autoExpand={hasScrolledToBottom} />
+        <MeetingScheduler autoExpand={false} />
       </div>
 
       {/* Action Buttons */}

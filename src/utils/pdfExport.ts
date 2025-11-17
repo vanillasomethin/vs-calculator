@@ -46,12 +46,15 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
 
   // Header with branding
   doc.setFillColor(79, 9, 12); // vs color
-  doc.rect(0, 0, pageWidth, 45, 'F');
+  doc.rect(0, 0, pageWidth, 50, 'F');
   doc.setTextColor(255, 255, 255);
-  addText('CONSTRUCTION COST ESTIMATE', pageWidth / 2, 18, 22, 'bold', 'center');
-  addText('Vanilla Something | Professional Architecture & Design', pageWidth / 2, 28, 9, 'normal', 'center');
-  addText('www.vanillasometh.in | hello@vanillasometh.in | +91 741 134 9844', pageWidth / 2, 36, 8, 'normal', 'center');
-  yPos = 55;
+
+  // Company Logo/Name
+  addText('Vanilla&Somethin\'', pageWidth / 2, 15, 18, 'bold', 'center');
+  addText('CONSTRUCTION COST ESTIMATE', pageWidth / 2, 26, 20, 'bold', 'center');
+  addText('Professional Architecture & Design', pageWidth / 2, 34, 10, 'normal', 'center');
+  addText('www.vanillasometh.in | hello@vanillasometh.in | +91 741 134 9844', pageWidth / 2, 42, 9, 'normal', 'center');
+  yPos = 60;
 
   // Reset text color
   doc.setTextColor(0, 0, 0);
@@ -87,21 +90,21 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
 
   // Total Cost Section - Highlighted
   doc.setFillColor(245, 247, 250);
-  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 35, 3, 3, 'F');
+  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 40, 3, 3, 'F');
   doc.setFillColor(79, 9, 12);
-  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 8, 3, 3, 'F');
+  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 10, 3, 3, 'F');
   doc.setTextColor(255, 255, 255);
-  addText('ESTIMATED PROJECT COST', pageWidth / 2, yPos + 6, 11, 'bold', 'center');
+  addText('ESTIMATED PROJECT COST (Incl. GST)', pageWidth / 2, yPos + 7, 12, 'bold', 'center');
   doc.setTextColor(0, 0, 0);
 
-  yPos += 15;
+  yPos += 18;
   doc.setTextColor(79, 9, 12);
-  addText(formatCurrency(estimate.totalCost), pageWidth / 2, yPos + 4, 22, 'bold', 'center');
-  yPos += 10;
+  addText(formatCurrency(estimate.totalCost), pageWidth / 2, yPos + 4, 24, 'bold', 'center');
+  yPos += 11;
   doc.setTextColor(100, 100, 100);
-  addText(`Rate: ${formatCurrency(Math.round(estimate.totalCost / estimate.area))} per ${estimate.areaUnit}`, pageWidth / 2, yPos, 10, 'normal', 'center');
+  addText(`Rate: ${formatCurrency(Math.round(estimate.totalCost / estimate.area))} per ${estimate.areaUnit}`, pageWidth / 2, yPos, 11, 'normal', 'center');
   doc.setTextColor(0, 0, 0);
-  yPos += 15;
+  yPos += 18;
 
   // Architect Fee Section
   checkPageBreak(30);
@@ -116,20 +119,20 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   const architectFee = estimate.totalCost * (architectFeePercent / 100);
   const totalWithArchitectFee = estimate.totalCost + architectFee;
 
-  doc.setFillColor(230, 240, 255);
-  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 25, 3, 3, 'F');
-  yPos += 8;
-  addText(`Architect's Fee (${architectFeePercent}% as per COA standards):`, margin + 5, yPos, 10, 'bold');
-  addText(formatCurrency(Math.round(architectFee)), pageWidth - margin - 5, yPos, 10, 'bold', 'right');
-  yPos += 8;
-  doc.setDrawColor(100, 150, 200);
+  doc.setFillColor(240, 245, 250);
+  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 28, 3, 3, 'F');
+  yPos += 9;
+  addText(`Architect's Fee (${architectFeePercent}% as per COA standards):`, margin + 5, yPos, 11, 'normal');
+  addText(formatCurrency(Math.round(architectFee)), pageWidth - margin - 5, yPos, 11, 'bold', 'right');
+  yPos += 9;
+  doc.setDrawColor(150, 150, 150);
   doc.line(margin + 5, yPos, pageWidth - margin - 5, yPos);
-  yPos += 6;
-  doc.setTextColor(0, 50, 100);
-  addText('TOTAL WITH ARCHITECT FEE:', margin + 5, yPos, 12, 'bold');
-  addText(formatCurrency(Math.round(totalWithArchitectFee)), pageWidth - margin - 5, yPos, 14, 'bold', 'right');
+  yPos += 7;
   doc.setTextColor(0, 0, 0);
-  yPos += 15;
+  addText('Total with Architect Fee:', margin + 5, yPos, 12, 'bold');
+  addText(formatCurrency(Math.round(totalWithArchitectFee)), pageWidth - margin - 5, yPos, 13, 'bold', 'right');
+  doc.setTextColor(0, 0, 0);
+  yPos += 16;
 
   // Cost Distribution
   checkPageBreak(60);
@@ -238,49 +241,58 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   ].filter(item => isIncluded(item.level));
 
   componentDetails.forEach((item, index) => {
-    checkPageBreak(10);
+    checkPageBreak(12);
 
+    const areaInSqM = estimate.areaUnit === "sqft" ? estimate.area * 0.092903 : estimate.area;
     const perSqm = COMPONENT_PRICING_PER_SQM[item.key]?.[item.level] || 0;
+    const perUnit = estimate.areaUnit === "sqft" ? Math.round(perSqm / 10.764) : perSqm;
+    const totalCost = Math.round(perSqm * areaInSqM);
 
-    // Alternating background
+    // Alternating background with better spacing
     if (index % 2 === 0) {
       doc.setFillColor(250, 250, 250);
-      doc.rect(margin, yPos - 4, pageWidth - 2 * margin, 8, 'F');
+      doc.rect(margin, yPos - 5, pageWidth - 2 * margin, 10, 'F');
     }
 
-    doc.setFontSize(9);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
     doc.text(item.name, margin + 5, yPos);
 
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(79, 9, 12);
-    doc.text(formatLevel(item.level), margin + 80, yPos);
+    doc.text(formatLevel(item.level), margin + 85, yPos);
 
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0, 120, 0);
-    const priceText = `₹${perSqm.toLocaleString('en-IN')}/sqm`;
-    doc.text(priceText, pageWidth - margin - 5, yPos, { align: 'right' });
+    doc.setTextColor(0, 100, 0);
+    const priceText = `₹${perUnit.toLocaleString('en-IN')}/${estimate.areaUnit}`;
+    doc.text(priceText, margin + 125, yPos);
 
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
-    yPos += 7;
+    const totalText = formatCurrency(totalCost);
+    doc.text(totalText, pageWidth - margin - 5, yPos, { align: 'right' });
+
+    doc.setFont('helvetica', 'normal');
+    yPos += 9;
   });
 
   // Disclaimer
-  yPos += 10;
-  checkPageBreak(35);
+  yPos += 12;
+  checkPageBreak(40);
 
   doc.setFillColor(255, 248, 230);
-  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 32, 3, 3, 'F');
-  yPos += 8;
-  doc.setFontSize(10);
+  doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 38, 3, 3, 'F');
+  yPos += 9;
+  doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(200, 100, 0);
-  doc.text('IMPORTANT NOTE:', margin + 5, yPos);
+  doc.text('IMPORTANT NOTES:', margin + 5, yPos);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(80, 80, 80);
-  yPos += 5;
-  const disclaimerText = `This is an indicative estimate based on standard inputs and current market rates for ${estimate.city}. Actual costs may vary based on site conditions, material availability, contractor rates, design complexity, and specific project requirements. This estimate is valid for 30 days from the date of generation. For a detailed itemized quote and site-specific assessment, please contact our team.`;
+  doc.setTextColor(60, 60, 60);
+  yPos += 6;
+  doc.setFontSize(9);
+  const disclaimerText = `• All costs shown are inclusive of GST @ 18%\n• Actual costs may vary ±10% based on site conditions, material price fluctuations, and contractor rates\n• Architect's fee shown separately as per COA standards\n• This is an indicative estimate based on current market rates for ${estimate.city}\n• Valid for 30 days from generation date. For detailed itemized quote, please contact our team.`;
   const splitDisclaimer = doc.splitTextToSize(disclaimerText, pageWidth - 2 * margin - 10);
   doc.text(splitDisclaimer, margin + 5, yPos);
 

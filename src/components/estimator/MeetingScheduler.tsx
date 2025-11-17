@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Video, Building, MessageCircle, Mail, Calendar, CheckCircle2, ChevronRight } from "lucide-react";
+import { MapPin, Video, Building, MessageCircle, Mail, Calendar, CheckCircle2, ChevronRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type MainOptionType = "schedule" | "whatsapp" | "email";
@@ -31,6 +31,8 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
   const [selectedMainOption, setSelectedMainOption] = useState<MainOptionType | null>(null);
   const [selectedSubOption, setSelectedSubOption] = useState<ScheduleSubOption | null>(null);
   const [shouldPulse, setShouldPulse] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
 
   // Auto-expand when triggered from parent
   useEffect(() => {
@@ -80,7 +82,8 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
       description: "We'll visit your project location",
       icon: <MapPin className="size-5" />,
       action: () => {
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi! I'd like to schedule an on-site visit to discuss my project.")}`, '_blank');
+        const message = `Hi! I'd like to schedule an on-site visit to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
       }
     },
     {
@@ -89,7 +92,8 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
       description: "Visit our office for consultation",
       icon: <Building className="size-5" />,
       action: () => {
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi! I'd like to schedule an office visit to discuss my project.")}`, '_blank');
+        const message = `Hi! I'd like to schedule an office visit to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
       }
     },
     {
@@ -98,7 +102,8 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
       description: "Online meeting via Google Meet/Zoom",
       icon: <Video className="size-5" />,
       action: () => {
-        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Schedule Virtual Meeting - Project Discussion")}&body=${encodeURIComponent("Hi! I'd like to schedule a virtual meeting to discuss my project.")}`;
+        const body = `Hi! I'd like to schedule a virtual meeting to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Schedule Virtual Meeting - Project Discussion")}&body=${encodeURIComponent(body)}`;
       }
     }
   ];
@@ -187,6 +192,44 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
             >
               ← Back to main options
             </button>
+
+            {/* Date & Time Selection */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 className="text-sm font-semibold text-vs-dark mb-3 flex items-center gap-2">
+                <Calendar className="size-4" />
+                Select Preferred Date & Time
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Date</label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-vs/20 focus:border-vs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Time</label>
+                  <select
+                    value={selectedTime}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-vs/20 focus:border-vs"
+                  >
+                    <option value="">Select time</option>
+                    <option value="09:00 AM - 10:00 AM">09:00 AM - 10:00 AM</option>
+                    <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
+                    <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
+                    <option value="12:00 PM - 01:00 PM">12:00 PM - 01:00 PM</option>
+                    <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM</option>
+                    <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
+                    <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
+                    <option value="05:00 PM - 06:00 PM">05:00 PM - 06:00 PM</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
             {/* Schedule Sub-options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -279,15 +322,15 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
         )}
       </AnimatePresence>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 size-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+          <div className="flex-shrink-0 size-5 rounded-full bg-vs text-white flex items-center justify-center text-xs font-bold mt-0.5">
             i
           </div>
-          <div className="text-sm text-blue-900">
+          <div className="text-sm text-red-900">
             <p className="font-medium mb-1">Quick Contact:</p>
-            <p>WhatsApp: <a href={`https://wa.me/${whatsappNumber}`} className="underline font-medium">+{whatsappNumber}</a></p>
-            <p>Email: <a href={`mailto:${email}`} className="underline font-medium">{email}</a></p>
+            <p>WhatsApp: <a href={`https://wa.me/${whatsappNumber}`} className="underline font-medium hover:text-vs">+{whatsappNumber}</a></p>
+            <p>Email: <a href={`mailto:${email}`} className="underline font-medium hover:text-vs">{email}</a></p>
           </div>
         </div>
       </div>
