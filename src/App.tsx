@@ -18,7 +18,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <CursorAnimation />
-        <BrowserRouter>
+        <BrowserRouter basename="/vs-calculator">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/architect-fee" element={<ArchitectFee />} />
