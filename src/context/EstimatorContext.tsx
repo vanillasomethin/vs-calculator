@@ -77,11 +77,13 @@ const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
 };
 
 // Base construction cost per square meter (foundation, structure, masonry)
-// Updated for Bangalore 2025 - reflects current material and labor costs
+// Updated for Bangalore 2025 - rates are comprehensive construction base
+// These rates align with UltraTech calculator and architects4design.com methodology
+// Includes RCC structure, foundation work, masonry, basic construction labor
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
-  residential: 850,
-  commercial: 1050,
-  "mixed-use": 1250,
+  residential: 7350,    // ₹7,350/sqm for residential (achieves ₹1,750-1,900/sqft target)
+  commercial: 9200,     // ₹9,200/sqm for commercial projects
+  "mixed-use": 11000,   // ₹11,000/sqm for mixed-use developments
 };
 
 const initialEstimate: ProjectEstimate = {
