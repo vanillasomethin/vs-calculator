@@ -187,6 +187,13 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   // Calculate area in sqm for calculations
   const areaInSqM = estimate.areaUnit === "sqft" ? estimate.area * 0.092903 : estimate.area;
 
+  // Calculate architect fee (COA standards: 6-8% for residential projects)
+  // Using a simplified approach based on total construction cost
+  const architectFeePercent = estimate.projectType === "commercial" ? 5 :
+                             estimate.projectType === "mixed-use" ? 6 : 8;
+  const architectFee = (estimate.totalCost * architectFeePercent) / 100;
+  const totalWithArchitectFee = estimate.totalCost + architectFee;
+
   // Create pricing list with costs
   const pricingList = [
     isIncluded(estimate.civilQuality) && {
