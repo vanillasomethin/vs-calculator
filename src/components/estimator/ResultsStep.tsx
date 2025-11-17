@@ -264,18 +264,6 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     },
   ].filter(Boolean);
 
-  // Calculate architect fee (COA standards)
-  const getArchitectFeePercentage = (projectCost: number): number => {
-    if (projectCost <= 5000000) return 12;
-    if (projectCost <= 10000000) return 10;
-    if (projectCost <= 50000000) return 9;
-    return 8;
-  };
-
-  const architectFeePercent = getArchitectFeePercentage(estimate.totalCost);
-  const architectFee = estimate.totalCost * (architectFeePercent / 100);
-  const totalWithArchitectFee = estimate.totalCost + architectFee;
-
   return (
     <div className="space-y-6 overflow-y-auto overflow-x-hidden max-h-[85vh] px-2 pb-6">
       {/* Main Summary Card */}
