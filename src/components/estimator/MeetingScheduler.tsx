@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Video, Building, MessageCircle, Mail, Calendar, CheckCircle2, ChevronRight, Clock } from "lucide-react";
+import { MapPin, Video, Building, MessageCircle, Mail, Calendar, CheckCircle2, ChevronRight, Clock, Zap, CalendarCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CalBookingForm from "./CalBookingForm";
+import CalEmbed from "./CalEmbed";
+import { isCalComConfigured } from "@/utils/calcom";
 
-type MainOptionType = "schedule" | "whatsapp" | "email";
+type MainOptionType = "schedule" | "api-booking" | "cal-embed" | "whatsapp" | "email";
 type ScheduleSubOption = "on-site" | "in-office" | "virtual";
 
 interface MainOption {
@@ -25,9 +28,10 @@ interface ScheduleOption {
 
 interface MeetingSchedulerProps {
   autoExpand?: boolean;
+  estimate?: any; // ProjectEstimate
 }
 
-const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
+const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProps) => {
   const [selectedMainOption, setSelectedMainOption] = useState<MainOptionType | null>(null);
   const [selectedSubOption, setSelectedSubOption] = useState<ScheduleSubOption | null>(null);
   const [shouldPulse, setShouldPulse] = useState(false);
@@ -49,9 +53,23 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
 
   const mainOptions: MainOption[] = [
     {
+      id: "cal-embed",
+      title: "Book Consultation",
+      description: "View live availability and book instantly",
+      icon: <CalendarCheck className="size-6" />,
+      hasSubOptions: true,
+    },
+    ...(isCalComConfigured() ? [{
+      id: "api-booking" as MainOptionType,
+      title: "Quick Booking",
+      description: "3-step booking with project details",
+      icon: <Zap className="size-6" />,
+      hasSubOptions: true,
+    }] : []),
+    {
       id: "schedule",
-      title: "Schedule Meeting",
-      description: "Book a consultation session with our team",
+      title: "Request Callback",
+      description: "Schedule via WhatsApp or Email",
       icon: <Calendar className="size-6" />,
       hasSubOptions: true,
     },
@@ -177,7 +195,53 @@ const MeetingScheduler = ({ autoExpand = false }: MeetingSchedulerProps) => {
       </div>
 
       <AnimatePresence mode="wait">
-        {selectedMainOption === "schedule" ? (
+        {selectedMainOption === "cal-embed" ? (
+          <motion.div
+            key="cal-embed"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Back button */}
+            <button
+              onClick={handleBack}
+              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
+            >
+              ← Back to main options
+            </button>
+
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <CalEmbed
+                calLink="vanilla-somethin-nezld5/15min"
+                config={{ layout: "month_view" }}
+                namespace="15min"
+              />
+            </div>
+          </motion.div>
+        ) : selectedMainOption === "api-booking" ? (
+          <motion.div
+            key="api-booking"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Back button */}
+            <button
+              onClick={handleBack}
+              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
+            >
+              ← Back to main options
+            </button>
+
+            <CalBookingForm
+              estimate={estimate}
+              onSuccess={handleBack}
+              onCancel={handleBack}
+            />
+          </motion.div>
+        ) : selectedMainOption === "schedule" ? (
           <motion.div
             key="schedule-options"
             initial={{ opacity: 0, x: 20 }}

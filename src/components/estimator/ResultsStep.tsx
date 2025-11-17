@@ -551,7 +551,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
-            <MeetingScheduler autoExpand={true} />
+            <MeetingScheduler autoExpand={true} estimate={estimate} />
           </div>
           <button
             onClick={() => setShowConsultationPrompt(false)}

@@ -380,9 +380,18 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     const totalCost = totalBeforeTax + gst;
 
     // 11. Calculate phase breakdown
+    // Check if this is an interiors-only project
+    const isInteriorsOnly = currentEstimate.workTypes?.includes("interiors") &&
+                           !currentEstimate.workTypes?.includes("construction");
+    const hasConstruction = currentEstimate.workTypes?.includes("construction");
+
     const planningCost = totalCost * 0.08;
-    const constructionPhaseCost = constructionCost + (core * 0.6) + professionalFees * 0.5;
-    const interiorsPhaseCost = interiors + finishes + (core * 0.4) + professionalFees * 0.5 + contingency + gst;
+    const constructionPhaseCost = hasConstruction
+      ? constructionCost + (core * 0.6) + professionalFees * 0.5
+      : 0;
+    const interiorsPhaseCost = isInteriorsOnly
+      ? totalCost - planningCost
+      : interiors + finishes + (core * 0.4) + professionalFees * 0.5 + contingency + gst;
 
     // 12. Calculate timeline
     const timeline = calculateTimeline(currentEstimate);
@@ -391,14 +400,14 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
       ...currentEstimate,
       totalCost: Math.round(totalCost),
       categoryBreakdown: {
-        construction: Math.round(constructionCost),
+        construction: hasConstruction ? Math.round(constructionCost) : 0,
         core: Math.round(core),
         finishes: Math.round(finishes),
         interiors: Math.round(interiors),
       },
       phaseBreakdown: {
         planning: Math.round(planningCost),
-        construction: Math.round(constructionPhaseCost),
+        construction: hasConstruction ? Math.round(constructionPhaseCost) : 0,
         interiors: Math.round(interiorsPhaseCost),
       },
       timeline,
