@@ -189,8 +189,9 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
   });
   currentMonth += paintingDuration;
 
-  // Final Handover - fixed duration of 1 month
-  const handoverDuration = 1;
+  // Final Handover - calculate remaining time to match total timeline
+  const totalDuration = estimate.timeline.totalMonths;
+  const handoverDuration = Math.max(1, totalDuration - currentMonth + 1);
   phases.push({
     name: "Final Inspection & Handover",
     duration: handoverDuration,
@@ -198,11 +199,8 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     percentage: (interiorsCost * 0.08 / estimate.totalCost) * 100,
     color: "#8B0000", // Dark red - end of gradient
     startMonth: currentMonth,
-    endMonth: currentMonth + handoverDuration - 1
+    endMonth: totalDuration
   });
-  currentMonth += handoverDuration;
-
-  const totalDuration = estimate.timeline.totalMonths;
 
   return (
     <div className="space-y-3">
