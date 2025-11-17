@@ -43,7 +43,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: estimate.timeline.phases.planning,
     cost: estimate.phaseBreakdown.planning,
     percentage: (estimate.phaseBreakdown.planning / estimate.totalCost) * 100,
-    color: "#8B0000", // Dark red
+    color: "#FFE4E1", // Lightest red/misty rose - start of gradient
     startMonth: currentMonth,
     endMonth: currentMonth + estimate.timeline.phases.planning - 1
   });
@@ -61,7 +61,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
       duration: excavationDuration,
       cost: constructionCost * 0.08,
       percentage: (constructionCost * 0.08 / estimate.totalCost) * 100,
-      color: "#B22222", // Firebrick
+      color: "#FFC0CB", // Light pink
       startMonth: currentMonth,
       endMonth: currentMonth + excavationDuration - 1
     });
@@ -74,7 +74,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
       duration: foundationDuration,
       cost: constructionCost * 0.20,
       percentage: (constructionCost * 0.20 / estimate.totalCost) * 100,
-      color: "#CD5C5C", // Indian red
+      color: "#FFB6C1", // Light pink (slightly darker)
       startMonth: currentMonth,
       endMonth: currentMonth + foundationDuration - 1
     });
@@ -87,7 +87,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
       duration: structuralDuration,
       cost: constructionCost * 0.42,
       percentage: (constructionCost * 0.42 / estimate.totalCost) * 100,
-      color: "#DC143C", // Crimson
+      color: "#FFA07A", // Light salmon
       startMonth: currentMonth,
       endMonth: currentMonth + structuralDuration - 1
     });
@@ -100,7 +100,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
       duration: roofDuration,
       cost: constructionCost * 0.25,
       percentage: (constructionCost * 0.25 / estimate.totalCost) * 100,
-      color: "#E9967A", // Dark salmon
+      color: "#FA8072", // Salmon
       startMonth: currentMonth,
       endMonth: currentMonth + roofDuration - 1
     });
@@ -131,7 +131,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: flooringDuration,
     cost: interiorsCost * 0.20,
     percentage: (interiorsCost * 0.20 / estimate.totalCost) * 100,
-    color: "#FA8072", // Salmon
+    color: "#E9967A", // Dark salmon
     startMonth: currentMonth,
     endMonth: currentMonth + flooringDuration - 1
   });
@@ -144,7 +144,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: mepDuration,
     cost: interiorsCost * 0.25,
     percentage: (interiorsCost * 0.25 / estimate.totalCost) * 100,
-    color: "#FFA07A", // Light salmon
+    color: "#DC143C", // Crimson
     startMonth: currentMonth,
     endMonth: currentMonth + mepDuration - 1
   });
@@ -157,7 +157,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: carpentryDuration,
     cost: interiorsCost * 0.22,
     percentage: (interiorsCost * 0.22 / estimate.totalCost) * 100,
-    color: "#FFB6C1", // Light pink
+    color: "#CD5C5C", // Indian red
     startMonth: currentMonth,
     endMonth: currentMonth + carpentryDuration - 1
   });
@@ -170,7 +170,7 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: doorsWindowsDuration,
     cost: interiorsCost * 0.15,
     percentage: (interiorsCost * 0.15 / estimate.totalCost) * 100,
-    color: "#FFC0CB", // Pink
+    color: "#B22222", // Firebrick
     startMonth: currentMonth,
     endMonth: currentMonth + doorsWindowsDuration - 1
   });
@@ -183,23 +183,24 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     duration: paintingDuration,
     cost: interiorsCost * 0.10,
     percentage: (interiorsCost * 0.10 / estimate.totalCost) * 100,
-    color: "#FFE4E1", // Misty rose
+    color: "#A52A2A", // Brown-red
     startMonth: currentMonth,
     endMonth: currentMonth + paintingDuration - 1
   });
   currentMonth += paintingDuration;
 
-  // Final Handover - calculate remaining time
-  const remainingMonths = Math.max(1, estimate.timeline.totalMonths - currentMonth + 1);
+  // Final Handover - fixed duration of 1 month
+  const handoverDuration = 1;
   phases.push({
     name: "Final Inspection & Handover",
-    duration: remainingMonths,
+    duration: handoverDuration,
     cost: interiorsCost * 0.08,
     percentage: (interiorsCost * 0.08 / estimate.totalCost) * 100,
-    color: "#FADADD", // Light pink/rose
+    color: "#8B0000", // Dark red - end of gradient
     startMonth: currentMonth,
-    endMonth: estimate.timeline.totalMonths
+    endMonth: currentMonth + handoverDuration - 1
   });
+  currentMonth += handoverDuration;
 
   const totalDuration = estimate.timeline.totalMonths;
 

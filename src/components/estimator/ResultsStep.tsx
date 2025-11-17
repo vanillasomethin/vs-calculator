@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ProjectEstimate, ComponentOption } from "@/types/estimator";
-import { Share, CheckCircle2, Download, IndianRupee } from "lucide-react";
+import { Share, CheckCircle2, Download, IndianRupee, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImprovedCostVisualization from "./ImprovedCostVisualization";
 import PhaseTimelineCost from "./PhaseTimelineCost";
 import MeetingScheduler from "./MeetingScheduler";
 import { generateEstimatePDF } from "@/utils/pdfExport";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface ResultsStepProps {
   estimate: ProjectEstimate;
@@ -116,7 +123,6 @@ const COMPONENT_DESCRIPTIONS: Record<string, { standard: string[]; premium: stri
 const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   const { toast } = useToast();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const meetingSchedulerRef = useRef<HTMLDivElement>(null);
   const [showConsultationPrompt, setShowConsultationPrompt] = useState(false);
 
   const formatCurrency = (amount: number) => {
@@ -172,31 +178,29 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     }
   };
 
-  // Scroll detection for consultation prompt
+  // Scroll detection for consultation prompt - show modal once
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
+    let hasTriggered = false;
+
     const handleScroll = () => {
+      if (hasTriggered) return;
+
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
       const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
 
-      // Show consultation prompt when scrolled 70% or more
-      if (scrollPercentage >= 0.7 && !showConsultationPrompt) {
+      // Show modal when scrolled 70% or more (only once)
+      if (scrollPercentage >= 0.7) {
+        hasTriggered = true;
         setShowConsultationPrompt(true);
-        // Scroll meeting scheduler into view smoothly
-        setTimeout(() => {
-          meetingSchedulerRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-          });
-        }, 300);
       }
     };
 
     scrollContainer.addEventListener('scroll', handleScroll);
     return () => scrollContainer.removeEventListener('scroll', handleScroll);
-  }, [showConsultationPrompt]);
+  }, []);
 
   // Helper to check if component is included
   const isIncluded = (value: string | undefined): boolean => {
@@ -392,12 +396,27 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
 
         {/* Total Cost - Prominent */}
         <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-6 rounded-xl text-center">
-          <h3 className="text-sm text-vs-dark/70 mb-2">Estimated Project Cost</h3>
-          <p className="text-4xl font-bold text-vs mb-2">{formatCurrency(estimate.totalCost)}</p>
+          <h3 className="text-sm text-vs-dark/70 mb-2">Construction Cost Estimate</h3>
+          <p className="text-3xl font-bold text-vs-dark/80 mb-2">{formatCurrency(estimate.totalCost)}</p>
           <p className="text-sm text-vs-dark/70">
             {formatCurrency(Math.round(estimate.totalCost / estimate.area))} per {estimate.areaUnit}
           </p>
-          <p className="text-xs text-vs-dark/50 mt-2">All costs inclusive of GST @ 18%</p>
+        </div>
+
+        {/* Architect Fee Display */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+          <p className="text-xs text-blue-800 mb-1">+ Architect's Fee ({architectFeePercent}% as per COA standards)</p>
+          <p className="text-lg font-semibold text-blue-900">{formatCurrency(Math.round(architectFee))}</p>
+        </div>
+
+        {/* Total Estimated Project Cost - HIGHLIGHTED */}
+        <div className="bg-gradient-to-br from-vs to-vs-dark p-6 rounded-xl text-center shadow-lg border-2 border-vs-dark">
+          <h3 className="text-sm text-white/90 mb-2 font-semibold">TOTAL ESTIMATED PROJECT COST</h3>
+          <p className="text-5xl font-bold text-white mb-2">{formatCurrency(Math.round(totalWithArchitectFee))}</p>
+          <p className="text-sm text-white/90">
+            {formatCurrency(Math.round(totalWithArchitectFee / estimate.area))} per {estimate.areaUnit}
+          </p>
+          <p className="text-xs text-white/70 mt-2">All costs inclusive of GST @ 18%</p>
         </div>
 
 
@@ -470,27 +489,15 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           {/* Total Summary */}
           <div className="mt-4 pt-4 border-t border-gray-300">
             <div className="flex items-center justify-between text-lg font-bold">
-              <span className="text-vs-dark">Total Selected Components</span>
+              <span className="text-vs-dark">Total Construction Cost</span>
               <div className="flex items-center gap-1 text-vs">
                 <IndianRupee className="size-5" />
                 <span>{formatCurrency(estimate.totalCost)}</span>
               </div>
             </div>
-
-            {/* Architect Fee - mentioned without highlighting */}
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>Architect's Fee ({architectFeePercent}% as per COA standards)</span>
-                <span className="font-medium">{formatCurrency(Math.round(architectFee))}</span>
-              </div>
-              <div className="flex items-center justify-between text-base font-semibold text-gray-800 mt-2">
-                <span>Total with Architect Fee</span>
-                <div className="flex items-center gap-1">
-                  <IndianRupee className="size-4" />
-                  <span>{formatCurrency(Math.round(totalWithArchitectFee))}</span>
-                </div>
-              </div>
-            </div>
+            <p className="text-xs text-gray-500 mt-2 text-right">
+              (Architect fee shown above - Total Project Cost: {formatCurrency(Math.round(totalWithArchitectFee))})
+            </p>
           </div>
         </div>
 
@@ -507,11 +514,6 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           </ul>
         </div>
       </motion.div>
-
-      {/* Meeting Scheduler */}
-      <div ref={meetingSchedulerRef}>
-        <MeetingScheduler autoExpand={showConsultationPrompt} />
-      </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
@@ -536,6 +538,30 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
           Start New Estimate
         </button>
       </div>
+
+      {/* Modal Dialog for Meeting Scheduler */}
+      <Dialog open={showConsultationPrompt} onOpenChange={setShowConsultationPrompt}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-vs-dark">
+              Ready to Get Started?
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              Schedule a consultation with our team to discuss your project in detail
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <MeetingScheduler autoExpand={true} />
+          </div>
+          <button
+            onClick={() => setShowConsultationPrompt(false)}
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Close"
+          >
+            <X className="size-5 text-gray-500" />
+          </button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

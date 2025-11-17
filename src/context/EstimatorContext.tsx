@@ -236,26 +236,45 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     // Convert to approximate building size units
     const sizeUnits = estimate.area / (estimate.areaUnit === "sqft" ? 1000 : 100);
 
+    // Check if this is an interior-only project
+    const isInteriorOnly = estimate.workTypes?.includes("interiors") &&
+                          !estimate.workTypes?.includes("construction");
+    const hasConstruction = estimate.workTypes?.includes("construction");
+    const hasInteriors = estimate.workTypes?.includes("interiors");
+
     // Base timeline in months
     let planningMonths = 2;
-    let constructionMonths = 6;
-    let interiorsMonths = 2;
+    let constructionMonths = hasConstruction ? 6 : 0;
+    let interiorsMonths = hasInteriors ? 2 : 0;
 
-    // Project type adjustment
-    if (estimate.projectType === "commercial") {
-      planningMonths += 1;
-      constructionMonths += 2;
-      interiorsMonths += 1;
-    } else if (estimate.projectType === "mixed-use") {
-      planningMonths += 2;
-      constructionMonths += 4;
-      interiorsMonths += 1;
+    // For interior-only projects, reduce planning time
+    if (isInteriorOnly) {
+      planningMonths = 1;
+      constructionMonths = 0;
+      interiorsMonths = 3; // More time for detailed interior work
+    }
+
+    // Project type adjustment (only if construction is involved)
+    if (hasConstruction) {
+      if (estimate.projectType === "commercial") {
+        planningMonths += 1;
+        constructionMonths += 2;
+        interiorsMonths += hasInteriors ? 1 : 0;
+      } else if (estimate.projectType === "mixed-use") {
+        planningMonths += 2;
+        constructionMonths += 4;
+        interiorsMonths += hasInteriors ? 1 : 0;
+      }
     }
 
     // Area adjustment (add time for larger projects)
     const areaAddition = Math.floor(sizeUnits / 2);
-    constructionMonths += areaAddition;
-    interiorsMonths += Math.floor(areaAddition / 2);
+    if (hasConstruction) {
+      constructionMonths += areaAddition;
+    }
+    if (hasInteriors) {
+      interiorsMonths += Math.floor(areaAddition / 2);
+    }
 
     // Quality level adjustments - premium and luxury projects take longer
     const qualityMultiplier = (() => {
@@ -283,18 +302,26 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     })();
 
     // Apply quality multiplier
-    constructionMonths = constructionMonths * qualityMultiplier;
-    interiorsMonths = interiorsMonths * qualityMultiplier;
+    if (hasConstruction) {
+      constructionMonths = constructionMonths * qualityMultiplier;
+    }
+    if (hasInteriors) {
+      interiorsMonths = interiorsMonths * qualityMultiplier;
+    }
 
     // Complexity adjustment
     const complexityFactor = 1 + ((estimate.complexity - 5) * 0.1);
-    constructionMonths = Math.ceil(constructionMonths * complexityFactor);
-    interiorsMonths = Math.ceil(interiorsMonths * complexityFactor);
+    if (hasConstruction) {
+      constructionMonths = Math.ceil(constructionMonths * complexityFactor);
+    }
+    if (hasInteriors) {
+      interiorsMonths = Math.ceil(interiorsMonths * complexityFactor);
+    }
 
     // Ensure minimum values
     planningMonths = Math.max(1, Math.round(planningMonths));
-    constructionMonths = Math.max(3, Math.round(constructionMonths));
-    interiorsMonths = Math.max(1, Math.round(interiorsMonths));
+    constructionMonths = hasConstruction ? Math.max(3, Math.round(constructionMonths)) : 0;
+    interiorsMonths = hasInteriors ? Math.max(1, Math.round(interiorsMonths)) : 0;
 
     return {
       totalMonths: planningMonths + constructionMonths + interiorsMonths,

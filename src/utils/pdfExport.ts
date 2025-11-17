@@ -10,12 +10,9 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
 
   // Helper functions
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    // Format without Intl to avoid spaces in PDF
+    const formatted = Math.round(amount).toLocaleString('en-IN');
+    return `₹${formatted}`.replace(/\s/g, ''); // Remove all spaces
   };
 
   const toSentenceCase = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
