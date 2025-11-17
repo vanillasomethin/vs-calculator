@@ -43,7 +43,7 @@ const ComponentsStep = ({
   const components = [
     {
       key: "civilQuality",
-      title: "Quality of Construction - Civil Materials",
+      title: "Civil Materials",
       icon: <Hammer className="size-6" />,
       value: civilQuality,
       required: workTypes.includes("construction"),

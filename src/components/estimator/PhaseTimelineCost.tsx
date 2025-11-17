@@ -223,63 +223,12 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
       {/* Timeline ruler */}
       <div className="mt-4">
         <div className="flex justify-between text-[10px] text-gray-400 mb-1">
-          {Array.from({ length: Math.min(totalDuration + 1, 13) }, (_, i) => (
-            <span key={i}>M{i}</span>
+          {Array.from({ length: Math.min(totalDuration, 12) }, (_, i) => (
+            <span key={i}>M{i + 1}</span>
           ))}
+          {totalDuration > 12 && <span>M{totalDuration}</span>}
         </div>
         <div className="h-1 bg-gray-200 w-full rounded-full"></div>
-      </div>
-
-      {/* Detailed Cost & Timeline Table */}
-      <div className="mt-6">
-        <h4 className="text-sm font-semibold text-vs-dark mb-3">Phase-wise Cost & Timeline Summary</h4>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="bg-vs/10">
-                <th className="border border-vs/20 px-2 py-2 text-left font-semibold text-vs-dark">Phase</th>
-                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">Duration</th>
-                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">Timeline</th>
-                <th className="border border-vs/20 px-2 py-2 text-right font-semibold text-vs-dark">Cost</th>
-                <th className="border border-vs/20 px-2 py-2 text-center font-semibold text-vs-dark">% of Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {phases.map((phase, index) => (
-                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="border border-gray-200 px-2 py-2 text-gray-800">{phase.name}</td>
-                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-700">
-                    {phase.duration} {phase.duration === 1 ? 'month' : 'months'}
-                  </td>
-                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-600">
-                    M{phase.startMonth}-M{phase.endMonth}
-                  </td>
-                  <td className="border border-gray-200 px-2 py-2 text-right font-semibold text-vs">
-                    {formatCurrency(phase.cost)}
-                  </td>
-                  <td className="border border-gray-200 px-2 py-2 text-center text-gray-600">
-                    {phase.percentage.toFixed(1)}%
-                  </td>
-                </tr>
-              ))}
-              <tr className="bg-vs/5 font-bold">
-                <td className="border border-vs/30 px-2 py-2 text-vs-dark">Total</td>
-                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
-                  {totalDuration} months
-                </td>
-                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
-                  M1-M{totalDuration}
-                </td>
-                <td className="border border-vs/30 px-2 py-2 text-right text-vs">
-                  {formatCurrency(estimate.totalCost)}
-                </td>
-                <td className="border border-vs/30 px-2 py-2 text-center text-vs-dark">
-                  100%
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
 
       {/* Cost distribution summary */}

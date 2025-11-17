@@ -2,6 +2,7 @@ export interface FeeRates {
   typologies: Record<string, { model: 'PERCENT' | 'SQM'; rate: number; min: number }>;
   clientMultipliers: Record<string, number>;
   complexity: Record<string, number>;
+  clientInvolvementMultipliers: Record<string, number>;
   premiumMultiplier: number;
   rushMultiplier: number;
   vizPrices: Record<string, number>;
@@ -31,6 +32,13 @@ export const defaultFeeRates: FeeRates = {
     "Standard": 1.0,
     "Premium": 1.2,
     "Luxury": 1.5,
+  },
+  clientInvolvementMultipliers: {
+    "Minimal": 1.035,      // +2-5% (average 3.5%)
+    "Low": 1.075,          // +5-10% (average 7.5%)
+    "Moderate": 1.125,     // +10-15% (average 12.5%)
+    "High": 1.175,         // +15-20% (average 17.5%)
+    "Flexible": 1.10,      // Negotiated (average 10%)
   },
   premiumMultiplier: 1.0,
   rushMultiplier: 1.25,
@@ -65,28 +73,30 @@ export function calculateArchitectFee(
   vizPackage: string = "Standard",
   isRush: boolean = false,
   currency: string = "INR",
+  clientInvolvement: string = "Moderate",
   rates: FeeRates = defaultFeeRates
 ) {
   const typ = rates.typologies[projectType] || rates.typologies["Individual House"];
   const clientMult = rates.clientMultipliers[clientType] || 1;
   const complexityMult = rates.complexity[complexity] || 1;
+  const involvementMult = rates.clientInvolvementMultipliers[clientInvolvement] || 1;
   const premiumMult = rates.premiumMultiplier;
   const rushMult = isRush ? rates.rushMultiplier : 1;
 
-  let rawFee = typ.model === "PERCENT" ? 
-    constructionCost * typ.rate : 
+  let rawFee = typ.model === "PERCENT" ?
+    constructionCost * typ.rate :
     area * typ.rate;
 
-  const feeAfterMultipliers = rawFee * clientMult * complexityMult * premiumMult * rushMult;
+  const feeAfterMultipliers = rawFee * clientMult * complexityMult * premiumMult * rushMult * involvementMult;
   const baseFee = Math.max(typ.min || 0, rates.minimumFeeStudio || 0, feeAfterMultipliers);
 
-  const ffeFee = includeFFE ? 
+  const ffeFee = includeFFE ?
     Math.max(
       rates.typologies["FF&E Procurement"].min,
       constructionCost * 0.15 * rates.typologies["FF&E Procurement"].rate
     ) : 0;
 
-  const landscapeFee = includeLandscape ? 
+  const landscapeFee = includeLandscape ?
     Math.max(
       rates.typologies["Landscape - Detailed"].min,
       area * rates.typologies["Landscape - Detailed"].rate
@@ -94,6 +104,10 @@ export function calculateArchitectFee(
 
   const vizFee = rates.vizPrices[vizPackage] || 0;
   const overheadAllocation = 80000 / 3;
+
+  // Calculate Client Involvement Factor adjustment
+  const baseFeeBeforeCIF = rawFee * clientMult * complexityMult * premiumMult * rushMult;
+  const cifAdjustment = baseFeeBeforeCIF * (involvementMult - 1);
 
   const subtotal = baseFee + ffeFee + landscapeFee + vizFee + overheadAllocation;
   const profit = Math.round(subtotal * rates.profitMargin);
@@ -109,6 +123,8 @@ export function calculateArchitectFee(
     landscapeFee,
     vizFee,
     overheadAllocation,
+    cifAdjustment: Math.round(cifAdjustment / fx),
+    involvementMultiplier: involvementMult,
     profit,
     tax,
     totalFee: totalInCurrency,

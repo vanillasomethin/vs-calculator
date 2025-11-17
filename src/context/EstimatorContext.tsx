@@ -52,30 +52,32 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 };
 
 // Component pricing per square meter (in INR)
+// Updated based on realistic 2025 Indian construction costs
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
   // Core Construction Components
-  civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
-  plumbing: { none: 0, standard: 300, premium: 550, luxury: 950 },
-  electrical: { none: 0, standard: 250, premium: 480, luxury: 850 },
-  ac: { none: 0, standard: 350, premium: 600, luxury: 1100 },
-  elevator: { none: 0, standard: 1100, premium: 1700, luxury: 2800 },
+  civilQuality: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
+  plumbing: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
+  electrical: { none: 0, standard: 450, premium: 850, luxury: 1650 },
+  ac: { none: 0, standard: 650, premium: 1300, luxury: 2800 },
+  elevator: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
 
   // Finishes & Envelope
-  buildingEnvelope: { none: 0, standard: 250, premium: 500, luxury: 950 },
-  lighting: { none: 0, standard: 180, premium: 400, luxury: 800 },
-  windows: { none: 0, standard: 300, premium: 600, luxury: 1200 },
-  ceiling: { none: 0, standard: 180, premium: 360, luxury: 750 },
-  surfaces: { none: 0, standard: 350, premium: 700, luxury: 1400 },
+  buildingEnvelope: { none: 0, standard: 400, premium: 800, luxury: 1600 },
+  lighting: { none: 0, standard: 300, premium: 650, luxury: 1300 },
+  windows: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
+  ceiling: { none: 0, standard: 300, premium: 600, luxury: 1200 },
+  surfaces: { none: 0, standard: 550, premium: 1100, luxury: 2200 },
 
   // Interior Components
-  fixedFurniture: { none: 0, standard: 500, premium: 900, luxury: 1700 },
-  looseFurniture: { none: 0, standard: 350, premium: 700, luxury: 1500 },
-  furnishings: { none: 0, standard: 120, premium: 280, luxury: 600 },
-  appliances: { none: 0, standard: 250, premium: 500, luxury: 1000 },
-  artefacts: { none: 0, standard: 100, premium: 250, luxury: 550 },
+  fixedFurniture: { none: 0, standard: 900, premium: 1700, luxury: 3200 },
+  looseFurniture: { none: 0, standard: 650, premium: 1300, luxury: 3000 },
+  furnishings: { none: 0, standard: 200, premium: 450, luxury: 950 },
+  appliances: { none: 0, standard: 400, premium: 800, luxury: 1800 },
+  artefacts: { none: 0, standard: 150, premium: 400, luxury: 900 },
 };
 
 // Base construction cost per square meter (foundation, structure, masonry)
+// Includes excavation, foundation, RCC work, brickwork, plastering
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
   residential: 7350,    // ₹7,350/sqm for residential (achieves ₹1,750-1,900/sqft target)
   commercial: 9200,     // ₹9,200/sqm for commercial projects

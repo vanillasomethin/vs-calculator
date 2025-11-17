@@ -15,22 +15,23 @@ interface ResultsStepProps {
 }
 
 // Component pricing per square meter mapping for display
+// Updated based on realistic 2025 Indian construction costs
 const COMPONENT_PRICING_PER_SQM: Record<string, Record<ComponentOption, number>> = {
-  civilQuality: { none: 0, standard: 900, premium: 1400, luxury: 2200 },
-  plumbing: { none: 0, standard: 300, premium: 550, luxury: 950 },
-  electrical: { none: 0, standard: 250, premium: 480, luxury: 850 },
-  ac: { none: 0, standard: 350, premium: 600, luxury: 1100 },
-  elevator: { none: 0, standard: 1100, premium: 1700, luxury: 2800 },
-  buildingEnvelope: { none: 0, standard: 250, premium: 500, luxury: 950 },
-  lighting: { none: 0, standard: 180, premium: 400, luxury: 800 },
-  windows: { none: 0, standard: 300, premium: 600, luxury: 1200 },
-  ceiling: { none: 0, standard: 180, premium: 360, luxury: 750 },
-  surfaces: { none: 0, standard: 350, premium: 700, luxury: 1400 },
-  fixedFurniture: { none: 0, standard: 500, premium: 900, luxury: 1700 },
-  looseFurniture: { none: 0, standard: 350, premium: 700, luxury: 1500 },
-  furnishings: { none: 0, standard: 120, premium: 280, luxury: 600 },
-  appliances: { none: 0, standard: 250, premium: 500, luxury: 1000 },
-  artefacts: { none: 0, standard: 100, premium: 250, luxury: 550 },
+  civilQuality: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
+  plumbing: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
+  electrical: { none: 0, standard: 450, premium: 850, luxury: 1650 },
+  ac: { none: 0, standard: 650, premium: 1300, luxury: 2800 },
+  elevator: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
+  buildingEnvelope: { none: 0, standard: 400, premium: 800, luxury: 1600 },
+  lighting: { none: 0, standard: 300, premium: 650, luxury: 1300 },
+  windows: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
+  ceiling: { none: 0, standard: 300, premium: 600, luxury: 1200 },
+  surfaces: { none: 0, standard: 550, premium: 1100, luxury: 2200 },
+  fixedFurniture: { none: 0, standard: 900, premium: 1700, luxury: 3200 },
+  looseFurniture: { none: 0, standard: 650, premium: 1300, luxury: 3000 },
+  furnishings: { none: 0, standard: 200, premium: 450, luxury: 950 },
+  appliances: { none: 0, standard: 400, premium: 800, luxury: 1800 },
+  artefacts: { none: 0, standard: 150, premium: 400, luxury: 900 },
 };
 
 // Component descriptions for detailed breakdown
@@ -157,7 +158,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   const pricingList = [
     isIncluded(estimate.civilQuality) && {
       category: "Core Components",
-      name: "Quality of Construction - Civil Materials",
+      name: "Civil Materials",
       level: estimate.civilQuality,
       description: COMPONENT_DESCRIPTIONS.civilQuality,
       perSqm: COMPONENT_PRICING_PER_SQM.civilQuality[estimate.civilQuality],
@@ -291,18 +292,6 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.artefacts[estimate.artefacts] * areaInSqM),
     },
   ].filter(Boolean);
-
-  // Calculate architect fee (COA standards)
-  const getArchitectFeePercentage = (projectCost: number): number => {
-    if (projectCost <= 5000000) return 12;
-    if (projectCost <= 10000000) return 10;
-    if (projectCost <= 50000000) return 9;
-    return 8;
-  };
-
-  const architectFeePercent = getArchitectFeePercentage(estimate.totalCost);
-  const architectFee = estimate.totalCost * (architectFeePercent / 100);
-  const totalWithArchitectFee = estimate.totalCost + architectFee;
 
   return (
     <div

@@ -24,7 +24,7 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
 
   const categoryData = [
     { name: 'Construction', value: estimate.categoryBreakdown.construction, color: COLORS.construction },
-    { name: 'Core Systems', value: estimate.categoryBreakdown.core, color: COLORS.core },
+    { name: 'Services', value: estimate.categoryBreakdown.core, color: COLORS.core },
     { name: 'Finishes', value: estimate.categoryBreakdown.finishes, color: COLORS.finishes },
     { name: 'Interiors', value: estimate.categoryBreakdown.interiors, color: COLORS.interiors },
   ].filter(item => item.value > 0);

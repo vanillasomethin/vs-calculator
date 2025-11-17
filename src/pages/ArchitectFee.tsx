@@ -10,6 +10,7 @@ const ArchitectFee = () => {
   const [area, setArea] = useState<number>(2000);
   const [clientType, setClientType] = useState('Individual');
   const [complexity, setComplexity] = useState('Standard');
+  const [clientInvolvement, setClientInvolvement] = useState('Moderate');
   const [includeFFE, setIncludeFFE] = useState(false);
   const [includeLandscape, setIncludeLandscape] = useState(false);
   const [vizPackage, setVizPackage] = useState('Standard');
@@ -28,7 +29,8 @@ const ArchitectFee = () => {
     includeLandscape,
     vizPackage,
     isRush,
-    currency
+    currency,
+    clientInvolvement
   );
 
   const currencySymbol = currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '€';
@@ -177,6 +179,28 @@ const ArchitectFee = () => {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium mb-2">Client Involvement Level</label>
+                  <select
+                    value={clientInvolvement}
+                    onChange={(e) => setClientInvolvement(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-vs/20 bg-background focus:outline-none focus:ring-2 focus:ring-vs/30"
+                  >
+                    <option value="Minimal">Minimal (+2-5%)</option>
+                    <option value="Low">Low (+5-10%)</option>
+                    <option value="Moderate">Moderate (+10-15%)</option>
+                    <option value="High">High (+15-20%)</option>
+                    <option value="Flexible">Flexible (Negotiated)</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {clientInvolvement === 'Minimal' && 'Client provides clear brief, trusts design decisions'}
+                    {clientInvolvement === 'Low' && 'Occasional input on major decisions only'}
+                    {clientInvolvement === 'Moderate' && 'Regular reviews and feedback on key milestones'}
+                    {clientInvolvement === 'High' && 'Frequent involvement, detailed reviews, multiple revisions'}
+                    {clientInvolvement === 'Flexible' && 'Custom arrangement based on project needs'}
+                  </p>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium mb-2">Visualization Package</label>
                   <select
                     value={vizPackage}
@@ -253,6 +277,16 @@ const ArchitectFee = () => {
                   <span className="text-sm text-gray-700">Base Design Fee:</span>
                   <span className="text-sm font-semibold text-vs-dark">{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
                 </div>
+
+                {architectFee.cifAdjustment > 0 && (
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-700">
+                      Client Involvement Factor:
+                      <span className="text-xs text-muted-foreground ml-1">({clientInvolvement})</span>
+                    </span>
+                    <span className="text-sm font-semibold text-vs-dark">+{currencySymbol}{architectFee.cifAdjustment.toLocaleString()}</span>
+                  </div>
+                )}
 
                 {includeFFE && (
                   <div className="flex justify-between py-2 border-b border-gray-200">
