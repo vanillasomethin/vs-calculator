@@ -231,45 +231,71 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
 
   // Calculate timeline
   const calculateTimeline = useCallback((
-    projectType: string,
-    area: number,
-    areaUnit: string,
-    complexity: number
+    estimate: ProjectEstimate
   ) => {
     // Convert to approximate building size units
-    const sizeUnits = area / (areaUnit === "sqft" ? 1000 : 100);
-    
+    const sizeUnits = estimate.area / (estimate.areaUnit === "sqft" ? 1000 : 100);
+
     // Base timeline in months
     let planningMonths = 2;
     let constructionMonths = 6;
     let interiorsMonths = 2;
-    
+
     // Project type adjustment
-    if (projectType === "commercial") {
+    if (estimate.projectType === "commercial") {
       planningMonths += 1;
       constructionMonths += 2;
       interiorsMonths += 1;
-    } else if (projectType === "mixed-use") {
+    } else if (estimate.projectType === "mixed-use") {
       planningMonths += 2;
       constructionMonths += 4;
       interiorsMonths += 1;
     }
-    
+
     // Area adjustment (add time for larger projects)
     const areaAddition = Math.floor(sizeUnits / 2);
     constructionMonths += areaAddition;
     interiorsMonths += Math.floor(areaAddition / 2);
-    
+
+    // Quality level adjustments - premium and luxury projects take longer
+    const qualityMultiplier = (() => {
+      const components = [
+        estimate.civilQuality,
+        estimate.plumbing,
+        estimate.electrical,
+        estimate.ac,
+        estimate.buildingEnvelope,
+        estimate.lighting,
+        estimate.windows,
+        estimate.ceiling,
+        estimate.surfaces,
+        estimate.fixedFurniture,
+        estimate.looseFurniture,
+        estimate.furnishings,
+        estimate.appliances,
+      ];
+
+      const luxuryCount = components.filter(c => c === 'luxury').length;
+      const premiumCount = components.filter(c => c === 'premium').length;
+
+      // Each luxury component adds 3% to timeline, premium adds 1.5%
+      return 1 + (luxuryCount * 0.03) + (premiumCount * 0.015);
+    })();
+
+    // Apply quality multiplier
+    constructionMonths = constructionMonths * qualityMultiplier;
+    interiorsMonths = interiorsMonths * qualityMultiplier;
+
     // Complexity adjustment
-    const complexityFactor = 1 + ((complexity - 5) * 0.1);
+    const complexityFactor = 1 + ((estimate.complexity - 5) * 0.1);
     constructionMonths = Math.ceil(constructionMonths * complexityFactor);
     interiorsMonths = Math.ceil(interiorsMonths * complexityFactor);
-    
+
     // Ensure minimum values
     planningMonths = Math.max(1, Math.round(planningMonths));
     constructionMonths = Math.max(3, Math.round(constructionMonths));
     interiorsMonths = Math.max(1, Math.round(interiorsMonths));
-    
+
     return {
       totalMonths: planningMonths + constructionMonths + interiorsMonths,
       phases: {
@@ -332,12 +358,7 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     const interiorsPhaseCost = interiors + finishes + (core * 0.4) + professionalFees * 0.5 + contingency + gst;
 
     // 12. Calculate timeline
-    const timeline = calculateTimeline(
-      currentEstimate.projectType,
-      currentEstimate.area,
-      currentEstimate.areaUnit,
-      currentEstimate.complexity
-    );
+    const timeline = calculateTimeline(currentEstimate);
 
     return {
       ...currentEstimate,

@@ -37,8 +37,7 @@ export type RoomConfiguration =
   | "4BHK"
   | "5BHK+"
   | "Studio"
-  | "Penthouse"
-  | "Villa";
+  | "Penthouse";
 
 // Landscape area types
 export type LandscapeArea =

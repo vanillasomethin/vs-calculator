@@ -78,8 +78,10 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   ];
 
   details.forEach(([label, value]) => {
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(label, margin + 5, yPos, { maxWidth: 50 });
+    doc.setTextColor(0, 0, 0);
+    doc.text(label, margin + 5, yPos);
     doc.setFont('helvetica', 'normal');
     doc.text(value, margin + 60, yPos);
     yPos += 7;
@@ -152,8 +154,12 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
     if (item.value > 0) {
       doc.setFillColor(...item.color);
       doc.roundedRect(margin + 5, yPos - 4, 4, 4, 1, 1, 'F');
-      addText(item.label, margin + 12, yPos, 10);
-      addText(formatCurrency(item.value), pageWidth - margin - 5, yPos, 10, 'bold', 'right');
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text(item.label, margin + 12, yPos);
+      doc.setFont('helvetica', 'bold');
+      doc.text(formatCurrency(item.value), pageWidth - margin - 5, yPos, { align: 'right' });
       yPos += 7;
     }
   });
@@ -176,8 +182,11 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   ];
 
   phases.forEach(phase => {
-    addText(`• ${phase.label}:`, margin + 10, yPos, 9);
-    addText(`${phase.months} ${phase.months === 1 ? 'month' : 'months'}`, pageWidth - margin - 5, yPos, 9, 'normal', 'right');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    doc.text(`• ${phase.label}:`, margin + 10, yPos);
+    doc.text(`${phase.months} ${phase.months === 1 ? 'month' : 'months'}`, pageWidth - margin - 5, yPos, { align: 'right' });
     yPos += 6;
   });
 
@@ -254,27 +263,35 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
       doc.rect(margin, yPos - 5, pageWidth - 2 * margin, 10, 'F');
     }
 
-    doc.setFontSize(10);
+    // Component name - consistent font size
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
-    doc.text(item.name, margin + 5, yPos);
+    const nameText = item.name.length > 25 ? item.name.substring(0, 25) + '...' : item.name;
+    doc.text(nameText, margin + 3, yPos);
 
+    // Quality level - consistent size and position
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(79, 9, 12);
-    doc.text(formatLevel(item.level), margin + 85, yPos);
+    doc.text(formatLevel(item.level), margin + 68, yPos);
 
+    // Per unit price - consistent size
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 100, 0);
     const priceText = `₹${perUnit.toLocaleString('en-IN')}/${estimate.areaUnit}`;
-    doc.text(priceText, margin + 125, yPos);
+    doc.text(priceText, margin + 105, yPos);
 
+    // Total cost - consistent size, right aligned
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
     const totalText = formatCurrency(totalCost);
-    doc.text(totalText, pageWidth - margin - 5, yPos, { align: 'right' });
+    doc.text(totalText, pageWidth - margin - 3, yPos, { align: 'right' });
 
     doc.setFont('helvetica', 'normal');
-    yPos += 9;
+    yPos += 8;
   });
 
   // Disclaimer

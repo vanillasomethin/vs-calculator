@@ -117,6 +117,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   const { toast } = useToast();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const meetingSchedulerRef = useRef<HTMLDivElement>(null);
+  const [showConsultationPrompt, setShowConsultationPrompt] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -170,6 +171,32 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       });
     }
   };
+
+  // Scroll detection for consultation prompt
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+
+      // Show consultation prompt when scrolled 70% or more
+      if (scrollPercentage >= 0.7 && !showConsultationPrompt) {
+        setShowConsultationPrompt(true);
+        // Scroll meeting scheduler into view smoothly
+        setTimeout(() => {
+          meetingSchedulerRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          });
+        }, 300);
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, [showConsultationPrompt]);
 
   // Helper to check if component is included
   const isIncluded = (value: string | undefined): boolean => {
@@ -483,7 +510,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
 
       {/* Meeting Scheduler */}
       <div ref={meetingSchedulerRef}>
-        <MeetingScheduler autoExpand={false} />
+        <MeetingScheduler autoExpand={showConsultationPrompt} />
       </div>
 
       {/* Action Buttons */}

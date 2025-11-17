@@ -103,7 +103,6 @@ const ProjectTypeStep = ({
     { id: "4BHK", title: "4 BHK", description: "4 Bedrooms, Hall, Kitchen" },
     { id: "5BHK+", title: "5+ BHK", description: "5 or more Bedrooms" },
     { id: "Penthouse", title: "Penthouse", description: "Luxury top-floor residence" },
-    { id: "Villa", title: "Villa", description: "Independent house" },
   ];
 
   const landscapeAreaOptions: LandscapeAreaOption[] = [
