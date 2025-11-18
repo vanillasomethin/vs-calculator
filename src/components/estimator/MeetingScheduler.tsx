@@ -53,19 +53,33 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
 
   const mainOptions: MainOption[] = [
     {
-      id: "schedule",
-      title: "Schedule a Meeting",
-      description: "Virtual, At Office, or At Site",
+      id: "schedule-virtual",
+      title: "Schedule Virtual Meeting",
+      description: "Book instantly via Cal.com",
       icon: <Calendar className="size-6" />,
-      hasSubOptions: true,
+      action: () => {
+        setSelectedMainOption("schedule-virtual");
+      }
     },
-    ...(isCalComConfigured() ? [{
-      id: "api-booking" as MainOptionType,
-      title: "Quick Booking",
-      description: "3-step booking with project details",
-      icon: <Zap className="size-6" />,
-      hasSubOptions: true,
-    }] : []),
+    {
+      id: "schedule-site",
+      title: "Request via WhatsApp",
+      description: "On-site or Office visit",
+      icon: <MessageCircle className="size-6" />,
+      action: () => {
+        const message = `Hi! I'd like to schedule a consultation to discuss my project. Please let me know your availability.`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+      }
+    },
+    {
+      id: "schedule-office",
+      title: "Contact via Email",
+      description: "Send detailed requirements",
+      icon: <Mail className="size-6" />,
+      action: () => {
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Project Consultation Request")}&body=${encodeURIComponent("Hi! I'd like to schedule a consultation to discuss my project. Please let me know your availability.")}`;
+      }
+    },
   ];
 
   const scheduleOptions: ScheduleOption[] = [
@@ -101,7 +115,7 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
   ];
 
   const handleMainOptionClick = (option: MainOption) => {
-    if (option.hasSubOptions) {
+    if (option.id === "schedule-virtual") {
       setSelectedMainOption(option.id);
     } else {
       setSelectedMainOption(option.id);
@@ -159,13 +173,11 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
           {shouldPulse ? "👋 Ready to get started?" : "Let's Connect"}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {selectedMainOption === "schedule"
-            ? "Choose your preferred meeting location"
-            : selectedMainOption === "schedule-virtual"
-              ? "Select your preferred meeting duration"
-              : shouldPulse
-                ? "Schedule a consultation to discuss your project in detail"
-                : "Choose your preferred way to connect with our team"
+          {selectedMainOption === "schedule-virtual"
+            ? "Select your preferred meeting duration"
+            : shouldPulse
+              ? "Schedule a consultation to discuss your project in detail"
+              : "Choose your preferred way to connect with our team"
           }
         </p>
       </div>
@@ -216,120 +228,6 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
               </div>
             </div>
           </motion.div>
-        ) : selectedMainOption === "api-booking" ? (
-          <motion.div
-            key="api-booking"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Back button */}
-            <button
-              onClick={handleBack}
-              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
-            >
-              ← Back to main options
-            </button>
-
-            <CalBookingForm
-              estimate={estimate}
-              onSuccess={handleBack}
-              onCancel={handleBack}
-            />
-          </motion.div>
-        ) : selectedMainOption === "schedule" ? (
-          <motion.div
-            key="schedule-options"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Back button */}
-            <button
-              onClick={handleBack}
-              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
-            >
-              ← Back to main options
-            </button>
-
-            {/* Date & Time Selection */}
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h4 className="text-sm font-semibold text-vs-dark mb-3 flex items-center gap-2">
-                <Calendar className="size-4" />
-                Select Preferred Date & Time
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-vs/20 focus:border-vs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Time</label>
-                  <select
-                    value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-vs/20 focus:border-vs"
-                  >
-                    <option value="">Select time</option>
-                    <option value="09:00 AM - 10:00 AM">09:00 AM - 10:00 AM</option>
-                    <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
-                    <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
-                    <option value="12:00 PM - 01:00 PM">12:00 PM - 01:00 PM</option>
-                    <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM</option>
-                    <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
-                    <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
-                    <option value="05:00 PM - 06:00 PM">05:00 PM - 06:00 PM</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Schedule Sub-options */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {scheduleOptions.map((option, index) => (
-                <motion.div
-                  key={option.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  <button
-                    onClick={() => handleSubOptionClick(option)}
-                    className={cn(
-                      "w-full group relative flex flex-col items-center p-5 border rounded-lg transition-all duration-300 text-center hover:shadow-md",
-                      selectedSubOption === option.id
-                        ? "border-vs bg-vs/5 shadow-sm"
-                        : "border-gray-200 hover:border-vs/50"
-                    )}
-                  >
-                    <div className={cn(
-                      "flex items-center justify-center size-12 rounded-lg transition-colors mb-3",
-                      selectedSubOption === option.id
-                        ? "bg-vs text-white"
-                        : "bg-gray-100 text-gray-600 group-hover:bg-vs/10 group-hover:text-vs"
-                    )}>
-                      {selectedSubOption === option.id ? (
-                        <CheckCircle2 className="size-6" />
-                      ) : (
-                        option.icon
-                      )}
-                    </div>
-
-                    <h4 className="font-semibold text-vs-dark mb-2">{option.title}</h4>
-                    <p className="text-xs text-muted-foreground">{option.description}</p>
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         ) : (
           <motion.div
             key="main-options"
@@ -370,12 +268,6 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
 
                   <h4 className="font-semibold text-vs-dark mb-2 text-base">{option.title}</h4>
                   <p className="text-sm text-muted-foreground mb-3">{option.description}</p>
-
-                  {option.hasSubOptions && (
-                    <div className="flex items-center gap-1 text-xs font-medium text-vs group-hover:gap-2 transition-all">
-                      View Options <ChevronRight className="size-4" />
-                    </div>
-                  )}
                 </button>
               </motion.div>
             ))}

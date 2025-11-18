@@ -47,9 +47,9 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   doc.setTextColor(255, 255, 255);
 
   // Company Logo/Name
-  addText('Vanilla&Somethin\'', pageWidth / 2, 15, 18, 'bold', 'center');
+  addText('Vanilla Somethin', pageWidth / 2, 15, 18, 'bold', 'center');
   addText('CONSTRUCTION COST ESTIMATE', pageWidth / 2, 26, 20, 'bold', 'center');
-  addText('Professional Architecture & Design', pageWidth / 2, 34, 10, 'normal', 'center');
+  addText('Professional Architecture and Design', pageWidth / 2, 34, 10, 'normal', 'center');
   addText('www.vanillasometh.in | hello@vanillasometh.in | +91 741 134 9844', pageWidth / 2, 42, 9, 'normal', 'center');
   yPos = 60;
 
@@ -121,7 +121,7 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
   doc.setFillColor(240, 245, 250);
   doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 28, 3, 3, 'F');
   yPos += 9;
-  addText(`Architect's Fee (${architectFeePercent}% as per COA standards):`, margin + 5, yPos, 11, 'normal');
+  addText(`Architect Fee (${architectFeePercent}% as per COA standards):`, margin + 5, yPos, 11, 'normal');
   addText(formatCurrency(Math.round(architectFee)), pageWidth - margin - 5, yPos, 11, 'bold', 'right');
   yPos += 9;
   doc.setDrawColor(150, 150, 150);

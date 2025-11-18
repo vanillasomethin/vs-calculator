@@ -32,29 +32,51 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
   const distributeMonths = (totalMonths: number, percentages: number[]): number[] => {
     if (totalMonths === 0) return percentages.map(() => 0);
 
-    // Calculate initial durations with floor to be conservative
-    const durations = percentages.map(p => Math.floor(totalMonths * p));
+    const numPhases = percentages.length;
 
-    // Calculate remainder to distribute
-    let remainder = totalMonths - durations.reduce((sum, d) => sum + d, 0);
+    // If we have fewer months than phases, only allocate to top phases
+    if (totalMonths < numPhases) {
+      const durations = new Array(numPhases).fill(0);
+      // Sort by percentage to prioritize important phases
+      const sortedIndices = percentages
+        .map((p, i) => ({ index: i, percent: p }))
+        .sort((a, b) => b.percent - a.percent);
 
-    // Calculate fractional parts for smart distribution
-    const fractionalParts = percentages.map((p, i) => ({
+      // Allocate 1 month to top N phases
+      for (let i = 0; i < totalMonths; i++) {
+        durations[sortedIndices[i].index] = 1;
+      }
+      return durations;
+    }
+
+    // For sufficient months, ensure each phase gets at least 1 month
+    const durations = percentages.map(() => 1);
+    let remainingMonths = totalMonths - numPhases;
+
+    // Distribute remaining months proportionally
+    const proportions = percentages.map(p => p * remainingMonths);
+    const additionalDurations = proportions.map(p => Math.floor(p));
+
+    // Add the floor amounts
+    for (let i = 0; i < numPhases; i++) {
+      durations[i] += additionalDurations[i];
+    }
+
+    // Distribute final remainder based on fractional parts
+    let remainder = remainingMonths - additionalDurations.reduce((a, b) => a + b, 0);
+    const fractionalParts = proportions.map((p, i) => ({
       index: i,
-      fraction: (totalMonths * p) - durations[i]
+      fraction: p - additionalDurations[i]
     }));
-
-    // Sort by fractional part (largest first) to distribute remainder fairly
     fractionalParts.sort((a, b) => b.fraction - a.fraction);
 
-    // Distribute remainder to phases with largest fractional parts
     for (let i = 0; i < remainder; i++) {
       if (fractionalParts[i]) {
         durations[fractionalParts[i].index]++;
       }
     }
 
-    // Verify total matches (critical for timeline accuracy)
+    // Verify total matches
     const sum = durations.reduce((a, b) => a + b, 0);
     if (sum !== totalMonths) {
       console.warn(`Timeline distribution mismatch: ${sum} !== ${totalMonths}`);
@@ -96,11 +118,13 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
 
     // Define construction sub-phases with their percentages
     const constructionPhaseData = [
-      { name: "Excavation & Earthwork", timePercent: 0.12, costPercent: 0.08, color: "#FFC0CB" },
-      { name: "Foundation & Footing", timePercent: 0.18, costPercent: 0.20, color: "#FFB6C1" },
-      { name: "Structural Work (RCC)", timePercent: 0.35, costPercent: 0.42, color: "#FFA07A" },
-      { name: "Roof Slab & Walls", timePercent: 0.20, costPercent: 0.25, color: "#FA8072" },
-      { name: "Plastering & Masonry", timePercent: 0.15, costPercent: 0.05, color: "#F08080" }
+      { name: "Excavation & Earthwork", timePercent: 0.10, costPercent: 0.08, color: "#FFC0CB" },
+      { name: "Foundation & Footing", timePercent: 0.15, costPercent: 0.20, color: "#FFB6C1" },
+      { name: "Structural Work (RCC)", timePercent: 0.30, costPercent: 0.35, color: "#FFA07A" },
+      { name: "Roof Slab & Walls", timePercent: 0.15, costPercent: 0.20, color: "#FA8072" },
+      { name: "Plastering & Masonry", timePercent: 0.12, costPercent: 0.08, color: "#F08080" },
+      { name: "Doors & Windows (Main Door, Windows & Glazing Systems)", timePercent: 0.10, costPercent: 0.05, color: "#E97777" },
+      { name: "MEP Rough-in", timePercent: 0.08, costPercent: 0.04, color: "#DC143C" }
     ];
 
     // Distribute months properly to ensure they sum to constructionMonths
