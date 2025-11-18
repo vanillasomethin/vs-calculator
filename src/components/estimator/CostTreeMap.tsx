@@ -256,7 +256,7 @@ const CostTreeMap = ({ estimate, showLabels = false }: CostTreeMapProps) => {
       currency: 'INR',
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    }).format(amount).replace('₹', '₹');
   };
 
   const CustomTooltip = ({ active, payload }: any) => {

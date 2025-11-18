@@ -30,7 +30,12 @@ const CalEmbed = ({
         },
         hideEventTypeDetails: false,
         layout: config.layout || "month_view",
-        theme: config.theme || "light"
+        theme: config.theme || "light",
+        styles: {
+          body: {
+            background: "transparent"
+          }
+        }
       });
 
       // Auto-click the button to open the embed
@@ -47,10 +52,22 @@ const CalEmbed = ({
         data-cal-namespace={namespace}
         data-cal-link={calLink}
         data-cal-config={JSON.stringify(config)}
-        className="w-full py-8 px-4 bg-vs/5 hover:bg-vs/10 border-2 border-vs/20 rounded-lg transition-colors text-vs font-semibold"
+        className="w-full py-8 px-4 bg-gradient-to-r from-vs to-vs-dark hover:from-vs-dark hover:to-vs border-2 border-vs rounded-lg transition-all duration-300 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 cursor-pointer"
+        style={{ cursor: 'pointer' }}
       >
-        Click to Open Cal.com Booking
+        🗓️ Pick Your Perfect Time - Book Now!
       </button>
+      <style>{`
+        [data-cal-namespace] * {
+          cursor: auto !important;
+        }
+        .cal-modal-box input,
+        .cal-modal-box button,
+        .cal-modal-box select,
+        .cal-modal-box a {
+          cursor: pointer !important;
+        }
+      `}</style>
     </div>
   );
 };

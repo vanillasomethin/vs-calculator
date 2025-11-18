@@ -36,7 +36,7 @@ const ContactCTAStrategy = ({ estimate }: ContactCTAStrategyProps) => {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    }).format(amount).replace('₹', '₹');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

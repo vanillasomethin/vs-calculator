@@ -10,8 +10,8 @@ export const formatCurrency = (amount: number, showDecimals: boolean = false): s
     maximumFractionDigits: showDecimals ? 2 : 0,
     minimumFractionDigits: 0
   });
-  
-  return formatter.format(amount).replace('₹', '₹ ');
+
+  return formatter.format(amount).replace('₹', '₹');
 };
 
 /**

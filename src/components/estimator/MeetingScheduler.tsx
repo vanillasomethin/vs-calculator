@@ -66,38 +66,38 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
       icon: <Clock className="size-6" />,
       hasSubOptions: true,
     },
-    ...(isCalComConfigured() ? [{
-      id: "api-booking" as MainOptionType,
-      title: "Quick Booking",
-      description: "3-step booking with project details",
-      icon: <Zap className="size-6" />,
-      hasSubOptions: true,
-    }] : []),
-    {
-      id: "schedule",
-      title: "Request Callback",
-      description: "Schedule via WhatsApp or Email",
-      icon: <Calendar className="size-6" />,
-      hasSubOptions: true,
-    },
     {
       id: "whatsapp",
-      title: "Quick Message (WhatsApp)",
-      description: "Get instant response via WhatsApp",
+      title: "Quick Contact (WhatsApp)",
+      description: "Instant chat - fastest response",
       icon: <MessageCircle className="size-6" />,
       action: () => {
         window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hi! I received my project estimate and would like to discuss further.")}`, '_blank');
       }
     },
     {
+      id: "schedule",
+      title: "Request Site/Office Visit",
+      description: "On-site, in-office, or virtual meeting",
+      icon: <MapPin className="size-6" />,
+      hasSubOptions: true,
+    },
+    {
       id: "email",
-      title: "Email Inquiry",
-      description: "Send us detailed requirements via email",
+      title: "Email Us Details",
+      description: "Send comprehensive requirements",
       icon: <Mail className="size-6" />,
       action: () => {
         window.location.href = `mailto:${email}?subject=${encodeURIComponent("Project Estimate Follow-up")}&body=${encodeURIComponent("Hi! I've received my project estimate and would like to discuss the next steps.")}`;
       }
-    }
+    },
+    ...(isCalComConfigured() ? [{
+      id: "api-booking" as MainOptionType,
+      title: "Advanced Booking",
+      description: "3-step booking with project details",
+      icon: <Zap className="size-6" />,
+      hasSubOptions: true,
+    }] : [])
   ];
 
   const scheduleOptions: ScheduleOption[] = [

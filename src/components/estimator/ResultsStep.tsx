@@ -131,7 +131,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       currency: 'INR',
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    }).format(amount).replace('₹', '₹');
   };
 
   const toSentenceCase = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
@@ -395,28 +395,28 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
         </div>
 
         {/* Total Cost - Prominent */}
-        <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-6 rounded-xl text-center">
-          <h3 className="text-sm text-vs-dark/70 mb-2">Construction Cost Estimate</h3>
-          <p className="text-3xl font-bold text-vs-dark/80 mb-2">{formatCurrency(estimate.totalCost)}</p>
-          <p className="text-sm text-vs-dark/70">
+        <div className="bg-gradient-to-br from-vs/10 to-vs/5 p-5 rounded-xl text-center">
+          <h3 className="text-xs text-vs-dark/70 mb-1.5">Construction Cost Estimate</h3>
+          <p className="text-2xl font-bold text-vs-dark/80 mb-1.5">{formatCurrency(estimate.totalCost)}</p>
+          <p className="text-xs text-vs-dark/70">
             {formatCurrency(Math.round(estimate.totalCost / estimate.area))} per {estimate.areaUnit}
           </p>
         </div>
 
         {/* Architect Fee Display */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-          <p className="text-xs text-blue-800 mb-1">+ Architect's Fee ({architectFeePercent}% as per COA standards)</p>
-          <p className="text-lg font-semibold text-blue-900">{formatCurrency(Math.round(architectFee))}</p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-blue-800 mb-0.5">+ Architect's Fee ({architectFeePercent}% as per COA standards)</p>
+          <p className="text-sm font-semibold text-blue-900">{formatCurrency(Math.round(architectFee))}</p>
         </div>
 
         {/* Total Estimated Project Cost - HIGHLIGHTED */}
-        <div className="bg-gradient-to-br from-vs to-vs-dark p-6 rounded-xl text-center shadow-lg border-2 border-vs-dark">
-          <h3 className="text-sm text-white/90 mb-2 font-semibold">TOTAL ESTIMATED PROJECT COST</h3>
-          <p className="text-5xl font-bold text-white mb-2">{formatCurrency(Math.round(totalWithArchitectFee))}</p>
-          <p className="text-sm text-white/90">
+        <div className="bg-gradient-to-br from-vs to-vs-dark p-4 rounded-xl text-center shadow-lg border-2 border-vs-dark">
+          <h3 className="text-xs text-white/90 mb-1.5 font-semibold">TOTAL ESTIMATED PROJECT COST</h3>
+          <p className="text-3xl font-bold text-white mb-1.5">{formatCurrency(Math.round(totalWithArchitectFee))}</p>
+          <p className="text-xs text-white/90">
             {formatCurrency(Math.round(totalWithArchitectFee / estimate.area))} per {estimate.areaUnit}
           </p>
-          <p className="text-xs text-white/70 mt-2">All costs inclusive of GST @ 18%</p>
+          <p className="text-[10px] text-white/70 mt-1.5">All costs inclusive of GST @ 18%</p>
         </div>
 
 
@@ -537,6 +537,11 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
         >
           Start New Estimate
         </button>
+      </div>
+
+      {/* Bottom Booking Section */}
+      <div className="mt-6">
+        <MeetingScheduler autoExpand={false} estimate={estimate} />
       </div>
 
       {/* Modal Dialog for Meeting Scheduler */}

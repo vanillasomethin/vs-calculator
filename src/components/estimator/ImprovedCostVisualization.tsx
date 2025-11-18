@@ -12,7 +12,7 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
       currency: 'INR',
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
-    }).format(amount).replace('₹', '₹ ');
+    }).format(amount).replace('₹', '₹');
   };
 
   const COLORS = {
@@ -92,10 +92,10 @@ const ImprovedCostVisualization = ({ estimate }: ImprovedCostVisualizationProps)
               tick={{ fontSize: 9 }}
               tickFormatter={(value) => `₹${(value / 100000).toFixed(1)}L`}
             />
-            <YAxis 
-              type="category" 
-              dataKey="name" 
-              tick={{ fontSize: 9 }}
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fontSize: 9, fill: '#1a1a1a' }}
               width={70}
             />
             <Tooltip 
