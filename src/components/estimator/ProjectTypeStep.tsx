@@ -368,15 +368,15 @@ const ProjectTypeStep = ({
         </motion.div>
       )}
 
-      {/* Floor Count Selection (Conditional - when construction subtype is selected) */}
-      {selectedConstructionSubtype && (
+      {/* Floor Count Selection (Conditional - when construction subtype is selected OR interiors work type) */}
+      {(selectedConstructionSubtype || selectedWorkTypes.includes("interiors")) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
           <AnimatedText
-            text="Number of Floors"
+            text="Number of Floors (G+ Format)"
             className="text-xl font-display mb-6 text-center"
           />
 
@@ -409,15 +409,50 @@ const ProjectTypeStep = ({
               </button>
             </div>
 
-            <div className="text-center text-[#4f090c]/70 text-sm">
-              <p>Select the number of floors for your {selectedConstructionSubtype}</p>
+            <div className="text-center text-[#4f090c]/70 text-sm mb-4">
+              <p>
+                {selectedConstructionSubtype
+                  ? `Select the number of floors for your ${selectedConstructionSubtype}`
+                  : "Select total number of floors in your home"}
+              </p>
+              <p className="text-xs mt-1">
+                {selectedFloorCount === 1 ? "Ground Floor only" : `G+${selectedFloorCount - 1} format`}
+              </p>
             </div>
+
+            {/* G+ Format Visual Guide */}
+            {selectedFloorCount && selectedFloorCount > 1 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <Layers className="size-5 text-purple-600" />
+                  <h5 className="font-semibold text-purple-900">G+{selectedFloorCount - 1} Structure</h5>
+                </div>
+                <div className="space-y-1 text-xs text-purple-800">
+                  {Array.from({ length: selectedFloorCount }, (_, i) => selectedFloorCount - i).map((floor, index) => (
+                    <div key={floor} className="flex items-center gap-2 py-1">
+                      <div className={cn(
+                        "size-3 rounded-sm",
+                        index === 0 ? "bg-purple-500" : "bg-blue-400"
+                      )}></div>
+                      <span className="font-medium">
+                        {floor === 1 ? "Ground Floor" : `${floor - 1}st Floor`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       )}
 
-      {/* Area Type Selection (Conditional - for House construction) */}
-      {selectedConstructionSubtype === "house" && (
+      {/* Area Type Selection (Conditional - for House construction OR Interiors) */}
+      {(selectedConstructionSubtype === "house" || selectedWorkTypes.includes("interiors")) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -429,62 +464,70 @@ const ProjectTypeStep = ({
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className={cn(
-                "group flex flex-col border rounded-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-md",
-                selectedAreaInputType === "plot"
-                  ? "border-vs bg-vs/5 shadow-sm"
-                  : "border-primary/10 hover:border-primary/30"
-              )}
-              onClick={() => onSelectAreaInputType("plot")}
-            >
-              <div className="flex items-start gap-3">
-                <div className={cn(
-                  "flex items-center justify-center size-12 rounded-lg transition-colors",
+            {selectedConstructionSubtype === "house" && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className={cn(
+                  "group flex flex-col border rounded-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-md",
                   selectedAreaInputType === "plot"
-                    ? "bg-vs text-white"
-                    : "bg-primary/5 text-primary/70 group-hover:bg-primary/10"
-                )}>
-                  <Layers className="size-6" />
+                    ? "border-vs bg-vs/5 shadow-sm"
+                    : "border-primary/10 hover:border-primary/30"
+                )}
+                onClick={() => onSelectAreaInputType("plot")}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={cn(
+                    "flex items-center justify-center size-12 rounded-lg transition-colors",
+                    selectedAreaInputType === "plot"
+                      ? "bg-vs text-white"
+                      : "bg-primary/5 text-primary/70 group-hover:bg-primary/10"
+                  )}>
+                    <Layers className="size-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-[#4f090c] mb-1">Plot/Site Area</h4>
+                    <p className="text-sm text-[#4f090c]/70">
+                      Total land area. We'll calculate plinth area based on FSI rules for your city.
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-lg font-semibold text-[#4f090c] mb-1">Plot/Site Area</h4>
-                  <p className="text-sm text-[#4f090c]/70">
-                    Total land area. We'll calculate built-up area based on FSI rules for your city.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.05 }}
+              transition={{ duration: 0.3, delay: selectedConstructionSubtype === "house" ? 0.05 : 0 }}
               className={cn(
                 "group flex flex-col border rounded-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-md",
-                selectedAreaInputType === "plinth"
+                selectedAreaInputType === "plinth" || !selectedConstructionSubtype
                   ? "border-vs bg-vs/5 shadow-sm"
-                  : "border-primary/10 hover:border-primary/30"
+                  : "border-primary/10 hover:border-primary/30",
+                !selectedConstructionSubtype && selectedWorkTypes.includes("interiors") ? "col-span-2" : ""
               )}
               onClick={() => onSelectAreaInputType("plinth")}
             >
               <div className="flex items-start gap-3">
                 <div className={cn(
                   "flex items-center justify-center size-12 rounded-lg transition-colors",
-                  selectedAreaInputType === "plinth"
+                  selectedAreaInputType === "plinth" || !selectedConstructionSubtype
                     ? "bg-vs text-white"
                     : "bg-primary/5 text-primary/70 group-hover:bg-primary/10"
                 )}>
                   <Building2 className="size-6" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold text-[#4f090c] mb-1">Plinth/Built-up Area</h4>
+                  <h4 className="text-lg font-semibold text-[#4f090c] mb-1">Plinth Area</h4>
                   <p className="text-sm text-[#4f090c]/70">
-                    Total constructed area across all floors.
+                    Ground floor area only (excluding upper floors). For G+ format homes, enter only the ground floor area.
                   </p>
+                  {selectedFloorCount && selectedFloorCount > 1 && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800">
+                      <span className="font-medium">Note:</span> For G+{selectedFloorCount - 1} format, we'll calculate total area as plinth × {selectedFloorCount} floors
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
