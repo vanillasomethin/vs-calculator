@@ -1,28 +1,50 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { calculateArchitectFee } from '@/utils/feeCalculations';
 import { Button } from '@/components/ui/button';
-import { Check, AlertCircle, Users, Building2, Zap, FileText, Home, Building, Store } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import AnimatedText from '@/components/AnimatedText';
+import {
+  Home,
+  Building2,
+  Building,
+  Users,
+  Zap,
+  FileText,
+  AlertCircle,
+  Check,
+  ChevronRight,
+  ChevronLeft,
+  Info,
+  Download,
+  Mail
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function ArchitectFee() {
-  const [projectType, setProjectType] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [projectType, setProjectType] = useState<string>('');
   const [constructionCost, setConstructionCost] = useState<string>('');
   const [area, setArea] = useState<string>('');
-  const [clientType, setClientType] = useState<string | null>(null);
-  const [complexity, setComplexity] = useState<string | null>(null);
-  const [clientInvolvement, setClientInvolvement] = useState<string | null>(null);
+  const [clientType, setClientType] = useState<string>('');
+  const [complexity, setComplexity] = useState<string>('');
+  const [clientInvolvement, setClientInvolvement] = useState<string>('');
   const [includeFFE, setIncludeFFE] = useState(false);
   const [includeLandscape, setIncludeLandscape] = useState(false);
   const [vizPackage, setVizPackage] = useState('None');
   const [isRush, setIsRush] = useState(false);
   const [currency, setCurrency] = useState('INR');
-  const [costError, setCostError] = useState('');
-  const [areaError, setAreaError] = useState('');
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Project type options with icons and descriptions
   const projectTypes = [
     {
       id: 'Individual House',
@@ -50,147 +72,102 @@ export default function ArchitectFee() {
     }
   ];
 
-  // Client type options
   const clientTypes = [
     {
       id: 'Friend/Family',
       name: 'Friend/Family',
-      description: 'Special discounted rate',
+      description: 'Special discounted rate for close connections',
       multiplier: '0.85×',
-      discount: '15% off'
+      discount: '-15%'
     },
     {
       id: 'Individual',
       name: 'Individual',
-      description: 'Standard client rate',
+      description: 'Standard client rate for individual homeowners',
       multiplier: '1.0×',
       discount: 'Standard'
     },
     {
       id: 'Corporate',
       name: 'Corporate',
-      description: 'Corporate/business client',
+      description: 'Corporate/business client projects',
       multiplier: '1.15×',
       discount: '+15%'
     },
     {
       id: 'Developer',
       name: 'Developer',
-      description: 'Real estate developer',
+      description: 'Real estate developer partnerships',
       multiplier: '1.10×',
       discount: '+10%'
     }
   ];
 
-  // Complexity levels
   const complexityLevels = [
     {
       id: 'Simple',
       name: 'Simple',
-      description: 'Straightforward design, minimal complexity',
-      multiplier: '0.9×',
-      inclusions: ['Basic layouts', 'Standard materials', 'Simple elevations']
+      description: 'Straightforward design with minimal customization. Basic layouts, standard materials, simple elevations.',
+      multiplier: '0.9×'
     },
     {
       id: 'Standard',
       name: 'Standard',
-      description: 'Moderate complexity with custom elements',
-      multiplier: '1.0×',
-      inclusions: ['Custom layouts', 'Mixed materials', 'Detailed elevations', 'Basic 3D views']
+      description: 'Moderate complexity with custom elements. Custom layouts, mixed materials, detailed elevations, basic 3D views.',
+      multiplier: '1.0×'
     },
     {
       id: 'Premium',
       name: 'Premium',
-      description: 'High-end design with advanced features',
-      multiplier: '1.2×',
-      inclusions: ['Complex layouts', 'Premium materials', 'Advanced elevations', 'Multiple 3D renderings', 'Custom details']
+      description: 'High-end design with advanced features. Complex layouts, premium materials, advanced elevations, multiple 3D renderings.',
+      multiplier: '1.2×'
     },
     {
       id: 'Luxury',
       name: 'Luxury',
-      description: 'Ultra-luxury with bespoke design elements',
-      multiplier: '1.5×',
-      inclusions: ['Bespoke layouts', 'Luxury finishes', 'Architectural features', 'Extensive 3D work', 'Custom millwork', 'High-end detailing']
+      description: 'Ultra-luxury with bespoke design elements. Bespoke layouts, luxury finishes, architectural features, extensive 3D work.',
+      multiplier: '1.5×'
     }
   ];
 
-  // Client involvement levels
   const involvementLevels = [
     {
       id: 'Minimal',
-      name: 'Minimal Involvement',
-      description: 'Provide clear brief, trust design decisions',
+      name: 'Minimal',
+      description: 'Provide clear brief, trust design decisions. 2 design presentation rounds, email updates.',
       multiplier: '1.035×',
-      premium: '+3.5%',
-      inclusions: ['Initial consultation', 'Design presentation (2 rounds)', 'Email updates']
+      premium: '+3.5%'
     },
     {
       id: 'Low',
-      name: 'Low Involvement',
-      description: 'Occasional input on major decisions only',
+      name: 'Low',
+      description: 'Occasional input on major decisions only. 3 design review rounds, bi-weekly updates.',
       multiplier: '1.075×',
-      premium: '+7.5%',
-      inclusions: ['Regular consultation', 'Design reviews (3 rounds)', 'Bi-weekly updates']
+      premium: '+7.5%'
     },
     {
       id: 'Moderate',
-      name: 'Moderate Involvement',
-      description: 'Regular reviews and feedback on key milestones',
+      name: 'Moderate',
+      description: 'Regular reviews and feedback on key milestones. 4 design review rounds, phone & email support.',
       multiplier: '1.125×',
-      premium: '+12.5%',
-      inclusions: ['Weekly meetings', 'Design reviews (4 rounds)', 'Phone & email support']
+      premium: '+12.5%'
     },
     {
       id: 'High',
-      name: 'High Involvement',
-      description: 'Frequent involvement, detailed reviews, multiple revisions',
+      name: 'High',
+      description: 'Frequent involvement, detailed reviews, multiple revisions. Unlimited review rounds, priority support.',
       multiplier: '1.175×',
-      premium: '+17.5%',
-      inclusions: ['Bi-weekly meetings', 'Design reviews (unlimited)', 'Priority support', 'Real-time collaboration']
-    },
-    {
-      id: 'Flexible',
-      name: 'Flexible',
-      description: 'Custom arrangement based on project needs',
-      multiplier: '1.10×',
-      premium: '+10%',
-      inclusions: ['Negotiated schedule', 'Custom review rounds', 'Flexible communication']
+      premium: '+17.5%'
     }
   ];
 
-  // Visualization packages
   const vizPackages = [
-    {
-      id: 'None',
-      name: 'No Visualization',
-      description: '2D drawings only',
-      price: 0,
-      inclusions: []
-    },
-    {
-      id: 'Standard',
-      name: 'Standard Package',
-      description: 'Basic 3D renderings',
-      price: 25000,
-      inclusions: ['3-4 exterior views', 'Basic materials', 'HD resolution']
-    },
-    {
-      id: 'Premium',
-      name: 'Premium Package',
-      description: 'Detailed 3D visualization',
-      price: 50000,
-      inclusions: ['6-8 views (exterior + interior)', 'Realistic materials', '4K resolution', 'Day & night shots']
-    },
-    {
-      id: 'Luxury',
-      name: 'Luxury Package',
-      description: 'Photorealistic renders + walkthrough',
-      price: 100000,
-      inclusions: ['10+ views', 'Photorealistic materials', '4K resolution', '360° panoramas', 'Animated walkthrough']
-    }
+    { id: 'None', name: 'No Visualization', price: 0, description: '2D drawings only' },
+    { id: 'Standard', name: 'Standard', price: 25000, description: '3-4 exterior views, basic materials, HD resolution' },
+    { id: 'Premium', name: 'Premium', price: 50000, description: '6-8 views (exterior + interior), realistic materials, 4K resolution' },
+    { id: 'Luxury', name: 'Luxury', price: 100000, description: 'Photorealistic renders + 360° walkthrough, 10+ views' }
   ];
 
-  // Calculate fee whenever inputs change
   const architectFee = React.useMemo(() => {
     if (!projectType || !clientType || !complexity || !clientInvolvement || !constructionCost || !area) {
       return {
@@ -223,52 +200,27 @@ export default function ArchitectFee() {
 
   const currencySymbol = currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '€';
 
-  const handleCostInput = (value: string) => {
-    setCostError('');
-    const cost = parseFloat(value);
-
-    if (value === '') {
-      setConstructionCost(value);
-      return;
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return projectType !== '';
+      case 2: return constructionCost !== '' && area !== '' && parseFloat(constructionCost) > 0 && parseFloat(area) > 0;
+      case 3: return clientType !== '';
+      case 4: return complexity !== '';
+      case 5: return clientInvolvement !== '';
+      default: return true;
     }
-
-    if (isNaN(cost) || cost <= 0) {
-      setCostError('Please enter a valid construction cost greater than 0');
-      setConstructionCost(value);
-      return;
-    }
-
-    if (cost > 1000000000) {
-      setCostError('Cost exceeds typical range. Please contact for consultation.');
-      setConstructionCost(value);
-      return;
-    }
-
-    setConstructionCost(value);
   };
 
-  const handleAreaInput = (value: string) => {
-    setAreaError('');
-    const areaValue = parseFloat(value);
-
-    if (value === '') {
-      setArea(value);
-      return;
+  const nextStep = () => {
+    if (canProceed() && currentStep < 6) {
+      setCurrentStep(currentStep + 1);
     }
+  };
 
-    if (isNaN(areaValue) || areaValue <= 0) {
-      setAreaError('Please enter a valid area greater than 0');
-      setArea(value);
-      return;
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
-
-    if (areaValue > 1000000) {
-      setAreaError('Area exceeds typical range. Please contact for consultation.');
-      setArea(value);
-      return;
-    }
-
-    setArea(value);
   };
 
   const exportToPDF = async () => {
@@ -325,810 +277,718 @@ export default function ArchitectFee() {
     }
   };
 
-  // Get all inclusions
-  const getAllInclusions = () => {
-    let inclusions: string[] = [];
-
-    // Base inclusions
-    inclusions.push('Professional Consultation');
-    inclusions.push('COA Compliance');
-    inclusions.push('Technical Documentation');
-
-    // Complexity inclusions
-    if (complexity) {
-      const complexityData = complexityLevels.find(c => c.id === complexity);
-      if (complexityData) {
-        inclusions.push(...complexityData.inclusions);
-      }
-    }
-
-    // Involvement inclusions
-    if (clientInvolvement) {
-      const involvementData = involvementLevels.find(i => i.id === clientInvolvement);
-      if (involvementData) {
-        inclusions.push(...involvementData.inclusions);
-      }
-    }
-
-    // Visualization inclusions
-    if (vizPackage !== 'None') {
-      const vizData = vizPackages.find(v => v.id === vizPackage);
-      if (vizData) {
-        inclusions.push(...vizData.inclusions);
-      }
-    }
-
-    // Additional services
-    if (includeFFE) {
-      inclusions.push('FF&E Procurement Services');
-      inclusions.push('Furniture & Equipment Planning');
-    }
-
-    if (includeLandscape) {
-      inclusions.push('Landscape Design');
-      inclusions.push('Garden & Outdoor Planning');
-    }
-
-    if (isRush) {
-      inclusions.push('Priority Rush Service');
-      inclusions.push('Expedited Delivery');
-    }
-
-    return [...new Set(inclusions)];
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-light text-gray-900 mb-2">
-                Professional Fee Calculator
-              </h1>
-              <p className="text-gray-600">
-                Calculate architect fees based on COA standards and project requirements
-              </p>
-            </div>
-            {isRush && (
-              <div className="bg-amber-100 border border-amber-300 rounded-lg px-4 py-2 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-amber-600" />
-                <span className="font-semibold text-amber-900">Rush Project</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Left Column - Calculator */}
-          <div className="lg:col-span-2.5 space-y-8">
-
-            {/* Step 1: Project Type */}
-            <div className="bg-white rounded-xl border border-gray-200 p-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Step 1: Project Type</h2>
-
-              <div className="grid gap-4">
-                {projectTypes.map(type => {
-                  const Icon = type.icon;
-                  return (
-                    <button
-                      key={type.id}
-                      onClick={() => setProjectType(type.id)}
-                      className={`text-left p-5 rounded-lg border-2 transition-all ${
-                        projectType === type.id
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex gap-4">
-                        <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${
-                          projectType === type.id ? 'bg-emerald-500' : 'bg-gray-100'
-                        }`}>
-                          <Icon className={`w-6 h-6 ${projectType === type.id ? 'text-white' : 'text-gray-600'}`} />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-900 mb-1">{type.name}</p>
-                          <p className="text-sm text-gray-600 mb-2">{type.description}</p>
-                          <div className="flex gap-4 text-xs text-gray-500">
-                            <span><strong>Rate:</strong> {type.baseRate}</span>
-                            <span><strong>Min:</strong> {type.minFee}</span>
-                          </div>
-                        </div>
-                        {projectType === type.id && (
-                          <div className="flex-shrink-0">
-                            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="text-center mb-8">
+              <AnimatedText
+                text="What type of project are you planning?"
+                className="text-2xl font-display mb-2 text-vs-dark"
+              />
+              <p className="text-sm text-muted-foreground">Select your project category</p>
             </div>
 
-            {/* Step 2: Project Details */}
-            {projectType && (
-              <div className="bg-white rounded-xl border border-gray-200 p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Step 2: Project Details</h2>
-
-                <div className="space-y-6">
-                  {/* Construction Cost */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Construction Cost ({currencySymbol})
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={constructionCost}
-                        onChange={(e) => handleCostInput(e.target.value)}
-                        placeholder="e.g., 5000000"
-                        className={`w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none ${
-                          costError
-                            ? 'border-red-500 focus:border-red-600'
-                            : 'border-gray-300 focus:border-emerald-500'
-                        }`}
-                      />
-                      <span className="absolute right-4 top-3.5 text-gray-500 font-medium">{currencySymbol}</span>
-                    </div>
-
-                    {costError && (
-                      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
-                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-red-700">{costError}</p>
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {projectTypes.map((type, index) => {
+                const Icon = type.icon;
+                return (
+                  <motion.div
+                    key={type.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    onClick={() => setProjectType(type.id)}
+                    className={cn(
+                      "group flex flex-col border rounded-xl p-6 cursor-pointer transition-all duration-300",
+                      projectType === type.id
+                        ? "border-vs bg-vs/5"
+                        : "border-gray-200 hover:border-vs/50"
                     )}
-                  </div>
-
-                  {/* Area */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Built-up Area (sq.ft)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={area}
-                        onChange={(e) => handleAreaInput(e.target.value)}
-                        placeholder="e.g., 2000"
-                        className={`w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none ${
-                          areaError
-                            ? 'border-red-500 focus:border-red-600'
-                            : 'border-gray-300 focus:border-emerald-500'
-                        }`}
-                      />
-                      <span className="absolute right-4 top-3.5 text-gray-500 font-medium">sq.ft</span>
-                    </div>
-
-                    {areaError && (
-                      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex gap-2">
-                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-red-700">{areaError}</p>
+                  >
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className={cn(
+                        "p-2 rounded-lg transition-colors",
+                        projectType === type.id ? "bg-vs text-white" : "bg-vs/10 text-vs"
+                      )}>
+                        <Icon className="size-6" />
                       </div>
-                    )}
-                  </div>
-
-                  {/* Currency Selection */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Currency
-                    </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {['INR', 'USD', 'EUR'].map(curr => (
-                        <button
-                          key={curr}
-                          onClick={() => setCurrency(curr)}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                            currency === curr
-                              ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                              : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                          }`}
-                        >
-                          {curr} ({curr === 'INR' ? '₹' : curr === 'USD' ? '$' : '€'})
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Client Type */}
-            {projectType && constructionCost && area && !costError && !areaError && (
-              <div className="bg-white rounded-xl border border-gray-200 p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Step 3: Client Type</h2>
-
-                <div className="grid md:grid-cols-2 gap-3">
-                  {clientTypes.map(type => (
-                    <button
-                      key={type.id}
-                      onClick={() => setClientType(type.id)}
-                      className={`text-left px-4 py-4 rounded-lg border-2 transition-all ${
-                        clientType === type.id
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <p className="font-semibold text-gray-900">{type.name}</p>
-                        <span className={`text-xs font-semibold px-2 py-1 rounded ${
-                          clientType === type.id
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {type.discount}
-                        </span>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-vs-dark mb-1">{type.name}</h4>
+                        <p className="text-sm text-muted-foreground">{type.description}</p>
                       </div>
-                      <p className="text-sm text-gray-600 mb-1">{type.description}</p>
-                      <p className="text-xs text-gray-500">Multiplier: {type.multiplier}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: Complexity */}
-            {clientType && (
-              <div className="bg-white rounded-xl border border-gray-200 p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Step 4: Design Complexity</h2>
-
-                <div className="space-y-3">
-                  {complexityLevels.map(level => (
-                    <button
-                      key={level.id}
-                      onClick={() => setComplexity(level.id)}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                        complexity === level.id
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{level.name}</p>
-                          <p className="text-sm text-gray-600 mt-1">{level.description}</p>
-                        </div>
-                        <span className={`text-xs font-semibold px-3 py-1 rounded ${
-                          complexity === level.id
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {level.multiplier}
-                        </span>
-                      </div>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {level.inclusions.map((inc, idx) => (
-                          <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                            {inc}
-                          </span>
-                        ))}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 5: Client Involvement */}
-            {complexity && (
-              <div className="bg-white rounded-xl border border-gray-200 p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                  <Users className="w-6 h-6 text-emerald-600" />
-                  Step 5: Client Involvement Level
-                </h2>
-                <p className="text-gray-600 mb-6">
-                  Select your expected involvement throughout the project (affects fee & timeline)
-                </p>
-
-                <div className="space-y-3">
-                  {involvementLevels.map(level => (
-                    <button
-                      key={level.id}
-                      onClick={() => setClientInvolvement(level.id)}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                        clientInvolvement === level.id
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{level.name}</p>
-                          <p className="text-sm text-gray-600 mt-1">{level.description}</p>
-                        </div>
-                        <span className={`text-xs font-semibold px-3 py-1 rounded flex-shrink-0 ${
-                          clientInvolvement === level.id
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}>
-                          {level.premium}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Multiplier: ×{level.multiplier} on base fee
-                      </p>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
-                    <span className="font-semibold">📋 Client Involvement Factor:</span> COA-compliant adjustment for the time and iterations required based on your expected engagement level.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Step 6: Additional Services */}
-            {clientInvolvement && (
-              <div className="bg-white rounded-xl border border-gray-200 p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Step 6: Additional Services (Optional)</h2>
-
-                <div className="space-y-6">
-                  {/* Visualization Package */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Visualization Package</h3>
-                    <div className="space-y-3">
-                      {vizPackages.map(pkg => (
-                        <button
-                          key={pkg.id}
-                          onClick={() => setVizPackage(pkg.id)}
-                          className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                            vizPackage === pkg.id
-                              ? 'border-emerald-500 bg-emerald-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              <p className="font-semibold text-gray-900">{pkg.name}</p>
-                              <p className="text-sm text-gray-600 mt-1">{pkg.description}</p>
-                              {pkg.inclusions.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                  {pkg.inclusions.map((inc, idx) => (
-                                    <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                      {inc}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-right flex-shrink-0 ml-4">
-                              <p className="font-semibold text-emerald-600">
-                                {pkg.price === 0 ? 'Included' : `+${currencySymbol}${pkg.price.toLocaleString()}`}
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Other Add-ons */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Other Services</h3>
-                    <div className="space-y-3">
-                      <div
-                        onClick={() => setIncludeFFE(!includeFFE)}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          includeFFE
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex gap-4">
-                          <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
-                            includeFFE
-                              ? 'bg-emerald-500 border-emerald-500'
-                              : 'border-gray-300'
-                          }`}>
-                            {includeFFE && (
-                              <Check className="w-4 h-4 text-white" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">FF&E Procurement</p>
-                            <p className="text-sm text-gray-600 mt-1">Furniture, Fixtures & Equipment planning and procurement</p>
-                          </div>
-                          <div className="flex-shrink-0 text-right">
-                            <p className="font-semibold text-emerald-600">Calculated</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        onClick={() => setIncludeLandscape(!includeLandscape)}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          includeLandscape
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex gap-4">
-                          <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
-                            includeLandscape
-                              ? 'bg-emerald-500 border-emerald-500'
-                              : 'border-gray-300'
-                          }`}>
-                            {includeLandscape && (
-                              <Check className="w-4 h-4 text-white" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">Landscape Design</p>
-                            <p className="text-sm text-gray-600 mt-1">Garden design and outdoor space planning</p>
-                          </div>
-                          <div className="flex-shrink-0 text-right">
-                            <p className="font-semibold text-emerald-600">Calculated</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div
-                        onClick={() => setIsRush(!isRush)}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          isRush
-                            ? 'border-amber-500 bg-amber-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className="flex gap-4">
-                          <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
-                            isRush
-                              ? 'bg-amber-500 border-amber-500'
-                              : 'border-gray-300'
-                          }`}>
-                            {isRush && (
-                              <Check className="w-4 h-4 text-white" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900 flex items-center gap-2">
-                              Rush Project
-                              <Zap className="w-4 h-4 text-amber-600" />
-                            </p>
-                            <p className="text-sm text-gray-600 mt-1">Expedited delivery with priority handling</p>
-                          </div>
-                          <div className="flex-shrink-0 text-right">
-                            <p className="font-semibold text-amber-600">+25%</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column - Sticky Summary */}
-          <div className="lg:col-span-1.5">
-            <div className="sticky top-28 space-y-6">
-              {/* Price Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                  Professional Fee Quote
-                </h3>
-
-                {architectFee.totalFee > 0 ? (
-                  <>
-                    {/* Breakdown */}
-                    <div className="space-y-3 mb-8 pb-8 border-b border-gray-200 text-sm">
-                      {architectFee.baseFee > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Base Design Fee</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.baseFee.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.cifAdjustment > 0 && (
-                        <div className="flex justify-between bg-amber-50 px-3 py-2 rounded">
-                          <span className="text-amber-900 font-medium">
-                            Client Involvement
-                            <span className="text-xs text-amber-700 ml-1">({clientInvolvement})</span>
-                          </span>
-                          <span className="font-semibold text-amber-900">
-                            +{currencySymbol}{architectFee.cifAdjustment.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.ffeFee > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">FF&E Procurement</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.ffeFee.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.landscapeFee > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Landscape Design</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.landscapeFee.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.vizFee > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Visualization Package</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.vizFee.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.overheadAllocation > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Overhead Allocation</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.overheadAllocation.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.profit > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Profit Margin (15%)</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.profit.toLocaleString()}
-                          </span>
-                        </div>
-                      )}
-
-                      {architectFee.tax > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">GST (18%)</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{architectFee.tax.toLocaleString()}
-                          </span>
-                        </div>
+                      {projectType === type.id && (
+                        <Check className="size-5 text-vs flex-shrink-0" />
                       )}
                     </div>
-
-                    {/* Total */}
-                    <div className="mb-8">
-                      <p className="text-gray-600 text-sm mb-2">Total Professional Fee</p>
-                      <p className="text-5xl font-light text-emerald-600">
-                        {currencySymbol}{architectFee.totalFee.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-2">Including GST @ 18%</p>
+                    <div className="mt-auto pt-3 border-t border-gray-100 text-xs text-muted-foreground space-y-1">
+                      <div>Base: {type.baseRate}</div>
+                      <div>Minimum: {type.minFee}</div>
                     </div>
-
-                    {/* Payment Breakdown */}
-                    <div className="bg-gray-50 rounded-lg p-4 mb-8">
-                      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3">
-                        Payment Schedule (50-30-20)
-                      </p>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">Upfront (50%)</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{Math.round(architectFee.totalFee * 0.5).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">Submission (30%)</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{Math.round(architectFee.totalFee * 0.3).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-700">Delivery (20%)</span>
-                          <span className="font-semibold text-gray-900">
-                            {currencySymbol}{Math.round(architectFee.totalFee * 0.2).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CTA Buttons */}
-                    <Button
-                      onClick={exportToPDF}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors mb-3"
-                    >
-                      Export to PDF
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full border border-gray-300 hover:bg-gray-50 text-gray-900 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      Send Quote via Email
-                    </Button>
-
-                    {/* COA Compliance Note */}
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="flex gap-3">
-                        <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <div className="text-sm text-blue-800">
-                          <p className="font-medium mb-1">COA Compliant</p>
-                          <p>Pricing follows Council of Architecture guidelines & standards.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">
-                      Complete the steps to calculate your professional fee
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* What's Included */}
-              {architectFee.totalFee > 0 && (
-                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Check className="w-5 h-5 text-emerald-600" />
-                    Included in Your Quote
-                  </h4>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {getAllInclusions().map((inclusion, idx) => (
-                      <div key={idx} className="flex gap-3 text-sm">
-                        <span className="text-emerald-600 font-bold flex-shrink-0">✓</span>
-                        <span className="text-gray-700">{inclusion}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* COA Standards */}
-              {projectType && (
-                <div className="bg-amber-50 rounded-xl border border-amber-200 p-6">
-                  <h4 className="font-semibold text-amber-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    COA Standards
-                  </h4>
-                  <ul className="space-y-2 text-sm text-amber-800">
-                    <li className="flex gap-2">
-                      <span className="font-bold flex-shrink-0">•</span>
-                      <span>National Building Code (NBC) Compliance</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold flex-shrink-0">•</span>
-                      <span>Local Municipal Building Bylaws</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold flex-shrink-0">•</span>
-                      <span>Professional Liability Insurance</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold flex-shrink-0">•</span>
-                      <span>Registered Architect Supervision</span>
-                    </li>
-                  </ul>
-                </div>
-              )}
+                  </motion.div>
+                );
+              })}
             </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        );
 
-      {/* Hidden content for PDF export */}
-      <div className="hidden">
-        <div ref={contentRef}>
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Professional Fee Estimate
-            </h1>
-            <p className="text-gray-600">COA Compliant Architecture Services</p>
-          </div>
+      case 2:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2 text-vs-dark">Project Details</h3>
+              <p className="text-sm text-muted-foreground">Enter your project specifications</p>
+            </div>
 
-          {architectFee.totalFee > 0 && (
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-lg mb-3">Project Details</h3>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-gray-600">Project Type:</span>
-                    <span className="ml-2 font-medium">{projectType}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Client Type:</span>
-                    <span className="ml-2 font-medium">{clientType}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Construction Cost:</span>
-                    <span className="ml-2 font-medium">{currencySymbol}{parseFloat(constructionCost).toLocaleString()}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Area:</span>
-                    <span className="ml-2 font-medium">{area} sq.ft</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Complexity:</span>
-                    <span className="ml-2 font-medium">{complexity}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Involvement:</span>
-                    <span className="ml-2 font-medium">{clientInvolvement}</span>
-                  </div>
-                </div>
+                <label className="block text-sm font-medium mb-3 text-vs-dark">
+                  Construction Cost ({currencySymbol})
+                </label>
+                <input
+                  type="number"
+                  value={constructionCost}
+                  onChange={(e) => setConstructionCost(e.target.value)}
+                  placeholder="e.g., 5000000"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-vs focus:outline-none transition-colors"
+                />
               </div>
 
               <div>
-                <h3 className="font-semibold text-lg mb-3">Fee Breakdown</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Base Design Fee</span>
-                    <span className="font-semibold">{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
-                  </div>
-                  {architectFee.cifAdjustment > 0 && (
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Client Involvement Adjustment</span>
-                      <span className="font-semibold">+{currencySymbol}{architectFee.cifAdjustment.toLocaleString()}</span>
-                    </div>
+                <label className="block text-sm font-medium mb-3 text-vs-dark">
+                  Built-up Area (sq.ft)
+                </label>
+                <input
+                  type="number"
+                  value={area}
+                  onChange={(e) => setArea(e.target.value)}
+                  placeholder="e.g., 2000"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-vs focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-3 text-vs-dark">Currency</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {['INR', 'USD', 'EUR'].map(curr => (
+                    <button
+                      key={curr}
+                      onClick={() => setCurrency(curr)}
+                      className={cn(
+                        "px-4 py-3 rounded-lg border-2 transition-all font-medium",
+                        currency === curr
+                          ? "border-vs bg-vs/5 text-vs"
+                          : "border-gray-200 hover:border-vs/50"
+                      )}
+                    >
+                      {curr} ({curr === 'INR' ? '₹' : curr === 'USD' ? '$' : '€'})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+
+      case 3:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2 text-vs-dark">Client Type</h3>
+              <p className="text-sm text-muted-foreground">Select your client category</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {clientTypes.map(type => (
+                <div
+                  key={type.id}
+                  onClick={() => setClientType(type.id)}
+                  className={cn(
+                    "border-2 rounded-lg p-4 cursor-pointer transition-all",
+                    clientType === type.id
+                      ? "border-vs bg-vs/5"
+                      : "border-gray-200 hover:border-vs/50"
                   )}
-                  {architectFee.ffeFee > 0 && (
-                    <div className="flex justify-between py-2 border-b">
-                      <span>FF&E Procurement</span>
-                      <span className="font-semibold">{currencySymbol}{architectFee.ffeFee.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {architectFee.landscapeFee > 0 && (
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Landscape Design</span>
-                      <span className="font-semibold">{currencySymbol}{architectFee.landscapeFee.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {architectFee.vizFee > 0 && (
-                    <div className="flex justify-between py-2 border-b">
-                      <span>Visualization Package</span>
-                      <span className="font-semibold">{currencySymbol}{architectFee.vizFee.toLocaleString()}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Overhead Allocation</span>
-                    <span className="font-semibold">{currencySymbol}{architectFee.overheadAllocation.toLocaleString()}</span>
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-medium text-vs-dark">{type.name}</h4>
+                    <Badge variant="outline" className={cn(
+                      "text-xs",
+                      clientType === type.id ? "border-vs text-vs" : "border-gray-300"
+                    )}>
+                      {type.discount}
+                    </Badge>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span>Profit Margin (15%)</span>
-                    <span className="font-semibold">{currencySymbol}{architectFee.profit.toLocaleString()}</span>
+                  <p className="text-sm text-muted-foreground mb-2">{type.description}</p>
+                  <p className="text-xs text-muted-foreground">Multiplier: {type.multiplier}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case 4:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2 text-vs-dark">Design Complexity</h3>
+              <p className="text-sm text-muted-foreground">Choose the complexity level of your project</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {complexityLevels.map(level => (
+                <TooltipProvider key={level.id} delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setComplexity(level.id)}
+                        className={cn(
+                          "relative p-4 rounded-lg border-2 transition-all duration-200 text-left hover:shadow-md",
+                          complexity === level.id
+                            ? "border-vs bg-vs/5 shadow-sm"
+                            : "border-gray-200 hover:border-vs/50"
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-sm">{level.name}</span>
+                          <Info className="size-4 text-muted-foreground" />
+                        </div>
+                        <div className="text-xs text-vs">{level.multiplier}</div>
+                        {complexity === level.id && (
+                          <div className="absolute top-2 right-2 size-2 rounded-full bg-vs" />
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="text-sm">{level.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case 5:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="size-5 text-vs" />
+                <h3 className="text-lg font-medium text-vs-dark">Client Involvement Level</h3>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Select your expected involvement throughout the project
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {involvementLevels.map(level => (
+                <TooltipProvider key={level.id} delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setClientInvolvement(level.id)}
+                        className={cn(
+                          "relative p-4 rounded-lg border-2 transition-all duration-200 text-left hover:shadow-md",
+                          clientInvolvement === level.id
+                            ? "border-vs bg-vs/5 shadow-sm"
+                            : "border-gray-200 hover:border-vs/50"
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-sm">{level.name}</span>
+                          <Info className="size-4 text-muted-foreground" />
+                        </div>
+                        <div className="text-xs text-vs">{level.premium}</div>
+                        {clientInvolvement === level.id && (
+                          <div className="absolute top-2 right-2 size-2 rounded-full bg-vs" />
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p className="text-sm">{level.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case 6:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-2 text-vs-dark">Additional Services</h3>
+              <p className="text-sm text-muted-foreground">Optional add-ons to enhance your project</p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Visualization Package */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-vs-dark">Visualization Package</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {vizPackages.map(pkg => (
+                    <TooltipProvider key={pkg.id} delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setVizPackage(pkg.id)}
+                            className={cn(
+                              "relative p-4 rounded-lg border-2 transition-all text-left",
+                              vizPackage === pkg.id
+                                ? "border-vs bg-vs/5"
+                                : "border-gray-200 hover:border-vs/50"
+                            )}
+                          >
+                            <div className="font-medium text-sm mb-1">{pkg.name}</div>
+                            <div className="text-xs text-vs">
+                              {pkg.price === 0 ? 'Included' : `+${currencySymbol}${pkg.price.toLocaleString()}`}
+                            </div>
+                            {vizPackage === pkg.id && (
+                              <div className="absolute top-2 right-2 size-2 rounded-full bg-vs" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p className="text-sm">{pkg.description}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Services */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-vs-dark">Other Services</label>
+                <div className="space-y-3">
+                  <div
+                    onClick={() => setIncludeFFE(!includeFFE)}
+                    className={cn(
+                      "p-4 rounded-lg border-2 cursor-pointer transition-all",
+                      includeFFE ? "border-vs bg-vs/5" : "border-gray-200 hover:border-vs/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "size-5 rounded border-2 flex items-center justify-center",
+                        includeFFE ? "bg-vs border-vs" : "border-gray-300"
+                      )}>
+                        {includeFFE && <Check className="size-3 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">FF&E Procurement</p>
+                        <p className="text-xs text-muted-foreground">Furniture, Fixtures & Equipment planning</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span>GST (18%)</span>
-                    <span className="font-semibold">{currencySymbol}{architectFee.tax.toLocaleString()}</span>
+
+                  <div
+                    onClick={() => setIncludeLandscape(!includeLandscape)}
+                    className={cn(
+                      "p-4 rounded-lg border-2 cursor-pointer transition-all",
+                      includeLandscape ? "border-vs bg-vs/5" : "border-gray-200 hover:border-vs/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "size-5 rounded border-2 flex items-center justify-center",
+                        includeLandscape ? "bg-vs border-vs" : "border-gray-300"
+                      )}>
+                        {includeLandscape && <Check className="size-3 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">Landscape Design</p>
+                        <p className="text-xs text-muted-foreground">Garden and outdoor space planning</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-3 text-lg font-bold">
-                    <span>Total Professional Fee</span>
-                    <span className="text-emerald-600">{currencySymbol}{architectFee.totalFee.toLocaleString()}</span>
+
+                  <div
+                    onClick={() => setIsRush(!isRush)}
+                    className={cn(
+                      "p-4 rounded-lg border-2 cursor-pointer transition-all",
+                      isRush ? "border-vs bg-vs/5" : "border-gray-200 hover:border-vs/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "size-5 rounded border-2 flex items-center justify-center",
+                        isRush ? "bg-vs border-vs" : "border-gray-300"
+                      )}>
+                        {isRush && <Check className="size-3 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm flex items-center gap-2">
+                          Rush Project
+                          <Zap className="size-4 text-vs" />
+                        </p>
+                        <p className="text-xs text-muted-foreground">Expedited delivery with +25% premium</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const totalSteps = 6;
+  const progress = (currentStep / totalSteps) * 100;
+
+  return (
+    <div className="min-h-screen bg-background py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="glass-card border border-primary/5 rounded-2xl p-4 md:p-5 lg:p-6">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-display mb-2 text-vs-dark">
+              Professional Fee Calculator
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Calculate architect fees based on COA standards
+            </p>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</span>
+              <span className="text-sm text-vs font-medium">{Math.round(progress)}% Complete</span>
+            </div>
+            <div className="h-2 bg-vs/10 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-vs rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </div>
+
+          {/* Step Indicator */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            {[1, 2, 3, 4, 5, 6].map(step => (
+              <div
+                key={step}
+                className={cn(
+                  "h-2 rounded-full transition-all duration-300",
+                  step === currentStep ? "w-8 bg-vs" :
+                  step < currentStep ? "w-6 bg-vs/60" : "w-6 bg-vs/20"
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Step Content */}
+          <div className="mb-8">
+            <AnimatePresence mode="wait">
+              {renderStep()}
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex flex-col-reverse sm:flex-row gap-3 justify-between items-center pt-6 border-t">
+            {currentStep > 1 ? (
+              <Button
+                onClick={prevStep}
+                variant="outline"
+                className="border-vs text-vs hover:bg-vs/5 rounded-full w-full sm:w-auto"
+              >
+                <ChevronLeft className="size-4 mr-2" />
+                Previous
+              </Button>
+            ) : <div />}
+
+            {currentStep < 6 ? (
+              <Button
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="bg-vs hover:bg-vs-light text-white rounded-full w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+                <ChevronRight className="size-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setCurrentStep(7)}
+                disabled={!canProceed()}
+                className="bg-vs hover:bg-vs-light text-white rounded-full w-full sm:w-auto"
+              >
+                View Quote
+                <ChevronRight className="size-4 ml-2" />
+              </Button>
+            )}
+          </div>
+
+          {/* Live Cost Display */}
+          {architectFee.totalFee > 0 && currentStep < 7 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-4 bg-vs/5 border border-vs/20 rounded-lg text-center"
+            >
+              <p className="text-sm text-muted-foreground mb-1">Current Estimate</p>
+              <p className="text-2xl font-bold text-vs">
+                {currencySymbol}{architectFee.totalFee.toLocaleString()}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">Including GST @ 18%</p>
+            </motion.div>
+          )}
+
+          {/* Results Step */}
+          {currentStep === 7 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="text-center py-6 border-b">
+                <h2 className="text-2xl font-display text-vs-dark mb-2">Your Professional Fee Quote</h2>
+                <p className="text-3xl md:text-5xl font-light text-vs mb-2">
+                  {currencySymbol}{architectFee.totalFee.toLocaleString()}
+                </p>
+                <p className="text-sm text-muted-foreground">Including GST @ 18%</p>
+              </div>
+
+              {/* Hidden content for PDF */}
+              <div className="hidden">
+                <div ref={contentRef}>
+                  <div className="text-center mb-6">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Professional Fee Estimate</h1>
+                    <p className="text-gray-600">COA Compliant Architecture Services</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div><span className="font-medium">Project Type:</span> {projectType}</div>
+                      <div><span className="font-medium">Client Type:</span> {clientType}</div>
+                      <div><span className="font-medium">Construction Cost:</span> {currencySymbol}{parseFloat(constructionCost).toLocaleString()}</div>
+                      <div><span className="font-medium">Area:</span> {area} sq.ft</div>
+                      <div><span className="font-medium">Complexity:</span> {complexity}</div>
+                      <div><span className="font-medium">Involvement:</span> {clientInvolvement}</div>
+                    </div>
+                    <div className="border-t pt-4">
+                      <h3 className="font-semibold mb-3">Fee Breakdown</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Base Design Fee</span>
+                          <span>{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
+                        </div>
+                        {architectFee.cifAdjustment > 0 && (
+                          <div className="flex justify-between">
+                            <span>Client Involvement Adjustment</span>
+                            <span>+{currencySymbol}{architectFee.cifAdjustment.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {architectFee.ffeFee > 0 && (
+                          <div className="flex justify-between">
+                            <span>FF&E Procurement</span>
+                            <span>{currencySymbol}{architectFee.ffeFee.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {architectFee.landscapeFee > 0 && (
+                          <div className="flex justify-between">
+                            <span>Landscape Design</span>
+                            <span>{currencySymbol}{architectFee.landscapeFee.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {architectFee.vizFee > 0 && (
+                          <div className="flex justify-between">
+                            <span>Visualization Package</span>
+                            <span>{currencySymbol}{architectFee.vizFee.toLocaleString()}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span>Overhead Allocation</span>
+                          <span>{currencySymbol}{architectFee.overheadAllocation.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Profit Margin (15%)</span>
+                          <span>{currencySymbol}{architectFee.profit.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>GST (18%)</span>
+                          <span>{currencySymbol}{architectFee.tax.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                          <span>Total Professional Fee</span>
+                          <span className="text-vs">{currencySymbol}{architectFee.totalFee.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500 text-center border-t pt-4">
-                <p>This estimate is based on COA (Council of Architecture) guidelines and industry standards.</p>
-                <p className="mt-1">Valid for 30 days from date of generation.</p>
+              {/* Breakdown */}
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-muted-foreground">Base Design Fee</span>
+                  <span className="font-semibold">{currencySymbol}{architectFee.baseFee.toLocaleString()}</span>
+                </div>
+                {architectFee.cifAdjustment > 0 && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Client Involvement ({clientInvolvement})</span>
+                    <span className="font-semibold text-vs">+{currencySymbol}{architectFee.cifAdjustment.toLocaleString()}</span>
+                  </div>
+                )}
+                {architectFee.ffeFee > 0 && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">FF&E Procurement</span>
+                    <span className="font-semibold">{currencySymbol}{architectFee.ffeFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {architectFee.landscapeFee > 0 && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Landscape Design</span>
+                    <span className="font-semibold">{currencySymbol}{architectFee.landscapeFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {architectFee.vizFee > 0 && (
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="text-muted-foreground">Visualization Package</span>
+                    <span className="font-semibold">{currencySymbol}{architectFee.vizFee.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-muted-foreground">Overhead Allocation</span>
+                  <span className="font-semibold">{currencySymbol}{architectFee.overheadAllocation.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-muted-foreground">Profit Margin (15%)</span>
+                  <span className="font-semibold">{currencySymbol}{architectFee.profit.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b">
+                  <span className="text-muted-foreground">GST (18%)</span>
+                  <span className="font-semibold">{currencySymbol}{architectFee.tax.toLocaleString()}</span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* Bottom CTA */}
-      <div className="border-t border-gray-200 bg-white mt-16">
-        <div className="max-w-7xl mx-auto px-6 py-12 text-center">
-          <h2 className="text-2xl font-light text-gray-900 mb-3">
-            Questions about your quote?
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Our COA-registered architects can help you customize your package or answer any questions.
-          </p>
-          <Button className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-            Schedule a Free Consultation
-          </Button>
+              {/* Payment Schedule */}
+              <div className="bg-vs/5 rounded-lg p-4 border border-vs/10">
+                <p className="text-xs font-semibold uppercase tracking-wide text-vs mb-3">
+                  Payment Schedule (50-30-20)
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Upfront (50%)</span>
+                    <span className="font-semibold">{currencySymbol}{Math.round(architectFee.totalFee * 0.5).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Submission (30%)</span>
+                    <span className="font-semibold">{currencySymbol}{Math.round(architectFee.totalFee * 0.3).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Delivery (20%)</span>
+                    <span className="font-semibold">{currencySymbol}{Math.round(architectFee.totalFee * 0.2).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+                <Button
+                  onClick={exportToPDF}
+                  variant="outline"
+                  className="border-vs text-vs hover:bg-vs/5 rounded-full"
+                >
+                  <Download className="size-4 mr-2" />
+                  Export to PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-vs text-vs hover:bg-vs/5 rounded-full"
+                >
+                  <Mail className="size-4 mr-2" />
+                  Send via Email
+                </Button>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setCurrentStep(6)}
+                  variant="outline"
+                  className="flex-1 border-vs text-vs hover:bg-vs/5 rounded-full"
+                >
+                  Edit Selections
+                </Button>
+                <Button
+                  onClick={() => {
+                    setCurrentStep(1);
+                    setProjectType('');
+                    setConstructionCost('');
+                    setArea('');
+                    setClientType('');
+                    setComplexity('');
+                    setClientInvolvement('');
+                    setVizPackage('None');
+                    setIncludeFFE(false);
+                    setIncludeLandscape(false);
+                    setIsRush(false);
+                  }}
+                  variant="outline"
+                  className="flex-1 border-gray-300 rounded-full"
+                >
+                  Start Over
+                </Button>
+              </div>
+
+              {/* COA Compliance */}
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex gap-3">
+                  <AlertCircle className="size-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium mb-1">COA Compliant</p>
+                    <p>Pricing follows Council of Architecture guidelines and industry standards.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>
