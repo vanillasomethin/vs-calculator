@@ -28,6 +28,47 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     }).format(value).replace('₹', '₹');
   };
 
+  // Helper function to distribute months proportionally
+  const distributeMonths = (totalMonths: number, percentages: number[]): number[] => {
+    if (totalMonths === 0) return percentages.map(() => 0);
+
+    // Calculate initial durations with floor to be conservative
+    const durations = percentages.map(p => Math.floor(totalMonths * p));
+
+    // Calculate remainder to distribute
+    let remainder = totalMonths - durations.reduce((sum, d) => sum + d, 0);
+
+    // Calculate fractional parts for smart distribution
+    const fractionalParts = percentages.map((p, i) => ({
+      index: i,
+      fraction: (totalMonths * p) - durations[i]
+    }));
+
+    // Sort by fractional part (largest first) to distribute remainder fairly
+    fractionalParts.sort((a, b) => b.fraction - a.fraction);
+
+    // Distribute remainder to phases with largest fractional parts
+    for (let i = 0; i < remainder; i++) {
+      durations[fractionalParts[i].index]++;
+    }
+
+    // Ensure each phase has at least 1 month if total > 0
+    if (totalMonths > 0) {
+      for (let i = 0; i < durations.length; i++) {
+        if (durations[i] === 0) {
+          durations[i] = 1;
+          // Take from the largest phase
+          const maxIndex = durations.indexOf(Math.max(...durations.filter((_, idx) => idx !== i)));
+          if (durations[maxIndex] > 1) {
+            durations[maxIndex]--;
+          }
+        }
+      }
+    }
+
+    return durations;
+  };
+
   // Check if this is an interior-only project
   const isInteriorOnly = estimate.workTypes?.includes("interiors") &&
                          !estimate.workTypes?.includes("construction");
@@ -54,153 +95,75 @@ const PhaseTimelineCost = ({ estimate }: PhaseTimelineCostProps) => {
     const constructionMonths = estimate.timeline.phases.construction;
     const constructionCost = estimate.phaseBreakdown.construction;
 
-    // Excavation & Earthwork
-    const excavationDuration = Math.max(1, Math.ceil(constructionMonths * 0.12));
-    phases.push({
-      name: "Excavation & Earthwork",
-      duration: excavationDuration,
-      cost: constructionCost * 0.08,
-      percentage: (constructionCost * 0.08 / estimate.totalCost) * 100,
-      color: "#FFC0CB", // Light pink
-      startMonth: currentMonth,
-      endMonth: currentMonth + excavationDuration - 1
-    });
-    currentMonth += excavationDuration;
+    // Define construction sub-phases with their percentages
+    const constructionPhaseData = [
+      { name: "Excavation & Earthwork", timePercent: 0.12, costPercent: 0.08, color: "#FFC0CB" },
+      { name: "Foundation & Footing", timePercent: 0.18, costPercent: 0.20, color: "#FFB6C1" },
+      { name: "Structural Work (RCC)", timePercent: 0.35, costPercent: 0.42, color: "#FFA07A" },
+      { name: "Roof Slab & Walls", timePercent: 0.20, costPercent: 0.25, color: "#FA8072" },
+      { name: "Plastering & Masonry", timePercent: 0.15, costPercent: 0.05, color: "#F08080" }
+    ];
 
-    // Foundation
-    const foundationDuration = Math.max(1, Math.ceil(constructionMonths * 0.18));
-    phases.push({
-      name: "Foundation & Footing",
-      duration: foundationDuration,
-      cost: constructionCost * 0.20,
-      percentage: (constructionCost * 0.20 / estimate.totalCost) * 100,
-      color: "#FFB6C1", // Light pink (slightly darker)
-      startMonth: currentMonth,
-      endMonth: currentMonth + foundationDuration - 1
-    });
-    currentMonth += foundationDuration;
+    // Distribute months properly to ensure they sum to constructionMonths
+    const durations = distributeMonths(
+      constructionMonths,
+      constructionPhaseData.map(p => p.timePercent)
+    );
 
-    // Structural Work
-    const structuralDuration = Math.max(1, Math.ceil(constructionMonths * 0.35));
-    phases.push({
-      name: "Structural Work (RCC)",
-      duration: structuralDuration,
-      cost: constructionCost * 0.42,
-      percentage: (constructionCost * 0.42 / estimate.totalCost) * 100,
-      color: "#FFA07A", // Light salmon
-      startMonth: currentMonth,
-      endMonth: currentMonth + structuralDuration - 1
+    // Create phases with properly distributed durations
+    constructionPhaseData.forEach((phaseData, index) => {
+      const duration = durations[index];
+      if (duration > 0) {
+        phases.push({
+          name: phaseData.name,
+          duration: duration,
+          cost: constructionCost * phaseData.costPercent,
+          percentage: (constructionCost * phaseData.costPercent / estimate.totalCost) * 100,
+          color: phaseData.color,
+          startMonth: currentMonth,
+          endMonth: currentMonth + duration - 1
+        });
+        currentMonth += duration;
+      }
     });
-    currentMonth += structuralDuration;
-
-    // Roof & Walls
-    const roofDuration = Math.max(1, Math.ceil(constructionMonths * 0.20));
-    phases.push({
-      name: "Roof Slab & Walls",
-      duration: roofDuration,
-      cost: constructionCost * 0.25,
-      percentage: (constructionCost * 0.25 / estimate.totalCost) * 100,
-      color: "#FA8072", // Salmon
-      startMonth: currentMonth,
-      endMonth: currentMonth + roofDuration - 1
-    });
-    currentMonth += roofDuration;
-
-    // Plastering
-    const plasterDuration = Math.max(1, Math.ceil(constructionMonths * 0.15));
-    phases.push({
-      name: "Plastering & Masonry",
-      duration: plasterDuration,
-      cost: constructionCost * 0.05,
-      percentage: (constructionCost * 0.05 / estimate.totalCost) * 100,
-      color: "#F08080", // Light coral
-      startMonth: currentMonth,
-      endMonth: currentMonth + plasterDuration - 1
-    });
-    currentMonth += plasterDuration;
   }
 
   // Interior & Finishing phases
   const interiorsMonths = estimate.timeline.phases.interiors;
   const interiorsCost = estimate.phaseBreakdown.interiors;
 
-  // Flooring & Tiling
-  const flooringDuration = Math.max(1, Math.ceil(interiorsMonths * 0.25));
-  phases.push({
-    name: "Flooring & Tiling",
-    duration: flooringDuration,
-    cost: interiorsCost * 0.20,
-    percentage: (interiorsCost * 0.20 / estimate.totalCost) * 100,
-    color: "#E9967A", // Dark salmon
-    startMonth: currentMonth,
-    endMonth: currentMonth + flooringDuration - 1
-  });
-  currentMonth += flooringDuration;
+  // Define interiors sub-phases with their percentages
+  const interiorsPhaseData = [
+    { name: "Flooring & Tiling", timePercent: 0.25, costPercent: 0.20, color: "#E9967A" },
+    { name: "MEP Installation", timePercent: 0.25, costPercent: 0.25, color: "#DC143C" },
+    { name: "Carpentry & Fixtures", timePercent: 0.20, costPercent: 0.22, color: "#CD5C5C" },
+    { name: "Doors & Windows", timePercent: 0.15, costPercent: 0.15, color: "#B22222" },
+    { name: "Painting & Finishes", timePercent: 0.10, costPercent: 0.10, color: "#A52A2A" },
+    { name: "Final Inspection & Handover", timePercent: 0.05, costPercent: 0.08, color: "#8B0000" }
+  ];
 
-  // MEP (Mechanical, Electrical, Plumbing)
-  const mepDuration = Math.max(1, Math.ceil(interiorsMonths * 0.25));
-  phases.push({
-    name: "MEP Installation",
-    duration: mepDuration,
-    cost: interiorsCost * 0.25,
-    percentage: (interiorsCost * 0.25 / estimate.totalCost) * 100,
-    color: "#DC143C", // Crimson
-    startMonth: currentMonth,
-    endMonth: currentMonth + mepDuration - 1
-  });
-  currentMonth += mepDuration;
+  // Distribute months properly to ensure they sum to interiorsMonths
+  const interiorDurations = distributeMonths(
+    interiorsMonths,
+    interiorsPhaseData.map(p => p.timePercent)
+  );
 
-  // Carpentry & Fixtures
-  const carpentryDuration = Math.max(1, Math.ceil(interiorsMonths * 0.20));
-  phases.push({
-    name: "Carpentry & Fixtures",
-    duration: carpentryDuration,
-    cost: interiorsCost * 0.22,
-    percentage: (interiorsCost * 0.22 / estimate.totalCost) * 100,
-    color: "#CD5C5C", // Indian red
-    startMonth: currentMonth,
-    endMonth: currentMonth + carpentryDuration - 1
+  // Create phases with properly distributed durations
+  interiorsPhaseData.forEach((phaseData, index) => {
+    const duration = interiorDurations[index];
+    if (duration > 0) {
+      phases.push({
+        name: phaseData.name,
+        duration: duration,
+        cost: interiorsCost * phaseData.costPercent,
+        percentage: (interiorsCost * phaseData.costPercent / estimate.totalCost) * 100,
+        color: phaseData.color,
+        startMonth: currentMonth,
+        endMonth: currentMonth + duration - 1
+      });
+      currentMonth += duration;
+    }
   });
-  currentMonth += carpentryDuration;
-
-  // Doors & Windows
-  const doorsWindowsDuration = Math.max(1, Math.ceil(interiorsMonths * 0.15));
-  phases.push({
-    name: "Doors & Windows",
-    duration: doorsWindowsDuration,
-    cost: interiorsCost * 0.15,
-    percentage: (interiorsCost * 0.15 / estimate.totalCost) * 100,
-    color: "#B22222", // Firebrick
-    startMonth: currentMonth,
-    endMonth: currentMonth + doorsWindowsDuration - 1
-  });
-  currentMonth += doorsWindowsDuration;
-
-  // Painting & Finishes
-  const paintingDuration = Math.max(1, Math.ceil(interiorsMonths * 0.10));
-  phases.push({
-    name: "Painting & Finishes",
-    duration: paintingDuration,
-    cost: interiorsCost * 0.10,
-    percentage: (interiorsCost * 0.10 / estimate.totalCost) * 100,
-    color: "#A52A2A", // Brown-red
-    startMonth: currentMonth,
-    endMonth: currentMonth + paintingDuration - 1
-  });
-  currentMonth += paintingDuration;
-
-  // Final Handover - fixed duration of 1 month
-  const handoverDuration = 1;
-  phases.push({
-    name: "Final Inspection & Handover",
-    duration: handoverDuration,
-    cost: interiorsCost * 0.08,
-    percentage: (interiorsCost * 0.08 / estimate.totalCost) * 100,
-    color: "#8B0000", // Dark red - end of gradient
-    startMonth: currentMonth,
-    endMonth: currentMonth + handoverDuration - 1
-  });
-  currentMonth += handoverDuration;
 
   const totalDuration = estimate.timeline.totalMonths;
 
