@@ -297,7 +297,7 @@ const AreaStep = ({
       </div>
 
       {/* G+ Format Info Display */}
-      {areaInputType === "plinth" && area > 0 && floorCount && floorCount > 1 && (
+      {areaInputType === "plinth" && area > 0 && floorCount && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -307,9 +307,13 @@ const AreaStep = ({
           <div className="flex items-start gap-3 mb-4">
             <Building2 className="size-6 text-green-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <h4 className="font-semibold text-green-900 mb-1">G+{floorCount - 1} Format Calculation</h4>
+              <h4 className="font-semibold text-green-900 mb-1">
+                {floorCount === 1 ? "G+0 Format Calculation" : `G+${floorCount - 1} Format Calculation`}
+              </h4>
               <p className="text-sm text-green-800">
-                Total built-up area for your {floorCount}-floor structure
+                {floorCount === 1
+                  ? "Single floor structure (Ground floor only)"
+                  : `Total built-up area for your ${floorCount}-floor structure`}
               </p>
             </div>
           </div>
@@ -319,19 +323,30 @@ const AreaStep = ({
             {Array.from({ length: floorCount }, (_, i) => ({
               floor: floorCount - i,
               index: i
-            })).map(({ floor, index }) => (
-              <div key={floor} className="flex items-center justify-between p-3 bg-white/60 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className={`size-3 rounded-sm ${index === floorCount - 1 ? 'bg-green-600' : 'bg-teal-500'}`}></div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {floor === 1 ? "Ground Floor (Plinth)" : `${floor - 1}${['st', 'nd', 'rd'][Math.min(floor - 2, 2)] || 'th'} Floor`}
+            })).map(({ floor, index }) => {
+              const getOrdinalSuffix = (num: number): string => {
+                const j = num % 10;
+                const k = num % 100;
+                if (j === 1 && k !== 11) return "st";
+                if (j === 2 && k !== 12) return "nd";
+                if (j === 3 && k !== 13) return "rd";
+                return "th";
+              };
+
+              return (
+                <div key={floor} className="flex items-center justify-between p-3 bg-white/60 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`size-3 rounded-sm ${index === floorCount - 1 ? 'bg-green-600' : 'bg-teal-500'}`}></div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {floor === 1 ? "Ground Floor (Plinth)" : `${floor - 1}${getOrdinalSuffix(floor - 1)} Floor`}
+                    </span>
+                  </div>
+                  <span className="text-sm font-bold text-gray-900">
+                    {area.toLocaleString()} {areaUnit}
                   </span>
                 </div>
-                <span className="text-sm font-bold text-gray-900">
-                  {area.toLocaleString()} {areaUnit}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Total calculation */}
@@ -339,7 +354,11 @@ const AreaStep = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm opacity-90 mb-1">Total Built-up Area</p>
-                <p className="text-xs opacity-75">{area} {areaUnit} × {floorCount} floors</p>
+                {floorCount > 1 ? (
+                  <p className="text-xs opacity-75">{area} {areaUnit} × {floorCount} floors</p>
+                ) : (
+                  <p className="text-xs opacity-75">Single floor (plinth area)</p>
+                )}
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold">{(area * floorCount).toLocaleString()} {areaUnit}</p>
