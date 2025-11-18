@@ -85,6 +85,7 @@ export interface ProjectEstimate {
   
   // Interiors
   fixedFurniture: ComponentOption;
+  interiorDoorsWindows: ComponentOption;
   looseFurniture: ComponentOption;
   furnishings: ComponentOption;
   appliances: ComponentOption;

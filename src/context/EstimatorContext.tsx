@@ -70,6 +70,7 @@ const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
 
   // Interior Components
   fixedFurniture: { none: 0, standard: 900, premium: 1700, luxury: 3200 },
+  interiorDoorsWindows: { none: 0, standard: 400, premium: 800, luxury: 1600 },
   looseFurniture: { none: 0, standard: 650, premium: 1300, luxury: 3000 },
   furnishings: { none: 0, standard: 200, premium: 450, luxury: 950 },
   appliances: { none: 0, standard: 400, premium: 800, luxury: 1800 },
@@ -107,10 +108,11 @@ const initialEstimate: ProjectEstimate = {
   ceiling: "standard",
   surfaces: "standard",
   fixedFurniture: "standard",
+  interiorDoorsWindows: "none",
   looseFurniture: "standard",
   furnishings: "standard",
   appliances: "standard",
-  artefacts: "none",
+  artefacts: "standard",
   totalCost: 0,
   categoryBreakdown: {
     construction: 0,
@@ -217,6 +219,7 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
 
     const interiors = [
       COMPONENT_PRICING.fixedFurniture[estimate.fixedFurniture] * areaInSqM,
+      COMPONENT_PRICING.interiorDoorsWindows[estimate.interiorDoorsWindows] * areaInSqM,
       COMPONENT_PRICING.looseFurniture[estimate.looseFurniture] * areaInSqM,
       COMPONENT_PRICING.furnishings[estimate.furnishings] * areaInSqM,
       COMPONENT_PRICING.appliances[estimate.appliances] * areaInSqM,

@@ -97,6 +97,7 @@ const StepContent = () => {
 
             <InteriorsStep
               fixedFurniture={estimate.fixedFurniture}
+              interiorDoorsWindows={estimate.interiorDoorsWindows}
               looseFurniture={estimate.looseFurniture}
               furnishings={estimate.furnishings}
               appliances={estimate.appliances}

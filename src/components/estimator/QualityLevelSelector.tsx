@@ -106,6 +106,13 @@ const COMPONENT_CONFIG: Record<string, {
     luxuryDesc: "Imported boards, luxury veneers/laminates, premium hardware (Hettich/Blum). High-end cabinetry with handleless options, glass shutters, and customization.",
     pricing: { standard: 900, premium: 1700, luxury: 3200 }
   },
+  interiorDoorsWindows: {
+    notRequiredDesc: "No interior doors/windows included. Client to arrange separately or covered in construction.",
+    standardDesc: "Engineered wood flush doors, basic frames and hardware. Standard bedroom/bathroom doors with simple locks and handles.",
+    premiumDesc: "Solid wood/veneer doors, premium hardware (Yale/Godrej locks). Designer doors with decorative handles, frosted glass, and better quality finishes.",
+    luxuryDesc: "Premium solid wood, carved/paneled designer doors, imported hardware. Smart locks, custom designs, glass partitions, and luxury finishes.",
+    pricing: { standard: 400, premium: 800, luxury: 1600 }
+  },
   looseFurniture: {
     notRequiredDesc: "No loose furniture included. Client to purchase furniture separately.",
     standardDesc: "Quality Indian brands (Godrej/Durian), solid construction. Essential furniture pieces including sofa, beds, dining, with basic upholstery.",

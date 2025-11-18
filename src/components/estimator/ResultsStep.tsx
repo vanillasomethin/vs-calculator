@@ -35,6 +35,7 @@ const COMPONENT_PRICING_PER_SQM: Record<string, Record<ComponentOption, number>>
   ceiling: { none: 0, standard: 300, premium: 600, luxury: 1200 },
   surfaces: { none: 0, standard: 550, premium: 1100, luxury: 2200 },
   fixedFurniture: { none: 0, standard: 900, premium: 1700, luxury: 3200 },
+  interiorDoorsWindows: { none: 0, standard: 400, premium: 800, luxury: 1600 },
   looseFurniture: { none: 0, standard: 650, premium: 1300, luxury: 3000 },
   furnishings: { none: 0, standard: 200, premium: 450, luxury: 950 },
   appliances: { none: 0, standard: 400, premium: 800, luxury: 1800 },
@@ -97,6 +98,11 @@ const COMPONENT_DESCRIPTIONS: Record<string, { standard: string[]; premium: stri
     standard: ["BWP plywood", "Laminate finish", "Basic hardware", "Standard kitchen cabinets", "Simple wardrobe systems"],
     premium: ["Premium BWR/Marine ply", "Acrylic/High-gloss finish", "Hettich/Ebco hardware", "Modular kitchen (Godrej/HomeLane)", "Designer wardrobes with organizers"],
     luxury: ["Imported marine ply/MDF", "Lacquered/Veneer finish", "Blum/Hafele premium hardware", "Designer modular kitchen (Häfele/Sleek)", "Walk-in closets", "Custom joinery"]
+  },
+  interiorDoorsWindows: {
+    standard: ["Engineered wood doors", "Basic flush doors", "Standard door frames", "Basic locks & handles", "Simple door design"],
+    premium: ["Solid wood/Veneer doors", "Designer flush doors", "Premium door frames", "Mortise locks (Yale/Godrej)", "Decorative handles", "Frosted glass options"],
+    luxury: ["Premium solid wood doors", "Designer carved/paneled doors", "Imported door hardware", "Smart locks (August/Schlage)", "Premium glass partitions", "Custom designs"]
   },
   looseFurniture: {
     standard: ["IKEA/Hometown furniture", "Standard sofa sets", "Basic beds & dining", "Functional design"],
@@ -325,6 +331,15 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
       perSqm: COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture],
       perSqft: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] / 10.764),
       totalCost: Math.round(COMPONENT_PRICING_PER_SQM.fixedFurniture[estimate.fixedFurniture] * areaInSqM),
+    },
+    isIncluded(estimate.interiorDoorsWindows) && {
+      category: "Interiors",
+      name: "Interior Doors & Windows",
+      level: estimate.interiorDoorsWindows,
+      description: COMPONENT_DESCRIPTIONS.interiorDoorsWindows[estimate.interiorDoorsWindows],
+      perSqm: COMPONENT_PRICING_PER_SQM.interiorDoorsWindows[estimate.interiorDoorsWindows],
+      perSqft: Math.round(COMPONENT_PRICING_PER_SQM.interiorDoorsWindows[estimate.interiorDoorsWindows] / 10.764),
+      totalCost: Math.round(COMPONENT_PRICING_PER_SQM.interiorDoorsWindows[estimate.interiorDoorsWindows] * areaInSqM),
     },
     isIncluded(estimate.looseFurniture) && {
       category: "Interiors",
