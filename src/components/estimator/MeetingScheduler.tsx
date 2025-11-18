@@ -6,7 +6,7 @@ import CalBookingForm from "./CalBookingForm";
 import CalEmbed from "./CalEmbed";
 import { isCalComConfigured } from "@/utils/calcom";
 
-type MainOptionType = "schedule" | "api-booking" | "cal-embed" | "cal-embed-15min" | "cal-embed-30min";
+type MainOptionType = "schedule" | "api-booking" | "schedule-virtual" | "schedule-office" | "schedule-site";
 type ScheduleSubOption = "on-site" | "in-office" | "virtual";
 
 interface MainOption {
@@ -53,58 +53,34 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
 
   const mainOptions: MainOption[] = [
     {
-      id: "cal-embed",
-      title: "Schedule a Call",
-      description: "15 or 30 min consultation call",
+      id: "schedule",
+      title: "Schedule a Meeting",
+      description: "Virtual, At Office, or At Site",
       icon: <Calendar className="size-6" />,
       hasSubOptions: true,
     },
-    {
-      id: "whatsapp",
-      title: "Quick Contact (WhatsApp)",
-      description: "Instant chat - fastest response",
-      icon: <MessageCircle className="size-6" />,
-      hasSubOptions: true,
-    },
-    {
-      id: "schedule",
-      title: "Request Site/Office Visit",
-      description: "On-site, in-office, or virtual meeting",
-      icon: <MapPin className="size-6" />,
-      hasSubOptions: true,
-    },
-    {
-      id: "email",
-      title: "Email Us Details",
-      description: "Send comprehensive requirements",
-      icon: <Mail className="size-6" />,
-      action: () => {
-        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Project Estimate Follow-up")}&body=${encodeURIComponent("Hi! I've received my project estimate and would like to discuss the next steps.")}`;
-      }
-    },
     ...(isCalComConfigured() ? [{
       id: "api-booking" as MainOptionType,
-      title: "Advanced Booking",
+      title: "Quick Booking",
       description: "3-step booking with project details",
       icon: <Zap className="size-6" />,
       hasSubOptions: true,
-    }] : [])
+    }] : []),
   ];
 
   const scheduleOptions: ScheduleOption[] = [
     {
-      id: "on-site",
-      title: "On-site Visit",
-      description: "We'll visit your project location",
-      icon: <MapPin className="size-5" />,
+      id: "virtual",
+      title: "Virtual Meeting",
+      description: "Online meeting via Cal.com",
+      icon: <Video className="size-5" />,
       action: () => {
-        const message = `Hi! I'd like to schedule an on-site visit to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        setSelectedMainOption("schedule-virtual");
       }
     },
     {
       id: "in-office",
-      title: "In-Office Meeting",
+      title: "At Office Meeting",
       description: "Visit our office for consultation",
       icon: <Building className="size-5" />,
       action: () => {
@@ -113,15 +89,15 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
       }
     },
     {
-      id: "virtual",
-      title: "Virtual Meeting",
-      description: "Online meeting via Google Meet/Zoom",
-      icon: <Video className="size-5" />,
+      id: "on-site",
+      title: "At Site Meeting",
+      description: "We'll visit your project location",
+      icon: <MapPin className="size-5" />,
       action: () => {
-        const body = `Hi! I'd like to schedule a virtual meeting to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
-        window.location.href = `mailto:${email}?subject=${encodeURIComponent("Schedule Virtual Meeting - Project Discussion")}&body=${encodeURIComponent(body)}`;
+        const message = `Hi! I'd like to schedule an on-site visit to discuss my project.${selectedDate ? `\n\nPreferred Date: ${selectedDate}` : ''}${selectedTime ? `\nPreferred Time: ${selectedTime}` : ''}`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
       }
-    }
+    },
   ];
 
   const handleMainOptionClick = (option: MainOption) => {
@@ -184,18 +160,20 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
         </h3>
         <p className="text-sm text-muted-foreground">
           {selectedMainOption === "schedule"
-            ? "Choose your preferred meeting type"
-            : shouldPulse
-              ? "Schedule a consultation to discuss your project in detail"
-              : "Choose your preferred way to connect with our team"
+            ? "Choose your preferred meeting location"
+            : selectedMainOption === "schedule-virtual"
+              ? "Select your preferred meeting duration"
+              : shouldPulse
+                ? "Schedule a consultation to discuss your project in detail"
+                : "Choose your preferred way to connect with our team"
           }
         </p>
       </div>
 
       <AnimatePresence mode="wait">
-        {selectedMainOption === "cal-embed" ? (
+        {selectedMainOption === "schedule-virtual" ? (
           <motion.div
-            key="cal-embed-selector"
+            key="schedule-virtual"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -203,83 +181,39 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
           >
             {/* Back button */}
             <button
-              onClick={handleBack}
+              onClick={() => setSelectedMainOption("schedule")}
               className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
             >
-              ← Back to main options
+              ← Back to meeting options
             </button>
 
-            {/* Call duration options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <button
-                onClick={() => setSelectedMainOption("cal-embed-15min" as MainOptionType)}
-                className="p-4 border-2 border-gray-200 rounded-lg hover:border-vs hover:bg-vs/5 transition-all text-left"
-              >
+            {/* Virtual meeting duration options */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 border-2 border-vs/20 rounded-lg bg-vs/5">
                 <div className="flex items-center gap-3 mb-2">
                   <CalendarCheck className="size-6 text-vs" />
                   <h4 className="font-semibold text-vs-dark">15-Min Quick Call</h4>
                 </div>
-                <p className="text-sm text-muted-foreground">Quick consultation to discuss basics</p>
-              </button>
+                <p className="text-sm text-muted-foreground mb-3">Quick consultation to discuss basics</p>
+                <CalEmbed
+                  calLink="vanilla-somethin-nezld5/15min"
+                  config={{ layout: "month_view" }}
+                  namespace="15min-virtual"
+                />
+              </div>
 
-              <button
-                onClick={() => setSelectedMainOption("cal-embed-30min" as MainOptionType)}
-                className="p-4 border-2 border-gray-200 rounded-lg hover:border-vs hover:bg-vs/5 transition-all text-left"
-              >
+              <div className="p-4 border-2 border-vs/20 rounded-lg bg-vs/5">
                 <div className="flex items-center gap-3 mb-2">
                   <Clock className="size-6 text-vs" />
                   <h4 className="font-semibold text-vs-dark">30-Min Detailed Call</h4>
                 </div>
-                <p className="text-sm text-muted-foreground">In-depth discussion of your project</p>
-              </button>
-            </div>
-          </motion.div>
-        ) : selectedMainOption === "cal-embed-15min" ? (
-          <motion.div
-            key="cal-embed-15min"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Back button */}
-            <button
-              onClick={() => setSelectedMainOption("cal-embed")}
-              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
-            >
-              ← Back to call options
-            </button>
-
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <CalEmbed
-                calLink="vanilla-somethin-nezld5/15min"
-                config={{ layout: "month_view" }}
-                namespace="15min"
-              />
-            </div>
-          </motion.div>
-        ) : selectedMainOption === "cal-embed-30min" ? (
-          <motion.div
-            key="cal-embed-30min"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Back button */}
-            <button
-              onClick={() => setSelectedMainOption("cal-embed")}
-              className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
-            >
-              ← Back to call options
-            </button>
-
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <CalEmbed
-                calLink="vanilla-somethin-nezld5/30min"
-                config={{ layout: "month_view" }}
-                namespace="30min"
-              />
+                <p className="text-sm text-muted-foreground mb-3">In-depth discussion of your project</p>
+                <CalEmbed
+                  calLink="vanilla-somethin-nezld5/30min"
+                  config={{ layout: "month_view" }}
+                  namespace="30min-virtual"
+                />
+              </div>
             </div>
           </motion.div>
         ) : selectedMainOption === "api-booking" ? (
@@ -448,19 +382,6 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
           </motion.div>
         )}
       </AnimatePresence>
-
-      <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 size-5 rounded-full bg-vs text-white flex items-center justify-center text-xs font-bold mt-0.5">
-            i
-          </div>
-          <div className="text-sm text-red-900">
-            <p className="font-medium mb-1">Quick Contact:</p>
-            <p>WhatsApp: <a href={`https://wa.me/${whatsappNumber}`} className="underline font-medium hover:text-vs">+{whatsappNumber}</a></p>
-            <p>Email: <a href={`mailto:${email}`} className="underline font-medium hover:text-vs">{email}</a></p>
-          </div>
-        </div>
-      </div>
     </motion.div>
   );
 };
