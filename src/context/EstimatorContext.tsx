@@ -91,6 +91,12 @@ const initialEstimate: ProjectEstimate = {
   workTypes: [],
   roomConfiguration: undefined,
   landscapeAreas: undefined,
+  constructionSubtype: undefined,
+  floorCount: 1,
+  areaInputType: undefined,
+  plotArea: undefined,
+  builtUpArea: undefined,
+  fsiCompliant: true,
   projectSubcategory: "", // Legacy field
   area: 0,
   areaUnit: "sqft",
@@ -548,6 +554,33 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
           });
           return false;
         }
+        // Validate construction-specific fields
+        if (estimate.projectType === "residential" && estimate.workTypes.includes("construction")) {
+          if (!estimate.constructionSubtype) {
+            toast({
+              title: "Construction Type Required",
+              description: "Please select whether you're building a house or apartment.",
+              variant: "destructive",
+            });
+            return false;
+          }
+          if (!estimate.floorCount || estimate.floorCount < 1) {
+            toast({
+              title: "Floor Count Required",
+              description: "Please specify the number of floors.",
+              variant: "destructive",
+            });
+            return false;
+          }
+          if (estimate.constructionSubtype === "house" && !estimate.areaInputType) {
+            toast({
+              title: "Area Type Required",
+              description: "Please select whether you'll provide plot area or plinth area.",
+              variant: "destructive",
+            });
+            return false;
+          }
+        }
         break;
       case 3:
         if (estimate.area <= 0) {
@@ -565,6 +598,17 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
             title: "Large Project",
             description: "Very large projects may require custom estimation. Please contact us for accurate pricing.",
           });
+        }
+        // Validate FSI compliance for houses with plot area
+        if (estimate.constructionSubtype === "house" &&
+            estimate.areaInputType === "plot" &&
+            estimate.fsiCompliant === false) {
+          toast({
+            title: "FSI Violation",
+            description: "The number of floors exceeds the FSI limit for your city. Please reduce floors or increase plot area.",
+            variant: "destructive",
+          });
+          return false;
         }
         break;
       case 4:

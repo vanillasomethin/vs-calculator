@@ -56,10 +56,16 @@ const StepContent = () => {
             selectedWorkTypes={estimate.workTypes}
             selectedRoomConfig={estimate.roomConfiguration}
             selectedLandscapeAreas={estimate.landscapeAreas}
+            selectedConstructionSubtype={estimate.constructionSubtype}
+            selectedFloorCount={estimate.floorCount}
+            selectedAreaInputType={estimate.areaInputType}
             onSelectType={(type) => updateEstimate('projectType', type)}
             onSelectWorkTypes={(workTypes) => updateEstimate('workTypes', workTypes)}
             onSelectRoomConfig={(config) => updateEstimate('roomConfiguration', config)}
             onSelectLandscapeAreas={(areas) => updateEstimate('landscapeAreas', areas)}
+            onSelectConstructionSubtype={(subtype) => updateEstimate('constructionSubtype', subtype)}
+            onSelectFloorCount={(count) => updateEstimate('floorCount', count)}
+            onSelectAreaInputType={(type) => updateEstimate('areaInputType', type)}
           />
         )}
 
@@ -68,8 +74,14 @@ const StepContent = () => {
             area={estimate.area}
             areaUnit={estimate.areaUnit}
             projectType={estimate.projectType}
+            city={estimate.city}
+            constructionSubtype={estimate.constructionSubtype}
+            floorCount={estimate.floorCount}
+            areaInputType={estimate.areaInputType}
             onAreaChange={(area) => updateEstimate('area', area)}
             onUnitChange={(unit) => updateEstimate('areaUnit', unit)}
+            onBuiltUpAreaChange={(builtUpArea) => updateEstimate('builtUpArea', builtUpArea)}
+            onFSIComplianceChange={(isCompliant) => updateEstimate('fsiCompliant', isCompliant)}
           />
         )}
 

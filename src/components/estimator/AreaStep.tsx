@@ -1,20 +1,93 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Ruler, SwitchCamera } from "lucide-react";
+import { Ruler, SwitchCamera, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedText from "@/components/AnimatedText";
+import { ConstructionSubtype, AreaInputType } from "@/types/estimator";
+import { getFSIRule, validateFSICompliance, calculateTypicalBuiltUpArea, suggestMaxFloors } from "@/utils/fsiRules";
 
 interface AreaStepProps {
   area: number;
   areaUnit: "sqft" | "sqm";
   projectType: string;
+  city: string;
+  constructionSubtype?: ConstructionSubtype;
+  floorCount?: number;
+  areaInputType?: AreaInputType;
   onAreaChange: (area: number) => void;
   onUnitChange: (unit: "sqft" | "sqm") => void;
+  onBuiltUpAreaChange?: (builtUpArea: number) => void;
+  onFSIComplianceChange?: (isCompliant: boolean) => void;
 }
 
-const AreaStep = ({ area, areaUnit, projectType, onAreaChange, onUnitChange }: AreaStepProps) => {
+const AreaStep = ({
+  area,
+  areaUnit,
+  projectType,
+  city,
+  constructionSubtype,
+  floorCount,
+  areaInputType,
+  onAreaChange,
+  onUnitChange,
+  onBuiltUpAreaChange,
+  onFSIComplianceChange
+}: AreaStepProps) => {
   // Use area prop as the initial value, ensuring synchronization
   const [inputValue, setInputValue] = useState(area > 0 ? area.toString() : "");
+  const [fsiValidation, setFsiValidation] = useState<{
+    isCompliant: boolean;
+    maxAllowed: number;
+    fsiUsed: number;
+    fsiMax: number;
+    message: string;
+  } | null>(null);
+  const [calculatedBuiltUpArea, setCalculatedBuiltUpArea] = useState<number | null>(null);
+
+  // Calculate FSI compliance and built-up area when relevant parameters change
+  useEffect(() => {
+    // Only calculate if we have house construction with plot area selected
+    if (
+      constructionSubtype === "house" &&
+      areaInputType === "plot" &&
+      area > 0 &&
+      floorCount &&
+      city
+    ) {
+      // Convert area to square meters for FSI calculation if needed
+      const areaInSqm = areaUnit === "sqft" ? area * 0.092903 : area;
+
+      // Get FSI rule for the city
+      const fsiRule = getFSIRule(city);
+
+      // Calculate typical built-up area based on FSI
+      const typicalBuiltUp = calculateTypicalBuiltUpArea(areaInSqm, city, areaUnit);
+
+      // Estimate floor area (assuming 70% of plot area due to setbacks)
+      const estimatedFloorArea = areaInSqm * 0.7;
+      const proposedBuiltUpArea = estimatedFloorArea * floorCount;
+
+      // Validate FSI compliance
+      const validation = validateFSICompliance(areaInSqm, proposedBuiltUpArea, city);
+
+      setFsiValidation(validation);
+      setCalculatedBuiltUpArea(proposedBuiltUpArea);
+
+      // Notify parent components
+      if (onBuiltUpAreaChange) {
+        onBuiltUpAreaChange(proposedBuiltUpArea);
+      }
+      if (onFSIComplianceChange) {
+        onFSIComplianceChange(validation.isCompliant);
+      }
+    } else {
+      setFsiValidation(null);
+      setCalculatedBuiltUpArea(null);
+      if (onFSIComplianceChange) {
+        onFSIComplianceChange(true); // Default to compliant if not using plot area
+      }
+    }
+  }, [area, areaUnit, city, constructionSubtype, floorCount, areaInputType, onBuiltUpAreaChange, onFSIComplianceChange]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -101,10 +174,22 @@ const AreaStep = ({ area, areaUnit, projectType, onAreaChange, onUnitChange }: A
   
   const maxRange = getMaxRange();
 
+  // Get dynamic title based on area input type
+  const getTitle = () => {
+    if (constructionSubtype === "house" && areaInputType === "plot") {
+      return "What's the plot/site area?";
+    } else if (constructionSubtype === "house" && areaInputType === "plinth") {
+      return "What's the plinth/built-up area?";
+    } else if (constructionSubtype === "apartment") {
+      return "What's the total built-up area?";
+    }
+    return "What's the approximate area of your project?";
+  };
+
   return (
     <div>
-      <AnimatedText 
-        text="What's the approximate area of your project?"
+      <AnimatedText
+        text={getTitle()}
         className="text-2xl font-display mb-8 text-center"
       />
       
@@ -194,8 +279,111 @@ const AreaStep = ({ area, areaUnit, projectType, onAreaChange, onUnitChange }: A
       </div>
       
       <div className="mt-8 text-center text-[#4f090c]/70 text-sm">
-        <p>Enter the area or use the slider to set your project size. Toggle between square feet and square meters as needed.</p>
+        <p>
+          {constructionSubtype === "house" && areaInputType === "plot"
+            ? "Enter the plot/site area. We'll calculate the built-up area based on FSI rules."
+            : "Enter the area or use the slider to set your project size. Toggle between square feet and square meters as needed."}
+        </p>
       </div>
+
+      {/* FSI Validation Display */}
+      {constructionSubtype === "house" && areaInputType === "plot" && area > 0 && floorCount && fsiValidation && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-8 space-y-4"
+        >
+          {/* FSI Info Card */}
+          <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+            <div className="flex items-start gap-3 mb-4">
+              <Info className="size-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-blue-900 mb-1">FSI Calculation</h4>
+                <p className="text-sm text-blue-800">
+                  Based on {city}'s FSI regulations and your {floorCount}-floor design
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-white/60 p-3 rounded-lg">
+                <p className="text-blue-700 font-medium mb-1">Plot Area</p>
+                <p className="text-lg font-bold text-blue-900">
+                  {area.toLocaleString()} {areaUnit}
+                </p>
+              </div>
+
+              <div className="bg-white/60 p-3 rounded-lg">
+                <p className="text-blue-700 font-medium mb-1">Max FSI Allowed</p>
+                <p className="text-lg font-bold text-blue-900">
+                  {fsiValidation.fsiMax}
+                </p>
+              </div>
+
+              <div className="bg-white/60 p-3 rounded-lg">
+                <p className="text-blue-700 font-medium mb-1">Estimated Built-up Area</p>
+                <p className="text-lg font-bold text-blue-900">
+                  {calculatedBuiltUpArea
+                    ? `${Math.round(areaUnit === "sqft" ? calculatedBuiltUpArea / 0.092903 : calculatedBuiltUpArea).toLocaleString()} ${areaUnit}`
+                    : "N/A"}
+                </p>
+              </div>
+
+              <div className="bg-white/60 p-3 rounded-lg">
+                <p className="text-blue-700 font-medium mb-1">FSI Used</p>
+                <p className="text-lg font-bold text-blue-900">
+                  {fsiValidation.fsiUsed.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Compliance Status */}
+          {fsiValidation.isCompliant ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3"
+            >
+              <CheckCircle2 className="size-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-green-900 mb-1">FSI Compliant ✓</h4>
+                <p className="text-sm text-green-800">
+                  Your {floorCount}-floor design complies with {city}'s FSI regulations.
+                  You're using {fsiValidation.fsiUsed.toFixed(2)} out of {fsiValidation.fsiMax} maximum FSI.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-4 bg-red-50 border-2 border-red-300 rounded-xl flex items-start gap-3"
+            >
+              <AlertTriangle className="size-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-red-900 mb-1">FSI Violation ⚠</h4>
+                <p className="text-sm text-red-800 mb-3">
+                  {fsiValidation.message}
+                </p>
+                <div className="bg-white/60 p-3 rounded-lg">
+                  <p className="text-xs text-red-700 font-medium mb-1">Recommendation:</p>
+                  <p className="text-sm text-red-900">
+                    {(() => {
+                      const areaInSqm = areaUnit === "sqft" ? area * 0.092903 : area;
+                      const estimatedFloorArea = areaInSqm * 0.7;
+                      const maxFloors = Math.floor((fsiValidation.maxAllowed) / estimatedFloorArea);
+                      return `With your plot size, you can build up to ${maxFloors} floors to comply with FSI regulations.
+                              Alternatively, increase the plot area or reduce the number of floors.`;
+                    })()}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 };

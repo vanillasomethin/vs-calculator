@@ -50,6 +50,12 @@ export type LandscapeArea =
   | "Full Compound"
   | "Courtyard";
 
+// Construction subtype for houses and apartments
+export type ConstructionSubtype = "house" | "apartment";
+
+// Area input type for construction
+export type AreaInputType = "plot" | "plinth";
+
 // Main project estimate interface
 export interface ProjectEstimate {
   // Location
@@ -61,6 +67,15 @@ export interface ProjectEstimate {
   workTypes: ProjectSubcategory[]; // Multiple selection for type of work
   roomConfiguration?: RoomConfiguration; // For Residential projects
   landscapeAreas?: LandscapeArea[]; // For Landscape work
+
+  // Construction specific fields
+  constructionSubtype?: ConstructionSubtype; // House or apartment
+  floorCount?: number; // Number of floors
+  areaInputType?: AreaInputType; // Plot area or plinth area
+  plotArea?: number; // Plot/site area (if selected)
+  builtUpArea?: number; // Calculated built-up area based on FSI
+  fsiCompliant?: boolean; // Whether the floor count is FSI compliant
+
   area: number;
   areaUnit: "sqft" | "sqm";
   complexity: number;
