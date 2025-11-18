@@ -23,72 +23,213 @@ const DetailedBreakdownSection = ({ estimate }: DetailedBreakdownSectionProps) =
     setExpandedSection(expandedSection === section ? null : section);
   };
 
-  // Calculate detailed breakdown based on total cost
+  // Calculate detailed breakdown based on total cost and work types
   // Using percentages from the user's data
   const getDetailedBreakdown = () => {
     const totalCost = estimate.totalCost;
+    const hasConstruction = estimate.workTypes?.includes("construction") ?? false;
+    const hasInteriors = estimate.workTypes?.includes("interiors") ?? false;
+    const hasLandscape = estimate.workTypes?.includes("landscape") ?? false;
 
+    // Construction-only breakdown
+    if (hasConstruction && !hasInteriors && !hasLandscape) {
+      return [
+        {
+          category: "Structural Work",
+          percentage: 37.5,
+          items: [
+            { name: "Earthwork & Excavation", cost: totalCost * 0.0134 },
+            { name: "Foundation (PCC Works)", cost: totalCost * 0.0185 },
+            { name: "Concrete (RCC)", cost: totalCost * 0.171 },
+            { name: "Steel & Iron", cost: totalCost * 0.202 },
+          ]
+        },
+        {
+          category: "Masonry & Walls",
+          percentage: 13.5,
+          items: [
+            { name: "Masonry/Brickwork", cost: totalCost * 0.122 },
+            { name: "Plastering", cost: totalCost * 0.095 },
+          ]
+        },
+        {
+          category: "Basic Finishing Works",
+          percentage: 18,
+          items: [
+            { name: "Basic Flooring", cost: totalCost * 0.084 },
+            { name: "Basic Painting", cost: totalCost * 0.047 },
+            { name: "Waterproofing", cost: totalCost * 0.018 },
+          ]
+        },
+        {
+          category: "Doors & Windows",
+          percentage: 11,
+          items: [
+            { name: "Basic Doors & Windows", cost: totalCost * 0.120 },
+            { name: "Staircase/Railings", cost: totalCost * 0.020 },
+          ]
+        },
+        {
+          category: "Core Services",
+          percentage: 6,
+          items: [
+            { name: "Basic Plumbing & Fixtures", cost: totalCost * 0.005 },
+            { name: "Basic Electrical Works", cost: totalCost * 0.025 },
+          ]
+        },
+        {
+          category: "External Works",
+          percentage: 8,
+          items: [
+            { name: "Water Tanks (Underground & Overhead)", cost: totalCost * 0.033 },
+            { name: "Compound Wall", cost: totalCost * 0.034 },
+            { name: "Anti-Termite Treatment", cost: totalCost * 0.003 },
+          ]
+        },
+        {
+          category: "Contingency & Misc",
+          percentage: 6,
+          items: [
+            { name: "Site Infrastructure", cost: totalCost * 0.02 },
+            { name: "Labour Welfare", cost: totalCost * 0.01 },
+            { name: "Tools & Equipment", cost: totalCost * 0.015 },
+            { name: "Contingency Buffer", cost: totalCost * 0.015 },
+          ]
+        }
+      ];
+    }
+
+    // Interiors-only breakdown
+    if (hasInteriors && !hasConstruction && !hasLandscape) {
+      return [
+        {
+          category: "Fixed Furniture & Cabinetry",
+          percentage: 35,
+          items: [
+            { name: "Kitchen Cabinets", cost: totalCost * 0.15 },
+            { name: "Wardrobes", cost: totalCost * 0.12 },
+            { name: "TV Units & Study Tables", cost: totalCost * 0.05 },
+            { name: "Bathroom Vanities", cost: totalCost * 0.03 },
+          ]
+        },
+        {
+          category: "Flooring & Wall Finishes",
+          percentage: 25,
+          items: [
+            { name: "Premium Flooring", cost: totalCost * 0.15 },
+            { name: "Wall Treatments", cost: totalCost * 0.06 },
+            { name: "Skirting & Dado", cost: totalCost * 0.04 },
+          ]
+        },
+        {
+          category: "Lighting & Electrical",
+          percentage: 15,
+          items: [
+            { name: "Designer Light Fixtures", cost: totalCost * 0.08 },
+            { name: "Electrical Accessories", cost: totalCost * 0.04 },
+            { name: "Smart Home Systems", cost: totalCost * 0.03 },
+          ]
+        },
+        {
+          category: "Furnishings & Decor",
+          percentage: 15,
+          items: [
+            { name: "Curtains & Blinds", cost: totalCost * 0.06 },
+            { name: "Soft Furnishings", cost: totalCost * 0.05 },
+            { name: "Artefacts & Art", cost: totalCost * 0.04 },
+          ]
+        },
+        {
+          category: "Loose Furniture",
+          percentage: 10,
+          items: [
+            { name: "Sofas & Seating", cost: totalCost * 0.05 },
+            { name: "Dining & Center Tables", cost: totalCost * 0.03 },
+            { name: "Beds & Storage", cost: totalCost * 0.02 },
+          ]
+        }
+      ];
+    }
+
+    // Combined construction + interiors breakdown
+    if (hasConstruction && hasInteriors) {
+      return [
+        {
+          category: "Structural Work",
+          percentage: 28,
+          items: [
+            { name: "Earthwork & Excavation", cost: totalCost * 0.01 },
+            { name: "Foundation (PCC Works)", cost: totalCost * 0.014 },
+            { name: "Concrete (RCC)", cost: totalCost * 0.13 },
+            { name: "Steel & Iron", cost: totalCost * 0.15 },
+          ]
+        },
+        {
+          category: "Masonry & Walls",
+          percentage: 10,
+          items: [
+            { name: "Masonry/Brickwork", cost: totalCost * 0.09 },
+            { name: "Plastering", cost: totalCost * 0.07 },
+          ]
+        },
+        {
+          category: "Premium Finishes",
+          percentage: 18,
+          items: [
+            { name: "Premium Flooring", cost: totalCost * 0.10 },
+            { name: "Premium Painting & Textures", cost: totalCost * 0.05 },
+            { name: "Waterproofing", cost: totalCost * 0.014 },
+          ]
+        },
+        {
+          category: "Doors, Windows & Woodwork",
+          percentage: 12,
+          items: [
+            { name: "Doors & Windows", cost: totalCost * 0.09 },
+            { name: "Fixed Cabinetry", cost: totalCost * 0.10 },
+            { name: "Staircase/Railings", cost: totalCost * 0.015 },
+          ]
+        },
+        {
+          category: "Services & Systems",
+          percentage: 8,
+          items: [
+            { name: "Plumbing & Premium Fixtures", cost: totalCost * 0.004 },
+            { name: "Electrical & Lighting", cost: totalCost * 0.035 },
+          ]
+        },
+        {
+          category: "Interiors & Furnishings",
+          percentage: 16,
+          items: [
+            { name: "Furniture & Upholstery", cost: totalCost * 0.08 },
+            { name: "Curtains & Soft Furnishings", cost: totalCost * 0.04 },
+            { name: "Appliances", cost: totalCost * 0.03 },
+            { name: "Decor & Artefacts", cost: totalCost * 0.01 },
+          ]
+        },
+        {
+          category: "External & Misc",
+          percentage: 8,
+          items: [
+            { name: "Water Tanks & Compound Wall", cost: totalCost * 0.05 },
+            { name: "Site Infrastructure", cost: totalCost * 0.015 },
+            { name: "Contingency Buffer", cost: totalCost * 0.015 },
+          ]
+        }
+      ];
+    }
+
+    // Default/fallback breakdown (landscape or other combinations)
     return [
       {
-        category: "Structural Work",
-        percentage: 37.5,
+        category: "Project Costs",
+        percentage: 100,
         items: [
-          { name: "Earthwork & Excavation", cost: totalCost * 0.0134 },
-          { name: "Foundation (PCC Works)", cost: totalCost * 0.0185 },
-          { name: "Concrete (RCC)", cost: totalCost * 0.171 },
-          { name: "Steel & Iron", cost: totalCost * 0.202 },
-        ]
-      },
-      {
-        category: "Masonry & Walls",
-        percentage: 13.5,
-        items: [
-          { name: "Masonry/Brickwork", cost: totalCost * 0.122 },
-          { name: "Plastering", cost: totalCost * 0.095 },
-        ]
-      },
-      {
-        category: "Finishing Works",
-        percentage: 18,
-        items: [
-          { name: "Flooring", cost: totalCost * 0.084 },
-          { name: "Painting", cost: totalCost * 0.047 },
-          { name: "Waterproofing", cost: totalCost * 0.018 },
-        ]
-      },
-      {
-        category: "Doors, Windows & Woodwork",
-        percentage: 11,
-        items: [
-          { name: "Doors & Windows", cost: totalCost * 0.120 },
-          { name: "Staircase/Railings", cost: totalCost * 0.020 },
-        ]
-      },
-      {
-        category: "Services",
-        percentage: 6,
-        items: [
-          { name: "Plumbing & Fixtures", cost: totalCost * 0.005 },
-          { name: "Electrical Works", cost: totalCost * 0.025 },
-        ]
-      },
-      {
-        category: "External Works",
-        percentage: 8,
-        items: [
-          { name: "Water Tanks (Underground & Overhead)", cost: totalCost * 0.033 },
-          { name: "Compound Wall", cost: totalCost * 0.034 },
-          { name: "Anti-Termite Treatment", cost: totalCost * 0.003 },
-        ]
-      },
-      {
-        category: "Contingency & Misc",
-        percentage: 6,
-        items: [
-          { name: "Site Infrastructure", cost: totalCost * 0.02 },
-          { name: "Labour Welfare", cost: totalCost * 0.01 },
-          { name: "Tools & Equipment", cost: totalCost * 0.015 },
-          { name: "Contingency Buffer", cost: totalCost * 0.015 },
+          { name: "Planning & Design", cost: totalCost * 0.10 },
+          { name: "Execution & Materials", cost: totalCost * 0.70 },
+          { name: "Professional Fees", cost: totalCost * 0.12 },
+          { name: "Contingency", cost: totalCost * 0.08 },
         ]
       }
     ];

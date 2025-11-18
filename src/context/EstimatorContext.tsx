@@ -206,6 +206,10 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     // Get size multiplier for accurate pricing
     const sizeMultiplier = getSizeMultiplier(areaInSqM);
 
+    // Check work types to determine which components should be included
+    const hasConstruction = estimate.workTypes?.includes("construction") ?? false;
+    const hasInteriors = estimate.workTypes?.includes("interiors") ?? false;
+
     const core = [
       COMPONENT_PRICING.civilQuality[estimate.civilQuality] * areaInSqM * 0.15,
       COMPONENT_PRICING.plumbing[estimate.plumbing] * areaInSqM,
@@ -222,13 +226,14 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
       COMPONENT_PRICING.surfaces[estimate.surfaces] * areaInSqM,
     ].reduce((sum, cost) => sum + cost, 0);
 
-    const interiors = [
+    // Only include interior costs if "interiors" work type is selected
+    const interiors = hasInteriors ? [
       COMPONENT_PRICING.fixedFurniture[estimate.fixedFurniture] * areaInSqM,
       COMPONENT_PRICING.looseFurniture[estimate.looseFurniture] * areaInSqM,
       COMPONENT_PRICING.furnishings[estimate.furnishings] * areaInSqM,
       COMPONENT_PRICING.appliances[estimate.appliances] * areaInSqM,
       COMPONENT_PRICING.artefacts[estimate.artefacts] * areaInSqM,
-    ].reduce((sum, cost) => sum + cost, 0);
+    ].reduce((sum, cost) => sum + cost, 0) : 0;
 
     // Apply size multiplier to all components
     return {
