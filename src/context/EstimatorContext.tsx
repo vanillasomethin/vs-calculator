@@ -371,9 +371,14 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
   // Main calculation function
   const calculateFullEstimate = useCallback((currentEstimate: ProjectEstimate): ProjectEstimate => {
     // Convert area to square meters for calculation
-    const areaInSqM = currentEstimate.areaUnit === "sqft" 
-      ? currentEstimate.area * 0.092903 
+    let baseAreaInSqM = currentEstimate.areaUnit === "sqft"
+      ? currentEstimate.area * 0.092903
       : currentEstimate.area;
+
+    // If plinth area is selected, multiply by floor count to get total built-up area
+    const areaInSqM = currentEstimate.areaInputType === "plinth" && currentEstimate.floorCount
+      ? baseAreaInSqM * currentEstimate.floorCount
+      : baseAreaInSqM;
 
     // 1. Calculate base construction cost
     const constructionCost = calculateConstructionCost(
@@ -577,6 +582,25 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
             toast({
               title: "Area Type Required",
               description: "Please select whether you'll provide plot area or plinth area.",
+              variant: "destructive",
+            });
+            return false;
+          }
+        }
+        // Validate interiors-specific fields
+        if (estimate.workTypes.includes("interiors")) {
+          if (!estimate.floorCount || estimate.floorCount < 1) {
+            toast({
+              title: "Floor Count Required",
+              description: "Please specify the number of floors in your home.",
+              variant: "destructive",
+            });
+            return false;
+          }
+          if (!estimate.areaInputType) {
+            toast({
+              title: "Area Input Type Required",
+              description: "Please specify whether you'll provide plot area or plinth area.",
               variant: "destructive",
             });
             return false;

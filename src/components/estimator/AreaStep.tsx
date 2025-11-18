@@ -186,10 +186,10 @@ const AreaStep = ({
   const getTitle = () => {
     if (constructionSubtype === "house" && areaInputType === "plot") {
       return "What's the plot/site area?";
-    } else if (constructionSubtype === "house" && areaInputType === "plinth") {
-      return "What's the plinth/built-up area?";
+    } else if (areaInputType === "plinth") {
+      return "What's the plinth area (ground floor)?";
     } else if (constructionSubtype === "apartment") {
-      return "What's the total built-up area?";
+      return "What's the plinth area per floor?";
     }
     return "What's the approximate area of your project?";
   };
@@ -289,10 +289,69 @@ const AreaStep = ({
       <div className="mt-8 text-center text-[#4f090c]/70 text-sm">
         <p>
           {constructionSubtype === "house" && areaInputType === "plot"
-            ? "Enter the plot/site area. We'll calculate the built-up area based on FSI rules."
+            ? "Enter the plot/site area. We'll calculate the plinth (ground floor) area based on FSI rules."
+            : areaInputType === "plinth"
+            ? "Enter the ground floor area only. We'll calculate total built-up area based on the number of floors."
             : "Enter the area or use the slider to set your project size. Toggle between square feet and square meters as needed."}
         </p>
       </div>
+
+      {/* G+ Format Info Display */}
+      {areaInputType === "plinth" && area > 0 && floorCount && floorCount > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mt-6 p-5 bg-gradient-to-br from-green-50 to-teal-50 border border-green-200 rounded-xl"
+        >
+          <div className="flex items-start gap-3 mb-4">
+            <Building2 className="size-6 text-green-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h4 className="font-semibold text-green-900 mb-1">G+{floorCount - 1} Format Calculation</h4>
+              <p className="text-sm text-green-800">
+                Total built-up area for your {floorCount}-floor structure
+              </p>
+            </div>
+          </div>
+
+          {/* Floor breakdown */}
+          <div className="space-y-2 mb-4">
+            {Array.from({ length: floorCount }, (_, i) => ({
+              floor: floorCount - i,
+              index: i
+            })).map(({ floor, index }) => (
+              <div key={floor} className="flex items-center justify-between p-3 bg-white/60 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className={`size-3 rounded-sm ${index === floorCount - 1 ? 'bg-green-600' : 'bg-teal-500'}`}></div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {floor === 1 ? "Ground Floor (Plinth)" : `${floor - 1}${['st', 'nd', 'rd'][Math.min(floor - 2, 2)] || 'th'} Floor`}
+                  </span>
+                </div>
+                <span className="text-sm font-bold text-gray-900">
+                  {area.toLocaleString()} {areaUnit}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Total calculation */}
+          <div className="p-4 bg-gradient-to-r from-green-600 to-teal-600 rounded-lg text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm opacity-90 mb-1">Total Built-up Area</p>
+                <p className="text-xs opacity-75">{area} {areaUnit} × {floorCount} floors</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold">{(area * floorCount).toLocaleString()} {areaUnit}</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-green-700 mt-3 text-center">
+            Pricing will be calculated based on total built-up area of {(area * floorCount).toLocaleString()} {areaUnit}
+          </p>
+        </motion.div>
+      )}
 
       {/* FSI Validation Display */}
       {constructionSubtype === "house" && areaInputType === "plot" && area > 0 && floorCount && fsiValidation && (
