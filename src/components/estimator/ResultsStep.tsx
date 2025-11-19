@@ -220,10 +220,15 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
   // Calculate area in sqm for calculations
   const areaInSqM = estimate.areaUnit === "sqft" ? estimate.area * 0.092903 : estimate.area;
 
-  // Calculate architect fee (COA standards: 6-8% for residential projects)
-  // Using a simplified approach based on total construction cost
-  const architectFeePercent = estimate.projectType === "commercial" ? 5 :
-                             estimate.projectType === "mixed-use" ? 6 : 8;
+  // Calculate architect fee using same tiered system as PDF (COA standards)
+  const getArchitectFeePercentage = (projectCost: number): number => {
+    if (projectCost <= 5000000) return 12;  // Up to 50 lakh: 12%
+    if (projectCost <= 10000000) return 10; // 50L - 1Cr: 10%
+    if (projectCost <= 50000000) return 9;  // 1Cr - 5Cr: 9%
+    return 8;                               // Above 5Cr: 8%
+  };
+
+  const architectFeePercent = getArchitectFeePercentage(estimate.totalCost);
   const architectFee = (estimate.totalCost * architectFeePercent) / 100;
   const totalWithArchitectFee = estimate.totalCost + architectFee;
 

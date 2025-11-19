@@ -175,11 +175,10 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
         </h3>
         <p className="text-sm text-muted-foreground">
           {showCalWidget
-            ? "Select your preferred date and time"
+            ? "Select your preferred date and time for a 15-minute consultation"
             : shouldPulse
-              ? "Schedule a consultation to discuss your project in detail"
-              : "Choose your preferred way to connect with our team"
-          }
+              ? "Virtual / Onsite / At Office - Schedule a consultation to discuss your project"
+              : "Virtual / Onsite / At Office - Choose your preferred way to connect"}
         </p>
       </div>
 

@@ -249,7 +249,10 @@ const DetailedBreakdownSection = ({ estimate }: DetailedBreakdownSectionProps) =
         <div>
           <h3 className="text-xl font-bold text-gray-900 mb-1">Detailed Cost Breakdown</h3>
           <p className="text-sm text-gray-600">
-            Itemized breakdown of construction costs by work category
+            Typical distribution of project costs across major work categories
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Note: Actual costs may vary based on specifications and site conditions
           </p>
         </div>
       </div>

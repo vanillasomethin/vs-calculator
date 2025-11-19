@@ -139,7 +139,7 @@ const LocationStep = ({ selectedState, selectedCity, onStateSelect, onCitySelect
           </div>
           <input
             type="text"
-            placeholder="Enter your location (e.g., Mumbai, Maharashtra)"
+            placeholder="Type city name (e.g., Mumbai, Bangalore, Delhi)"
             className="w-full pl-10 pr-4 py-3 rounded-lg border border-primary/20 bg-white bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-vs/50 focus:border-transparent"
             value={searchQuery}
             onChange={handleSearchInputChange}
