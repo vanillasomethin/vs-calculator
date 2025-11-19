@@ -544,14 +544,14 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
         </button>
       </div>
 
-      {/* FAQ Section */}
-      <div className="mt-6">
-        <FAQSection />
-      </div>
-
       {/* Bottom Booking Section */}
       <div className="mt-6">
         <MeetingScheduler autoExpand={false} estimate={estimate} />
+      </div>
+
+      {/* FAQ Section */}
+      <div className="mt-6">
+        <FAQSection />
       </div>
 
       {/* Modal Dialog for Meeting Scheduler */}
