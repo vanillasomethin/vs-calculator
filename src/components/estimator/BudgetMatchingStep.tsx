@@ -343,11 +343,11 @@ const BudgetMatchingStep = ({
       <div className="mb-6">
         <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
           <Sparkles className="size-5 text-vs" />
-          Budget-Based Component Matching
+          Budget-Based Component Matching <Badge variant="outline" className="ml-2 text-xs">Optional</Badge>
         </h3>
         <p className="text-sm text-muted-foreground">
-          Tell us your budget, and we'll suggest the best combination of components to match it.
-          You can always customize these selections in the next step.
+          Have a budget in mind? We'll suggest the best combination of components to match it.
+          You can always customize selections in the next step, or <strong className="text-vs">skip this entirely</strong> if you prefer to choose manually.
         </p>
       </div>
 
@@ -503,12 +503,21 @@ const BudgetMatchingStep = ({
         </Card>
       )}
 
-      {/* Skip Option */}
-      <div className="text-center py-4">
-        <p className="text-sm text-muted-foreground">
-          Not sure about your budget yet? That's okay! You can skip this step and select components manually.
-        </p>
-      </div>
+      {/* Skip Option - Prominent */}
+      <Card className="border-dashed border-2 border-vs/20 bg-vs/5">
+        <CardContent className="pt-6 text-center">
+          <h4 className="font-medium text-vs-dark mb-2">
+            Prefer to Choose Components Yourself?
+          </h4>
+          <p className="text-sm text-muted-foreground mb-4">
+            No problem! Click "Next" below to skip budget matching and manually select each component's quality level.
+            Perfect if you have specific preferences or want full control.
+          </p>
+          <p className="text-xs text-vs font-medium">
+            💡 Tip: You can proceed without entering a budget
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };
