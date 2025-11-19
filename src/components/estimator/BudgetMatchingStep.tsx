@@ -48,27 +48,27 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 
 // Component pricing per square meter (must match EstimatorContext)
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
-  civilQuality: { none: 0, standard: 400, premium: 900, luxury: 1800 },
-  plumbing: { none: 0, standard: 250, premium: 550, luxury: 1200 },
-  electrical: { none: 0, standard: 200, premium: 450, luxury: 900 },
-  ac: { none: 0, standard: 400, premium: 850, luxury: 1800 },
-  elevator: { none: 0, standard: 800, premium: 1400, luxury: 2500 },
-  buildingEnvelope: { none: 0, standard: 200, premium: 500, luxury: 1100 },
-  lighting: { none: 0, standard: 150, premium: 400, luxury: 850 },
-  windows: { none: 0, standard: 250, premium: 600, luxury: 1300 },
-  ceiling: { none: 0, standard: 150, premium: 400, luxury: 800 },
-  surfaces: { none: 0, standard: 300, premium: 700, luxury: 1500 },
-  fixedFurniture: { none: 0, standard: 500, premium: 1100, luxury: 2200 },
-  looseFurniture: { none: 0, standard: 350, premium: 850, luxury: 2000 },
-  furnishings: { none: 0, standard: 100, premium: 300, luxury: 650 },
-  appliances: { none: 0, standard: 200, premium: 500, luxury: 1200 },
-  artefacts: { none: 0, standard: 80, premium: 250, luxury: 600 },
+  civilQuality: { none: 0, standard: 300, premium: 700, luxury: 1400 },
+  plumbing: { none: 0, standard: 200, premium: 450, luxury: 950 },
+  electrical: { none: 0, standard: 150, premium: 350, luxury: 750 },
+  ac: { none: 0, standard: 350, premium: 750, luxury: 1600 },
+  elevator: { none: 0, standard: 750, premium: 1300, luxury: 2300 },
+  buildingEnvelope: { none: 0, standard: 150, premium: 400, luxury: 900 },
+  lighting: { none: 0, standard: 100, premium: 300, luxury: 700 },
+  windows: { none: 0, standard: 200, premium: 500, luxury: 1100 },
+  ceiling: { none: 0, standard: 100, premium: 300, luxury: 650 },
+  surfaces: { none: 0, standard: 250, premium: 600, luxury: 1300 },
+  fixedFurniture: { none: 0, standard: 400, premium: 950, luxury: 1900 },
+  looseFurniture: { none: 0, standard: 300, premium: 750, luxury: 1800 },
+  furnishings: { none: 0, standard: 80, premium: 250, luxury: 550 },
+  appliances: { none: 0, standard: 150, premium: 400, luxury: 1000 },
+  artefacts: { none: 0, standard: 60, premium: 200, luxury: 500 },
 };
 
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
-  residential: 11000,
-  commercial: 14000,
-  "mixed-use": 16000,
+  residential: 15000,
+  commercial: 18000,
+  "mixed-use": 21000,
 };
 
 const BudgetMatchingStep = ({
@@ -170,11 +170,11 @@ const BudgetMatchingStep = ({
     subtotal *= locationMultiplier;
     subtotal *= projectMultiplier;
 
-    // Add professional fees and contingency
-    const professionalFees = subtotal * 0.13;
-    const contingency = subtotal * 0.09;
+    // Add professional fees and contingency (aligned with architects4design.com)
+    const professionalFees = subtotal * 0.03; // 3% (reduced from 13%)
+    const contingency = subtotal * 0.05; // 5% (reduced from 9%)
     const totalBeforeTax = subtotal + professionalFees + contingency;
-    const gst = totalBeforeTax * 0.12;
+    const gst = totalBeforeTax * 0.06; // 6% effective (reduced from 12%)
 
     return Math.round(totalBeforeTax + gst);
   };
