@@ -56,7 +56,7 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
     {
       id: "schedule-virtual",
       title: "Schedule Meeting",
-      description: "Book 15-min call instantly",
+      description: "Virtual / Onsite / At Office",
       icon: <Calendar className="size-6" />,
       action: () => {
         setShowCalWidget(true);
@@ -65,7 +65,7 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
     {
       id: "schedule-site",
       title: "Request via WhatsApp",
-      description: "On-site or Office visit",
+      description: "Quick consultation request",
       icon: <MessageCircle className="size-6" />,
       action: () => {
         const message = `Hi! I'd like to schedule a consultation to discuss my project. Please let me know your availability.`;
@@ -116,14 +116,10 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
   ];
 
   const handleMainOptionClick = (option: MainOption) => {
-    if (option.id === "schedule-virtual") {
-      setSelectedMainOption(option.id);
-    } else {
-      setSelectedMainOption(option.id);
-      setTimeout(() => {
-        option.action?.();
-      }, 300);
-    }
+    setSelectedMainOption(option.id);
+    setTimeout(() => {
+      option.action?.();
+    }, 300);
   };
 
   const handleSubOptionClick = (option: ScheduleOption) => {

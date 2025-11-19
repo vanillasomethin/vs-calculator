@@ -176,29 +176,14 @@ const LocationStep = ({ selectedState, selectedCity, onStateSelect, onCitySelect
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 space-y-3"
+          className="mt-8 text-center p-4 glass-card rounded-xl border border-vs/10"
         >
-          <div className="text-center p-4 glass-card rounded-xl border border-vs/10">
-            <p className="text-vs font-medium">
-              Selected Location: {selectedCity}, {selectedState}
-            </p>
-            <p className="text-[#4f090c]/70 text-sm mt-1">
-              We'll use location-specific pricing data for your estimate
-            </p>
-          </div>
-
-          {/* Subtle hint about budget matching */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-center p-3 bg-gradient-to-r from-vs/5 to-vs/10 rounded-lg border border-vs/20"
-          >
-            <p className="text-xs text-vs-dark/80">
-              💡 <strong className="text-vs">Pro Tip:</strong> Later you'll have the option to enter your budget,
-              and we'll suggest component combinations to match it. Or skip it entirely and choose manually!
-            </p>
-          </motion.div>
+          <p className="text-vs font-medium">
+            Selected Location: {selectedCity}, {selectedState}
+          </p>
+          <p className="text-[#4f090c]/70 text-sm mt-1">
+            We'll use location-specific pricing data for your estimate
+          </p>
         </motion.div>
       )}
     </div>
