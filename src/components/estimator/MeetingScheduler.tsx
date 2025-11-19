@@ -37,6 +37,7 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
   const [shouldPulse, setShouldPulse] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [showCalWidget, setShowCalWidget] = useState(false);
 
   // Auto-expand when triggered from parent
   useEffect(() => {
@@ -54,11 +55,11 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
   const mainOptions: MainOption[] = [
     {
       id: "schedule-virtual",
-      title: "Virtual / Onsite / At Office",
-      description: "Book instantly via Cal.com",
+      title: "Schedule Meeting",
+      description: "Book 15-min call instantly",
       icon: <Calendar className="size-6" />,
       action: () => {
-        setSelectedMainOption("schedule-virtual");
+        setShowCalWidget(true);
       }
     },
     {
@@ -173,8 +174,8 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
           {shouldPulse ? "👋 Ready to get started?" : "Let's Connect"}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {selectedMainOption === "schedule-virtual"
-            ? "Select your preferred meeting duration"
+          {showCalWidget
+            ? "Select your preferred date and time"
             : shouldPulse
               ? "Schedule a consultation to discuss your project in detail"
               : "Choose your preferred way to connect with our team"
@@ -183,49 +184,34 @@ const MeetingScheduler = ({ autoExpand = false, estimate }: MeetingSchedulerProp
       </div>
 
       <AnimatePresence mode="wait">
-        {selectedMainOption === "schedule-virtual" ? (
+        {showCalWidget ? (
           <motion.div
-            key="schedule-virtual"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            key="cal-widget"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
             {/* Back button */}
             <button
-              onClick={() => setSelectedMainOption("schedule")}
+              onClick={() => setShowCalWidget(false)}
               className="mb-4 text-sm text-vs hover:text-vs/80 flex items-center gap-1 transition-colors"
             >
-              ← Back to meeting options
+              ← Back to options
             </button>
 
-            {/* Virtual meeting duration options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="p-4 border-2 border-vs/20 rounded-lg bg-vs/5">
-                <div className="flex items-center gap-3 mb-2">
-                  <CalendarCheck className="size-6 text-vs" />
-                  <h4 className="font-semibold text-vs-dark">15-Min Quick Call</h4>
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">Quick consultation to discuss basics</p>
-                <CalEmbed
-                  calLink="vanilla-somethin-nezld5/15min"
-                  config={{ layout: "month_view" }}
-                  namespace="15min-virtual"
-                />
+            {/* 15-min Cal.com widget */}
+            <div className="p-4 border-2 border-vs/20 rounded-lg bg-vs/5">
+              <div className="flex items-center gap-3 mb-2">
+                <CalendarCheck className="size-6 text-vs" />
+                <h4 className="font-semibold text-vs-dark">15-Min Consultation</h4>
               </div>
-
-              <div className="p-4 border-2 border-vs/20 rounded-lg bg-vs/5">
-                <div className="flex items-center gap-3 mb-2">
-                  <Clock className="size-6 text-vs" />
-                  <h4 className="font-semibold text-vs-dark">30-Min Detailed Call</h4>
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">In-depth discussion of your project</p>
-                <CalEmbed
-                  calLink="vanilla-somethin-nezld5/30min"
-                  config={{ layout: "month_view" }}
-                  namespace="30min-virtual"
-                />
-              </div>
+              <p className="text-sm text-muted-foreground mb-3">Quick call to discuss your project requirements</p>
+              <CalEmbed
+                calLink="vanilla-somethin-nezld5/15min"
+                config={{ layout: "month_view" }}
+                namespace="15min-consultation"
+              />
             </div>
           </motion.div>
         ) : (

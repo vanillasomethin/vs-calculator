@@ -210,18 +210,32 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     const hasConstruction = estimate.workTypes?.includes("construction") ?? false;
     const hasInteriors = estimate.workTypes?.includes("interiors") ?? false;
 
+    // Calculate core costs - civil quality only for construction projects
+    const civilQualityCost = hasConstruction
+      ? COMPONENT_PRICING.civilQuality[estimate.civilQuality] * areaInSqM * 0.15
+      : 0;
+
     const core = [
-      COMPONENT_PRICING.civilQuality[estimate.civilQuality] * areaInSqM * 0.15,
+      civilQualityCost,
       COMPONENT_PRICING.plumbing[estimate.plumbing] * areaInSqM,
       COMPONENT_PRICING.electrical[estimate.electrical] * areaInSqM,
       COMPONENT_PRICING.ac[estimate.ac] * areaInSqM,
       COMPONENT_PRICING.elevator[estimate.elevator] * areaInSqM,
     ].reduce((sum, cost) => sum + cost, 0);
 
+    // Calculate finishes - building envelope only for construction projects
+    const buildingEnvelopeCost = hasConstruction
+      ? COMPONENT_PRICING.buildingEnvelope[estimate.buildingEnvelope] * areaInSqM
+      : 0;
+
+    const windowsCost = hasConstruction
+      ? COMPONENT_PRICING.windows[estimate.windows] * areaInSqM
+      : 0;
+
     const finishes = [
-      COMPONENT_PRICING.buildingEnvelope[estimate.buildingEnvelope] * areaInSqM,
+      buildingEnvelopeCost,
       COMPONENT_PRICING.lighting[estimate.lighting] * areaInSqM,
-      COMPONENT_PRICING.windows[estimate.windows] * areaInSqM,
+      windowsCost,
       COMPONENT_PRICING.ceiling[estimate.ceiling] * areaInSqM,
       COMPONENT_PRICING.surfaces[estimate.surfaces] * areaInSqM,
     ].reduce((sum, cost) => sum + cost, 0);
