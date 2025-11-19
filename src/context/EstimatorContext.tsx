@@ -52,37 +52,37 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 };
 
 // Component pricing per square meter (in INR)
-// Updated based on realistic 2025 Indian construction costs
+// Realistic 2025 Indian construction costs - components are INCREMENTAL to base
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
-  // Core Construction Components
-  civilQuality: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
-  plumbing: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
-  electrical: { none: 0, standard: 450, premium: 850, luxury: 1650 },
-  ac: { none: 0, standard: 650, premium: 1300, luxury: 2800 },
-  elevator: { none: 0, standard: 1500, premium: 2300, luxury: 3800 },
+  // Core Construction Components (incremental costs above base)
+  civilQuality: { none: 0, standard: 400, premium: 900, luxury: 1800 },
+  plumbing: { none: 0, standard: 250, premium: 550, luxury: 1200 },
+  electrical: { none: 0, standard: 200, premium: 450, luxury: 900 },
+  ac: { none: 0, standard: 400, premium: 850, luxury: 1800 },
+  elevator: { none: 0, standard: 800, premium: 1400, luxury: 2500 },
 
-  // Finishes & Envelope
-  buildingEnvelope: { none: 0, standard: 400, premium: 800, luxury: 1600 },
-  lighting: { none: 0, standard: 300, premium: 650, luxury: 1300 },
-  windows: { none: 0, standard: 500, premium: 1000, luxury: 2000 },
-  ceiling: { none: 0, standard: 300, premium: 600, luxury: 1200 },
-  surfaces: { none: 0, standard: 550, premium: 1100, luxury: 2200 },
+  // Finishes & Envelope (incremental costs)
+  buildingEnvelope: { none: 0, standard: 200, premium: 500, luxury: 1100 },
+  lighting: { none: 0, standard: 150, premium: 400, luxury: 850 },
+  windows: { none: 0, standard: 250, premium: 600, luxury: 1300 },
+  ceiling: { none: 0, standard: 150, premium: 400, luxury: 800 },
+  surfaces: { none: 0, standard: 300, premium: 700, luxury: 1500 },
 
-  // Interior Components
-  fixedFurniture: { none: 0, standard: 900, premium: 1700, luxury: 3200 },
-  looseFurniture: { none: 0, standard: 650, premium: 1300, luxury: 3000 },
-  furnishings: { none: 0, standard: 200, premium: 450, luxury: 950 },
-  appliances: { none: 0, standard: 400, premium: 800, luxury: 1800 },
-  artefacts: { none: 0, standard: 150, premium: 400, luxury: 900 },
+  // Interior Components (incremental costs)
+  fixedFurniture: { none: 0, standard: 500, premium: 1100, luxury: 2200 },
+  looseFurniture: { none: 0, standard: 350, premium: 850, luxury: 2000 },
+  furnishings: { none: 0, standard: 100, premium: 300, luxury: 650 },
+  appliances: { none: 0, standard: 200, premium: 500, luxury: 1200 },
+  artefacts: { none: 0, standard: 80, premium: 250, luxury: 600 },
 };
 
-// Base construction cost per square meter (foundation, structure, masonry)
-// Includes excavation, foundation, RCC work, brickwork, plastering
-// Based on realistic 2025 Indian construction costs: ₹1,650-₹1,900/sqft
+// Base construction cost per square meter (shell + basic finishes)
+// Foundation, RCC structure, masonry, basic plaster, basic electrical/plumbing roughing
+// Based on 2025 market rates: ₹1,200-1,500/sqft for complete basic construction
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
-  residential: 18000,   // ₹18,000/sqm for residential (₹1,672/sqft - includes basic finishes)
-  commercial: 22000,    // ₹22,000/sqm for commercial projects
-  "mixed-use": 26000,   // ₹26,000/sqm for mixed-use developments
+  residential: 11000,   // ₹11,000/sqm (₹1,022/sqft) - basic shell with minimal finishes
+  commercial: 14000,    // ₹14,000/sqm for commercial projects
+  "mixed-use": 16000,   // ₹16,000/sqm for mixed-use developments
 };
 
 const initialEstimate: ProjectEstimate = {

@@ -81,17 +81,27 @@ const CalEmbed = ({
   }, [namespace, config]);
 
   return (
-    <div className="w-full h-full min-h-[600px] relative">
+    <div className="w-full h-full relative">
+      {/* Hidden button - only for cal.com API trigger */}
       <button
         ref={buttonRef}
         data-cal-namespace={namespace}
         data-cal-link={calLink}
         data-cal-config={JSON.stringify(config)}
-        className="w-full py-8 px-4 bg-gradient-to-r from-vs to-vs-dark hover:from-vs-dark hover:to-vs border-2 border-vs rounded-lg transition-all duration-300 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 cursor-pointer"
-        style={{ cursor: 'pointer' }}
-      >
-        🗓️ Pick Your Perfect Time - Book Now!
-      </button>
+        className="hidden"
+        aria-hidden="true"
+      />
+
+      {/* Loading indicator while Cal.com widget opens */}
+      {!isOpen && (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-vs mx-auto mb-4"></div>
+            <p className="text-sm text-muted-foreground">Opening booking calendar...</p>
+          </div>
+        </div>
+      )}
+
       <style>{`
         [data-cal-namespace] * {
           cursor: auto !important;

@@ -40,8 +40,8 @@ const DetailedBreakdownSection = ({ estimate }: DetailedBreakdownSectionProps) =
           items: [
             { name: "Earthwork & Excavation", cost: totalCost * 0.0134 },
             { name: "Foundation (PCC Works)", cost: totalCost * 0.0185 },
-            { name: "Concrete (RCC)", cost: totalCost * 0.171 },
-            { name: "Steel & Iron", cost: totalCost * 0.202 },
+            { name: "RCC (Slabs, Beams, Columns)", cost: totalCost * 0.171 },
+            { name: "Steel & Reinforcement", cost: totalCost * 0.202 },
           ]
         },
         {
@@ -160,8 +160,8 @@ const DetailedBreakdownSection = ({ estimate }: DetailedBreakdownSectionProps) =
           items: [
             { name: "Earthwork & Excavation", cost: totalCost * 0.01 },
             { name: "Foundation (PCC Works)", cost: totalCost * 0.014 },
-            { name: "Concrete (RCC)", cost: totalCost * 0.13 },
-            { name: "Steel & Iron", cost: totalCost * 0.15 },
+            { name: "RCC (Slabs, Beams, Columns)", cost: totalCost * 0.13 },
+            { name: "Steel & Reinforcement", cost: totalCost * 0.15 },
           ]
         },
         {
