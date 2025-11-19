@@ -80,6 +80,7 @@ export interface ProjectEstimate {
   areaUnit: "sqft" | "sqm";
   complexity: number;
   selectedMaterials: string[];
+  budget?: number; // User's budget for budget matching
 
   // Legacy field for backward compatibility
   projectSubcategory?: ProjectSubcategory | "";

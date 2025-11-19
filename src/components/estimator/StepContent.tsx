@@ -5,6 +5,7 @@ import { useEstimator } from "@/context/EstimatorContext";
 import LocationStep from "@/components/estimator/LocationStep";
 import ProjectTypeStep from "@/components/estimator/ProjectTypeStep";
 import AreaStep from "@/components/estimator/AreaStep";
+import BudgetMatchingStep from "@/components/estimator/BudgetMatchingStep";
 import ComponentsStep from "@/components/estimator/ComponentsStep";
 import FinishesStep from "@/components/estimator/FinishesStep";
 import InteriorsStep from "@/components/estimator/InteriorsStep";
@@ -14,9 +15,9 @@ const StepContent = () => {
   // ✅ FIX 1: Destructure handleOptionChange
   const { step, estimate, updateEstimate, handleReset, handleSaveEstimate, handleOptionChange } = useEstimator();
 
-  // Set default "standard" options when first reaching step 4
+  // Set default "standard" options when first reaching step 5 (components step)
   useEffect(() => {
-    if (step === 4) {
+    if (step === 5) {
       const componentsToInitialize = [
         'plumbing', 'ac', 'electrical', 'elevator', 'civilQuality',
         'lighting', 'windows', 'ceiling', 'surfaces', 'buildingEnvelope',
@@ -86,6 +87,19 @@ const StepContent = () => {
         )}
 
         {step === 4 && (
+          <BudgetMatchingStep
+            budget={estimate.budget || 0}
+            estimate={estimate}
+            onBudgetChange={(budget) => updateEstimate('budget', budget)}
+            onApplySuggestions={(suggestions) => {
+              Object.entries(suggestions).forEach(([key, value]) => {
+                updateEstimate(key as keyof typeof estimate, value);
+              });
+            }}
+          />
+        )}
+
+        {step === 5 && (
           <div className="space-y-6">
             <ComponentsStep
               plumbing={estimate.plumbing}
@@ -119,7 +133,7 @@ const StepContent = () => {
           </div>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <ResultsStep
             estimate={estimate}
             onReset={handleReset}

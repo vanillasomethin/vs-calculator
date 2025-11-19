@@ -147,7 +147,7 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
   const [estimate, setEstimate] = useState<ProjectEstimate>(initialEstimate);
   const [isCalculating, setIsCalculating] = useState(false);
   const { toast } = useToast();
-  const totalSteps = 5;
+  const totalSteps = 6; // Updated to include budget matching step
 
   // Get location multiplier
   const getLocationMultiplier = useCallback((city: string): number => {
@@ -723,16 +723,16 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
 
   const handleNext = useCallback(() => {
     if (!validateStep(step)) return;
-    
+
     if (step < totalSteps) {
-      if (step === 4) {
-        // Calculate final estimate before showing results
+      if (step === 5) {
+        // Calculate final estimate before showing results (step 5 -> 6)
         setIsCalculating(true);
         setTimeout(() => {
           const finalEstimate = calculateFullEstimate(estimate);
           setEstimate(finalEstimate);
           setIsCalculating(false);
-          setStep(5);
+          setStep(6);
         }, 1000);
       } else {
         setStep(step + 1);
