@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { Building2, Home, Building, Paintbrush, HardHat, Trees, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedText from "@/components/AnimatedText";
@@ -74,6 +75,15 @@ const ProjectTypeStep = ({
     if (j === 3 && k !== 13) return "rd";
     return "th";
   };
+
+  // Auto-set default area input type for interiors-only projects
+  useEffect(() => {
+    const isInteriorsOnly = selectedWorkTypes.includes("interiors") && !selectedWorkTypes.includes("construction");
+    // For interiors-only projects without construction subtype, default to "builtup"
+    if (isInteriorsOnly && !selectedConstructionSubtype && !selectedAreaInputType) {
+      onSelectAreaInputType("builtup");
+    }
+  }, [selectedWorkTypes, selectedConstructionSubtype, selectedAreaInputType, onSelectAreaInputType]);
 
   const projectOptions: ProjectOption[] = [
     {
