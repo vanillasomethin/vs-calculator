@@ -666,12 +666,12 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
             return false;
           }
         }
-        // Validate interiors-specific fields
-        if (estimate.workTypes.includes("interiors")) {
+        // Validate interiors-specific fields (only for interiors-only projects)
+        if (estimate.workTypes.includes("interiors") && !estimate.workTypes.includes("construction")) {
           if (!estimate.floorCount || estimate.floorCount < 1) {
             toast({
               title: "Floor Count Required",
-              description: "Please specify the number of floors in your home.",
+              description: "Please specify the number of floors in your building.",
               variant: "destructive",
             });
             return false;
@@ -679,7 +679,7 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
           if (!estimate.areaInputType) {
             toast({
               title: "Area Input Type Required",
-              description: "Please specify whether you'll provide plot area or plinth area.",
+              description: "Please select whether you'll provide plinth area (ground floor) or built-up area (total across all floors).",
               variant: "destructive",
             });
             return false;
