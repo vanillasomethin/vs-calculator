@@ -89,14 +89,8 @@ const BudgetMatchingStep = ({
       return estimate.builtUpArea;
     } else if (estimate.areaInputType === "plinth" && estimate.floorCount) {
       return baseAreaInSqM * estimate.floorCount;
-    } else if (estimate.areaInputType === "builtup") {
-      return baseAreaInSqM;
     }
-    // Default case - if areaInputType is not set but we have multiple floors,
-    // treat as plinth area and multiply by floor count
-    if (estimate.floorCount && estimate.floorCount > 1) {
-      return baseAreaInSqM * estimate.floorCount;
-    }
+    // For built-up area or default, use as-is (area is already total across all floors)
     return baseAreaInSqM;
   };
 
