@@ -52,28 +52,28 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
 };
 
 // Component pricing per square meter (in INR)
-// INCREMENTAL costs above base - based on architects4design.com breakdown
+// Updated based on 2025 market research: Premium interiors ₹1,500-3,000/sqft, Luxury ₹2,500-4,000/sqft
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
-  // Core Construction Components (incremental upgrades)
+  // Core Construction Components (realistic market rates)
   civilQuality: { none: 0, standard: 300, premium: 700, luxury: 1400 },
-  plumbing: { none: 0, standard: 200, premium: 450, luxury: 950 },
-  electrical: { none: 0, standard: 150, premium: 350, luxury: 750 },
-  ac: { none: 0, standard: 350, premium: 750, luxury: 1600 },
+  plumbing: { none: 0, standard: 500, premium: 1500, luxury: 3500 }, // Premium fixtures ₹140/sqft
+  electrical: { none: 0, standard: 400, premium: 1200, luxury: 2800 }, // Premium wiring & switches ₹112/sqft
+  ac: { none: 0, standard: 800, premium: 2200, luxury: 5000 }, // Split/VRV systems
   elevator: { none: 0, standard: 750, premium: 1300, luxury: 2300 },
 
-  // Finishes & Envelope (incremental upgrades)
+  // Finishes & Envelope (updated to 2025 market rates)
   buildingEnvelope: { none: 0, standard: 150, premium: 400, luxury: 900 },
-  lighting: { none: 0, standard: 100, premium: 300, luxury: 700 },
-  windows: { none: 0, standard: 200, premium: 500, luxury: 1100 },
-  ceiling: { none: 0, standard: 100, premium: 300, luxury: 650 },
-  surfaces: { none: 0, standard: 250, premium: 600, luxury: 1300 },
+  lighting: { none: 0, standard: 400, premium: 1200, luxury: 3000 }, // Designer lighting ₹112/sqft premium
+  windows: { none: 0, standard: 500, premium: 1500, luxury: 3500 }, // uPVC/aluminum premium ₹140/sqft
+  ceiling: { none: 0, standard: 350, premium: 1000, luxury: 2500 }, // False ceiling ₹93/sqft premium
+  surfaces: { none: 0, standard: 600, premium: 1800, luxury: 4000 }, // Premium tiles/marble ₹167/sqft
 
-  // Interior Components (incremental upgrades)
-  fixedFurniture: { none: 0, standard: 400, premium: 950, luxury: 1900 },
-  looseFurniture: { none: 0, standard: 300, premium: 750, luxury: 1800 },
-  furnishings: { none: 0, standard: 80, premium: 250, luxury: 550 },
-  appliances: { none: 0, standard: 150, premium: 400, luxury: 1000 },
-  artefacts: { none: 0, standard: 60, premium: 200, luxury: 500 },
+  // Interior Components (realistic 2025 rates - modular kitchen ₹2000-3500/sqft, wardrobes ₹65k+)
+  fixedFurniture: { none: 0, standard: 3000, premium: 8000, luxury: 15000 }, // Kitchen, wardrobes, TV units ₹745/sqft
+  looseFurniture: { none: 0, standard: 2000, premium: 5000, luxury: 12000 }, // Sofas, beds, dining ₹465/sqft
+  furnishings: { none: 0, standard: 500, premium: 2000, luxury: 4000 }, // Curtains, blinds, soft furnishings ₹186/sqft
+  appliances: { none: 0, standard: 1000, premium: 3500, luxury: 8000 }, // Built-in appliances, chimney, hob ₹325/sqft
+  artefacts: { none: 0, standard: 300, premium: 1500, luxury: 3500 }, // Decor, art, lighting fixtures ₹140/sqft
 };
 
 // Base construction cost per square meter - aligned with market rates

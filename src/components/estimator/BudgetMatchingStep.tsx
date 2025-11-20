@@ -46,23 +46,23 @@ const LOCATION_MULTIPLIERS: Record<string, number> = {
   "default": 0.95
 };
 
-// Component pricing per square meter (must match EstimatorContext)
+// Component pricing per square meter (must match EstimatorContext - updated to 2025 market rates)
 const COMPONENT_PRICING: Record<string, Record<ComponentOption, number>> = {
   civilQuality: { none: 0, standard: 300, premium: 700, luxury: 1400 },
-  plumbing: { none: 0, standard: 200, premium: 450, luxury: 950 },
-  electrical: { none: 0, standard: 150, premium: 350, luxury: 750 },
-  ac: { none: 0, standard: 350, premium: 750, luxury: 1600 },
+  plumbing: { none: 0, standard: 500, premium: 1500, luxury: 3500 },
+  electrical: { none: 0, standard: 400, premium: 1200, luxury: 2800 },
+  ac: { none: 0, standard: 800, premium: 2200, luxury: 5000 },
   elevator: { none: 0, standard: 750, premium: 1300, luxury: 2300 },
   buildingEnvelope: { none: 0, standard: 150, premium: 400, luxury: 900 },
-  lighting: { none: 0, standard: 100, premium: 300, luxury: 700 },
-  windows: { none: 0, standard: 200, premium: 500, luxury: 1100 },
-  ceiling: { none: 0, standard: 100, premium: 300, luxury: 650 },
-  surfaces: { none: 0, standard: 250, premium: 600, luxury: 1300 },
-  fixedFurniture: { none: 0, standard: 400, premium: 950, luxury: 1900 },
-  looseFurniture: { none: 0, standard: 300, premium: 750, luxury: 1800 },
-  furnishings: { none: 0, standard: 80, premium: 250, luxury: 550 },
-  appliances: { none: 0, standard: 150, premium: 400, luxury: 1000 },
-  artefacts: { none: 0, standard: 60, premium: 200, luxury: 500 },
+  lighting: { none: 0, standard: 400, premium: 1200, luxury: 3000 },
+  windows: { none: 0, standard: 500, premium: 1500, luxury: 3500 },
+  ceiling: { none: 0, standard: 350, premium: 1000, luxury: 2500 },
+  surfaces: { none: 0, standard: 600, premium: 1800, luxury: 4000 },
+  fixedFurniture: { none: 0, standard: 3000, premium: 8000, luxury: 15000 },
+  looseFurniture: { none: 0, standard: 2000, premium: 5000, luxury: 12000 },
+  furnishings: { none: 0, standard: 500, premium: 2000, luxury: 4000 },
+  appliances: { none: 0, standard: 1000, premium: 3500, luxury: 8000 },
+  artefacts: { none: 0, standard: 300, premium: 1500, luxury: 3500 },
 };
 
 const BASE_CONSTRUCTION_COST: Record<string, number> = {
