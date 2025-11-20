@@ -434,8 +434,11 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
     );
     subtotal *= projectMultiplier;
 
-    // 6. Add professional fees (architect, engineer) - aligned with architects4design.com
-    const professionalFees = subtotal * 0.03; // 3% (they recommend 2-4%)
+    // 6. Add professional fees - aligned with COA (Council of Architecture) guidelines
+    // For Individual Houses: 7.5% architectural services + 0.75% documentation (10% of 7.5%)
+    const architecturalFees = subtotal * 0.075; // 7.5% COA standard for individual houses
+    const documentationFees = architecturalFees * 0.10; // 10% of architectural fees
+    const professionalFees = architecturalFees + documentationFees; // Total: 8.25%
 
     // 7. Add contingency - aligned with architects4design.com
     const contingency = subtotal * 0.05; // 5% (they recommend 5-10%)

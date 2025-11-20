@@ -226,10 +226,12 @@ const DetailedBreakdownSection = ({ estimate }: DetailedBreakdownSectionProps) =
         category: "Project Costs",
         percentage: 100,
         items: [
-          { name: "Planning & Design", cost: totalCost * 0.10 },
-          { name: "Execution & Materials", cost: totalCost * 0.70 },
-          { name: "Professional Fees", cost: totalCost * 0.12 },
-          { name: "Contingency", cost: totalCost * 0.08 },
+          { name: "Planning & Design", cost: totalCost * 0.08 },
+          { name: "Execution & Materials", cost: totalCost * 0.74 },
+          { name: "Architectural Services (COA 7.5%)", cost: totalCost * 0.0625 },
+          { name: "Documentation & Communication", cost: totalCost * 0.00625 },
+          { name: "Contingency", cost: totalCost * 0.04 },
+          { name: "GST", cost: totalCost * 0.05125 },
         ]
       }
     ];
