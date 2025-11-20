@@ -40,6 +40,11 @@ const ComponentsStep = ({
     );
   };
 
+  // Check if this is an interiors-only project
+  const isInteriorsOnly = workTypes.includes("interiors") &&
+                         !workTypes.includes("construction") &&
+                         !workTypes.includes("landscape");
+
   const components = [
     {
       key: "civilQuality",
@@ -54,8 +59,10 @@ const ComponentsStep = ({
       title: "Plumbing Fixtures & Sanitary",
       icon: <Droplet className="size-6" />,
       value: plumbing,
-      required: true,
-      description: "Water supply systems, drainage networks, sanitary fixtures (toilets, sinks, showers), pipe quality, and water treatment systems",
+      required: workTypes.includes("construction"), // Only required for construction projects
+      description: isInteriorsOnly
+        ? "Optional: New plumbing fixtures and sanitary installations for interior renovations (choose 'Not Required' if not upgrading plumbing)"
+        : "Water supply systems, drainage networks, sanitary fixtures (toilets, sinks, showers), pipe quality, and water treatment systems",
     },
     {
       key: "ac",
@@ -70,8 +77,10 @@ const ComponentsStep = ({
       title: "Electrical Systems",
       icon: <Zap className="size-6" />,
       value: electrical,
-      required: true,
-      description: "Complete electrical installation with distribution boards, wiring networks, circuit breakers, switches, power outlets, earthing systems, and MCB protection",
+      required: workTypes.includes("construction"), // Only required for construction projects
+      description: isInteriorsOnly
+        ? "Optional: New electrical fixtures and lighting upgrades for interior renovations (choose 'Not Required' if not upgrading electrical)"
+        : "Complete electrical installation with distribution boards, wiring networks, circuit breakers, switches, power outlets, earthing systems, and MCB protection",
     },
     {
       key: "elevator",
@@ -88,6 +97,7 @@ const ComponentsStep = ({
       <div className="text-center py-8">
         <p className="text-muted-foreground">
           No core building components are typically required for {workTypes.join(", ")} projects.
+          You can proceed to the next step to configure interior finishes and furniture.
         </p>
       </div>
     );

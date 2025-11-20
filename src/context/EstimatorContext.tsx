@@ -523,6 +523,15 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
           appliances: "none",
           artefacts: "none",
         }));
+      } else if (hasInteriors && estimate.fixedFurniture === undefined) {
+        // If interiors is newly added and components are not set, set sensible defaults
+        setEstimate(prev => ({
+          ...prev,
+          fixedFurniture: prev.fixedFurniture === "none" ? "standard" : prev.fixedFurniture,
+          looseFurniture: prev.looseFurniture === "none" ? "standard" : prev.looseFurniture,
+          furnishings: prev.furnishings === "none" ? "standard" : prev.furnishings,
+          appliances: prev.appliances === "none" ? "standard" : prev.appliances,
+        }));
       }
 
       // If construction is not selected, set civil quality to "none"
@@ -530,6 +539,18 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
         setEstimate(prev => ({
           ...prev,
           civilQuality: "none",
+          buildingEnvelope: "none",
+          windows: "none",
+        }));
+      } else if (hasConstruction && estimate.civilQuality === "none") {
+        // If construction is newly added and civil quality is "none", restore to standard
+        setEstimate(prev => ({
+          ...prev,
+          civilQuality: "standard",
+          buildingEnvelope: prev.buildingEnvelope === "none" ? "standard" : prev.buildingEnvelope,
+          windows: prev.windows === "none" ? "standard" : prev.windows,
+          plumbing: prev.plumbing === "none" ? "standard" : prev.plumbing,
+          electrical: prev.electrical === "none" ? "standard" : prev.electrical,
         }));
       }
     }
@@ -698,21 +719,44 @@ export const EstimatorProvider = ({ children }: { children: React.ReactNode }) =
         }
         break;
       case 4:
-        // Validate at least core components are selected
-        const requiredComponents = [estimate.civilQuality, estimate.plumbing, estimate.electrical];
-        const hasAllRequired = requiredComponents.every(c => c && c !== 'none');
-        
-        if (!hasAllRequired) {
+        // Validate components based on work types
+        const hasConstruction = estimate.workTypes?.includes("construction");
+        const hasInteriors = estimate.workTypes?.includes("interiors");
+
+        // For construction projects, require civil quality
+        if (hasConstruction && (!estimate.civilQuality || estimate.civilQuality === 'none')) {
           toast({
-            title: "Required Components",
-            description: "Please select quality levels for all required components (Civil, Plumbing, Electrical).",
+            title: "Civil Quality Required",
+            description: "Please select civil materials quality for construction projects.",
             variant: "destructive",
           });
           return false;
         }
-        
-        // Warn about quality mismatches
-        if (estimate.civilQuality === "luxury" && 
+
+        // For interiors-only projects, require at least some selection
+        // (plumbing and electrical are optional for pure interior design)
+        const isInteriorsOnly = hasInteriors && !hasConstruction && !estimate.workTypes?.includes("landscape");
+        if (isInteriorsOnly) {
+          // Check if at least some interior components are selected
+          const hasAnyInteriorSelection = [
+            estimate.fixedFurniture,
+            estimate.looseFurniture,
+            estimate.furnishings,
+            estimate.appliances
+          ].some(c => c && c !== 'none');
+
+          if (!hasAnyInteriorSelection) {
+            toast({
+              title: "Interior Components Required",
+              description: "Please select at least one interior component for your interiors-only project.",
+              variant: "destructive",
+            });
+            return false;
+          }
+        }
+
+        // Warn about quality mismatches for construction projects
+        if (hasConstruction && estimate.civilQuality === "luxury" &&
             (estimate.plumbing === "standard" || estimate.electrical === "standard")) {
           toast({
             title: "Quality Mismatch",
