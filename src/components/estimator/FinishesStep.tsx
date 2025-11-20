@@ -28,7 +28,7 @@ const FinishesStep = ({
     }
 
     const finishAvailability: Record<ProjectSubcategory, string[]> = {
-      interiors: ["lighting", "ceiling", "surfaces"], // Interior finishes only
+      interiors: ["lighting", "windows", "ceiling", "surfaces"], // Interior finishes including door/window upgrades
       construction: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
       landscape: ["lighting"], // Outdoor lighting only
     };

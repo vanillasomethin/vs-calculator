@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import CalBookingForm from "./CalBookingForm";
 import CalEmbed from "./CalEmbed";
 import { isCalComConfigured } from "@/utils/calcom";
+import { getCalApi } from "@calcom/embed-react";
 
 type MainOptionType = "schedule" | "api-booking" | "schedule-virtual" | "schedule-office" | "schedule-site";
 type ScheduleSubOption = "on-site" | "in-office" | "virtual";

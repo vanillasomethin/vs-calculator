@@ -29,7 +29,7 @@ const ComponentsStep = ({
     }
 
     const componentAvailability: Record<ProjectSubcategory, string[]> = {
-      interiors: ["plumbing", "ac", "electrical"], // No civil/construction for interiors
+      interiors: ["plumbing", "ac", "electrical", "elevator"], // Include elevator for multi-floor interior renovations
       construction: ["civilQuality", "plumbing", "ac", "electrical", "elevator"],
       landscape: [], // Landscape doesn't need these core components
     };
@@ -88,7 +88,9 @@ const ComponentsStep = ({
       icon: <ArrowUp className="size-6" />,
       value: elevator,
       required: false,
-      description: "Passenger/goods lifts with safety mechanisms, cabin finishes, control systems, emergency backup, and maintenance access for multi-story buildings",
+      description: isInteriorsOnly
+        ? "Optional: Elevator cabin interior upgrades, finishes, and control panel styling for existing lifts in multi-story buildings"
+        : "Passenger/goods lifts with safety mechanisms, cabin finishes, control systems, emergency backup, and maintenance access for multi-story buildings",
     },
   ].filter(component => shouldShowComponent(component.key));
 
