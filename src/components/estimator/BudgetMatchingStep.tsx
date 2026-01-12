@@ -459,7 +459,7 @@ const BudgetMatchingStep = ({
                   elevator: "Elevator",
                   buildingEnvelope: "Building Envelope",
                   lighting: "Lighting",
-                  windows: "Windows",
+                  windows: "Exterior Windows & Doors",
                   ceiling: "Ceiling",
                   surfaces: "Surfaces",
                   fixedFurniture: "Fixed Furniture",

@@ -81,9 +81,9 @@ const COMPONENT_DESCRIPTIONS: Record<string, { standard: string[]; premium: stri
     luxury: ["Smart lighting system (Philips Hue)", "Designer imported fixtures", "Automated controls", "Color-changing ambiance", "Integrated outdoor lighting"]
   },
   windows: {
-    standard: ["Solid/Veneer flush doors", "Aluminum sliding windows", "5mm clear glass", "Basic door & window hardware", "Basic MS grills", "Powder-coated frames"],
-    premium: ["Premium veneer/laminated doors", "uPVC/Premium aluminum windows", "6mm toughened glass", "Designer door hardware (Dorset/Europa)", "Designer grills", "Double glazing options"],
-    luxury: ["Premium imported doors (Porta/Tata)", "Premium uPVC windows (Fenesta)", "Double-glazed low-E glass", "Designer imported hardware (Hafele/Hettich)", "Motorized windows", "Acoustic doors & glass"]
+    standard: ["Exterior flush doors", "Aluminum sliding windows", "5mm clear glass", "Basic door & window hardware", "Basic MS grills", "Powder-coated frames"],
+    premium: ["Premium exterior veneer/laminated doors", "uPVC/Premium aluminum windows", "6mm toughened glass", "Designer door hardware (Dorset/Europa)", "Designer grills", "Double glazing options"],
+    luxury: ["Premium imported exterior doors (Porta/Tata)", "Premium uPVC windows (Fenesta)", "Double-glazed low-E glass", "Designer imported hardware (Hafele/Hettich)", "Motorized windows", "Acoustic doors & glass"]
   },
   ceiling: {
     standard: ["Gypsum board false ceiling", "Basic POP corners", "Standard grid system", "Paint finish"],
@@ -299,7 +299,7 @@ const ResultsStep = ({ estimate, onReset, onSave }: ResultsStepProps) => {
     },
     isIncluded(estimate.windows) && {
       category: "Finishes",
-      name: "Windows, Doors & Glazing",
+      name: "Exterior Windows, Doors & Glazing",
       level: estimate.windows,
       description: COMPONENT_DESCRIPTIONS.windows[estimate.windows],
       perSqm: COMPONENT_PRICING_PER_SQM.windows[estimate.windows],

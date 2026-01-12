@@ -40,10 +40,10 @@ const InteriorsStep = ({
     },
     {
       key: "interiorDoorsWindows",
-      title: "Interior Doors & Windows",
+      title: "Interior Doors & Partitions",
       icon: <DoorOpen className="size-6" />,
       value: interiorDoorsWindows,
-      description: "Bedroom doors, bathroom doors, kitchen doors, internal partitions, sliding doors, french doors, windows for internal rooms, door handles and locks, and interior glazing work",
+      description: "Bedroom doors, bathroom doors, kitchen doors, internal partitions, sliding doors, french doors, door handles and locks, and interior glazing work",
     },
     {
       key: "looseFurniture",

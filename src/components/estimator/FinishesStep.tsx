@@ -28,7 +28,7 @@ const FinishesStep = ({
     }
 
     const finishAvailability: Record<ProjectSubcategory, string[]> = {
-      interiors: ["lighting", "windows", "ceiling", "surfaces"], // Interior finishes including door/window upgrades
+      interiors: ["lighting", "windows", "ceiling", "surfaces"], // Interior finishes including exterior opening upgrades
       construction: ["buildingEnvelope", "lighting", "windows", "ceiling", "surfaces"],
       landscape: ["lighting"], // Outdoor lighting only
     };
@@ -56,10 +56,10 @@ const FinishesStep = ({
     },
     {
       key: "windows",
-      title: "Windows, Doors & Glazing",
+      title: "Exterior Windows, Doors & Glazing",
       icon: <DoorOpen className="size-6" />,
       value: windows,
-      description: "Main entrance doors, bedroom/bathroom doors, window frames (aluminum/uPVC/wood), glass types (single/double glazed), sliding/casement systems, door hardware & locks, and security grills",
+      description: "Main entrance doors, external door systems, window frames (aluminum/uPVC/wood), glass types (single/double glazed), sliding/casement systems, door hardware & locks, and security grills",
     },
     {
       key: "ceiling",

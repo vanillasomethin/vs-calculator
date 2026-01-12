@@ -240,7 +240,7 @@ export const generateEstimatePDF = (estimate: ProjectEstimate) => {
     { name: 'Elevator/Lift', level: estimate.elevator, key: 'elevator' },
     { name: 'Building Envelope', level: estimate.buildingEnvelope, key: 'buildingEnvelope' },
     { name: 'Lighting Systems', level: estimate.lighting, key: 'lighting' },
-    { name: 'Windows, Doors & Glazing', level: estimate.windows, key: 'windows' },
+    { name: 'Exterior Windows, Doors & Glazing', level: estimate.windows, key: 'windows' },
     { name: 'Ceiling Design', level: estimate.ceiling, key: 'ceiling' },
     { name: 'Wall & Floor Finishes', level: estimate.surfaces, key: 'surfaces' },
     { name: 'Fixed Furniture', level: estimate.fixedFurniture, key: 'fixedFurniture' },
