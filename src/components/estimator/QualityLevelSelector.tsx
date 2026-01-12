@@ -79,8 +79,8 @@ const COMPONENT_CONFIG: Record<string, {
     pricing: { standard: 300, premium: 650, luxury: 1300 }
   },
   windows: {
-    notRequiredDesc: "No window work required. Existing windows retained or not applicable.",
-    standardDesc: "Aluminum/uPVC frames, single glazed glass, basic hardware. Standard windows with mosquito mesh and basic weather sealing.",
+    notRequiredDesc: "No exterior window/door work required. Existing openings retained or not applicable.",
+    standardDesc: "Aluminum/uPVC frames, single glazed glass, basic hardware. Standard exterior windows with mosquito mesh and basic weather sealing.",
     premiumDesc: "Premium uPVC/wood frames, double glazed glass, quality hardware. Better insulation, noise reduction, and German/Italian hardware.",
     luxuryDesc: "Imported systems (Schüco/Reynaers), acoustic glazing, designer hardware. Slim frames, large spans, motorized options, and superior performance.",
     pricing: { standard: 500, premium: 1000, luxury: 2000 }
